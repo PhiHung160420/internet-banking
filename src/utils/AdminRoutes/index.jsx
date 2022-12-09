@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import { IS_ADMIN, IS_LOGIN } from '~/constant';
+import { IS_ADMIN } from '~/constant';
 
 function AdminRoutes() {
     return IS_ADMIN ? <Outlet /> : <Navigate to="/" />;
