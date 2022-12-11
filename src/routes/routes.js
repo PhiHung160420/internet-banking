@@ -12,4 +12,4 @@ export const publicRoutes = [{ path: routesConfig.login, element: LoginPage, lay
 
 export const privateRoutes = [{ path: routesConfig.home, element: HomePage }];
 
-export const adminRoutes = [{ path: routesConfig.dashboard, element: AdminPage }];
+export const adminRoutes = [{ path: routesConfig.dashboard, element: AdminPage  }];

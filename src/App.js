@@ -6,6 +6,7 @@ import { Fragment } from 'react';
 import PrivateRoutes from './utils/PrivateRoutes';
 import { routesConfig } from './config/routesConfig';
 import AdminRoutes from './utils/AdminRoutes';
+import DashboardLayout from './layouts/dashboard/DashboardLayout';
 
 function App() {
     return (
@@ -37,7 +38,7 @@ function App() {
                     <Route element={<PrivateRoutes />}>
                         {privateRoutes.map((route, index) => {
                             const Page = route.element;
-                            let Layout = DefaultLayout;
+                            let Layout = DashboardLayout;
                             if (route.layout) {
                                 Layout = route.layout;
                             } else if (route.layout === null) {
@@ -58,7 +59,7 @@ function App() {
                         <Route path="/admin" element={<AdminRoutes />}>
                             {adminRoutes.map((route, index) => {
                                 const Page = route.element;
-                                let Layout = DefaultLayout;
+                                let Layout = DashboardLayout;
                                 if (route.layout) {
                                     Layout = route.layout;
                                 } else if (route.layout === null) {
