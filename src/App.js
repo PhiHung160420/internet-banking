@@ -56,7 +56,7 @@ function App() {
                                 />
                             );
                         })}
-                        <Route path="/admin" element={<AdminRoutes />}>
+                        <Route element={<AdminRoutes />}>
                             {adminRoutes.map((route, index) => {
                                 const Page = route.element;
                                 let Layout = DashboardLayout;

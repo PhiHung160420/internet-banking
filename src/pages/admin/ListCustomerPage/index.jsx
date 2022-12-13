@@ -29,8 +29,8 @@ import Label from '~/components/label';
 import TableListHead from '~/components/Table/TableListHead';
 import TableListToolbar from '~/components/Table/TableListToolbar';
 import HeaderAction from '~/components/HeaderAction';
-
-// ----------------------------------------------------------------------
+import { routesConfig } from '~/config/routesConfig';
+import { useNavigate } from 'react-router-dom';
 
 const TABLE_HEAD = [
     { id: 'name', label: 'Tên', alignRight: false },
@@ -40,8 +40,6 @@ const TABLE_HEAD = [
     { id: 'role', label: 'Chức vụ', alignRight: false },
     { id: '', label: 'Thao tác', alignRight: true },
 ];
-
-// ----------------------------------------------------------------------
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -73,6 +71,8 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function ListCustomer() {
+    const navigate = useNavigate();
+
     const [open, setOpen] = useState(null);
 
     const [page, setPage] = useState(0);
@@ -145,6 +145,10 @@ export default function ListCustomer() {
 
     const isNotFound = !filteredUsers.length && !!filterName;
 
+    const navigateTo = () => {
+        navigate(routesConfig.addCustomer);
+    };
+
     return (
         <>
             <Container>
@@ -154,6 +158,7 @@ export default function ListCustomer() {
                         button: 'Thêm nhân viên',
                     }}
                     hasAdd
+                    onClick={navigateTo}
                 />
 
                 <Card>
@@ -207,25 +212,25 @@ export default function ListCustomer() {
                                                     </TableCell>
 
                                                     <TableCell align="left">
-                                                        <Typography variant="subtitle2" noWrap>
+                                                        <Typography variant="subtitle" noWrap>
                                                             {name}
                                                         </Typography>
                                                     </TableCell>
 
                                                     <TableCell align="left">
-                                                        <Typography variant="subtitle2" noWrap>
+                                                        <Typography variant="subtitle" noWrap>
                                                             {name}
                                                         </Typography>
                                                     </TableCell>
 
                                                     <TableCell align="left">
-                                                        <Typography variant="subtitle2" noWrap>
+                                                        <Typography variant="subtitle" noWrap>
                                                             {name}
                                                         </Typography>
                                                     </TableCell>
 
                                                     <TableCell align="left">
-                                                        <Typography variant="subtitle2" noWrap>
+                                                        <Typography variant="subtitle" noWrap>
                                                             {name}
                                                         </Typography>
                                                     </TableCell>

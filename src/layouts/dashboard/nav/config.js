@@ -55,13 +55,13 @@ const navAdmin = [
     {
         id: 'Dashboard',
         title: 'Tổng quan',
-        path: `/admin/${routesConfig.dashboard}`,
+        path: routesConfig.dashboard,
         icon: <RxDashboard {...styledIcon} />,
     },
     {
         id: 'Customers',
         title: 'Danh sách nhân viên',
-        path: `/admin/${routesConfig.customers}`,
+        path: routesConfig.customers,
         icon: <FiUsers {...styledIcon} />,
     },
     {

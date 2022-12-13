@@ -10,8 +10,9 @@ export const routesConfig = {
     customerRecipientAcc: '/recipient-account',
 
     // Admin Page
-    dashboard: 'dashboard',
-    customers: 'customers',
+    dashboard: '/admin/dashboard',
+    customers: '/admin/customers',
+    addCustomer: '/admin/customer/add',
 
     // Page Not Found
     PageNotFound: '/*',
