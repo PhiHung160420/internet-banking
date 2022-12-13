@@ -29,8 +29,6 @@ const Main = styled('div')(({ theme }) => ({
     },
 }));
 
-// ----------------------------------------------------------------------
-
 export default function DashboardLayout({ children }) {
     const [open, setOpen] = useState(false);
 

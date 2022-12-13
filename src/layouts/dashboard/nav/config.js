@@ -4,8 +4,9 @@ import SvgColor from '../../../components/svg-color';
 import { MdHistory, MdSwitchAccount, MdOutlineFormatListBulleted } from 'react-icons/md';
 import { BiTransfer, BiNotification } from 'react-icons/bi';
 import { BsCardList } from 'react-icons/bs';
-
-const icon = (name) => <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />;
+import { RxDashboard } from 'react-icons/rx';
+import { FiUsers } from 'react-icons/fi';
+import { RiExchangeBoxLine } from 'react-icons/ri';
 
 const styledIcon = {
     size: '22px',
@@ -50,6 +51,25 @@ const navCustomer = [
     },
 ];
 
-const navAdmin = [];
+const navAdmin = [
+    {
+        id: 'Dashboard',
+        title: 'Tổng quan',
+        path: `/admin/${routesConfig.dashboard}`,
+        icon: <RxDashboard {...styledIcon} />,
+    },
+    {
+        id: 'Customers',
+        title: 'Danh sách nhân viên',
+        path: `/admin/${routesConfig.customers}`,
+        icon: <FiUsers {...styledIcon} />,
+    },
+    {
+        id: 'Dashboard',
+        title: 'Danh sách giao dịch',
+        path: routesConfig.customerBankAcc,
+        icon: <RiExchangeBoxLine {...styledIcon} />,
+    },
+];
 
 export { navCustomer, navAdmin };

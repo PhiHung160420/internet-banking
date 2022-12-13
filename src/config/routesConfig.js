@@ -11,6 +11,7 @@ export const routesConfig = {
 
     // Admin Page
     dashboard: 'dashboard',
+    customers: 'customers',
 
     // Page Not Found
     PageNotFound: '/*',

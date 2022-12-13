@@ -6,6 +6,7 @@ import HomePage from '~/pages/HomePage';
 import AdminPage from '~/pages/AdminPage';
 import BankAccountPage from '~/pages/Client/BankAccountPage';
 import RecipientAccount from '~/pages/Client/RecipientAccountPage';
+import ListCustomer from '~/pages/admin/ListCustomerPage';
 
 // Layout = null mean EmptyLayout
 // Layout = undefined mean DefaultLayout
@@ -18,4 +19,7 @@ export const privateRoutes = [
     { path: routesConfig.customerRecipientAcc, element: RecipientAccount },
 ];
 
-export const adminRoutes = [{ path: routesConfig.dashboard, element: AdminPage }];
+export const adminRoutes = [
+    { path: routesConfig.dashboard, element: AdminPage },
+    { path: routesConfig.customers, element: ListCustomer },
+];
