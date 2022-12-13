@@ -1,11 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { routesConfig } from '~/config/routesConfig';
 
 function HomePage() {
     return (
         <>
-            <Link to="/">HomePage</Link>
-            <Link to="admin/dashboard">AdminPage</Link>
+            <Link to={routesConfig.home}>HomePage</Link>
+            <Link to={routesConfig.dashboard}>AdminPage</Link>
         </>
     );
 }

@@ -4,8 +4,12 @@ export const routesConfig = {
 
     //Private routes
 
+    //Customer Page
     home: '/',
+    customerBankAcc: '/bank-account',
+    customerRecipientAcc: '/recipient-account',
 
+    //Admin Page //
     dashboard: 'dashboard',
 
     //Page Not Found

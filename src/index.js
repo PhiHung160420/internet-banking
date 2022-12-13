@@ -7,6 +7,9 @@ import { Provider } from 'react-redux';
 import { persistor, store } from './store';
 import reportWebVitals from './reportWebVitals';
 import ThemeProvider from './theme';
+import { ConfirmProvider } from 'material-ui-confirm';
+import { confirmConfig, notistackConfig } from './config/configProvider';
+import { SnackbarProvider } from 'notistack';
 
 //Import Lib
 
@@ -16,7 +19,16 @@ root.render(
         <Provider store={store}>
             <PersistGate loading={null} persistor={persistor}>
                 <ThemeProvider>
-                <App />
+                    <ConfirmProvider
+                        defaultOptions={{
+                            confirmationButtonProps: { autoFocus: true },
+                            ...confirmConfig
+                        }}
+                    >
+                        <SnackbarProvider {...notistackConfig}>
+                            <App />
+                        </SnackbarProvider>
+                    </ConfirmProvider>
                 </ThemeProvider>
             </PersistGate>
         </Provider>

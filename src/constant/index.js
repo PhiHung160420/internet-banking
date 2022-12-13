@@ -1,2 +1,2 @@
-export const IS_LOGIN = false;
-export const IS_ADMIN = true;
+export const IS_LOGIN = true;
+export const IS_ADMIN = false;
