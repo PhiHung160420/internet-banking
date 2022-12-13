@@ -1,15 +1,15 @@
 import { routesConfig } from '~/config/routesConfig';
-//Public Page
+// Public Page
 import LoginPage from '~/pages/LoginPage';
-//Private Page
+// Private Page
 import HomePage from '~/pages/HomePage';
 import AdminPage from '~/pages/AdminPage';
-import BankAccountPage from '~/pages/client/BankAccountPage';
-import RecipientAccount from '~/pages/client/RecipientAccountPage';
+import BankAccountPage from '~/pages/Client/BankAccountPage';
+import RecipientAccount from '~/pages/Client/RecipientAccountPage';
 
-//layout = null mean EmptyLayout
-//layout = undefined mean DefaultLayout
-//All customize Layout is layout key
+// Layout = null mean EmptyLayout
+// Layout = undefined mean DefaultLayout
+// All customize Layout is layout key
 export const publicRoutes = [{ path: routesConfig.login, element: LoginPage, layout: null }];
 
 export const privateRoutes = [

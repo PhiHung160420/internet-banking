@@ -1,19 +1,17 @@
 export const routesConfig = {
-    //Public routes
+    // Public routes
     login: '/login',
 
-    //Private routes
+    // Private routes
 
-    //Customer Page
+    // Customer Page
     home: '/',
     customerBankAcc: '/bank-account',
     customerRecipientAcc: '/recipient-account',
 
-    //Admin Page //
+    // Admin Page
     dashboard: 'dashboard',
 
-    //Page Not Found
-
-    404: '/*',
-    //...
+    // Page Not Found
+    PageNotFound: '/*',
 };

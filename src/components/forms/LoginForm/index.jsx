@@ -36,12 +36,12 @@ export default function LoginForm() {
     return (
         <Box component={'form'} onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={3}>
-                <InputField name="username" label="Username" control={control} />
+                <InputField name="username" label="Tên đăng nhập" control={control} />
 
                 <InputField
                     control={control}
                     name="password"
-                    label="Password"
+                    label="Mật khẩu"
                     type={showPassword ? 'text' : 'password'}
                     InputProps={{
                         endAdornment: (
@@ -56,14 +56,13 @@ export default function LoginForm() {
             </Stack>
 
             <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
-                <Checkbox name="remember" label="Remember me" />
                 <Link variant="subtitle2" underline="hover">
-                    Forgot password?
+                    Quên mật khẩu?
                 </Link>
             </Stack>
 
             <LoadingButton fullWidth size="large" type="submit" variant="contained">
-                Login
+                Đăng nhập
             </LoadingButton>
         </Box>
     );

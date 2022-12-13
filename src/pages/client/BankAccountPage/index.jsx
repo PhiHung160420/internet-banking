@@ -168,7 +168,7 @@ export default function BankAccountPage() {
             })
             .catch(() => {
                 /* ... */
-                  enqueueSnackbar('Thay đổi tài khoản thanh toán thất bại', {
+                enqueueSnackbar('Thay đổi tài khoản thanh toán thất bại', {
                     variant: 'error',
                 });
             });
@@ -235,7 +235,7 @@ export default function BankAccountPage() {
                                                     <TableCell align="left">
                                                         <Label
                                                             sx={{ textTransform: 'none' }}
-                                                            color={(status === 'banned' && 'error') || 'success'}
+                                                            // color={(status === 'banned' && 'error') || 'success'}
                                                         >
                                                             {balance}
                                                         </Label>
@@ -299,6 +299,7 @@ export default function BankAccountPage() {
                     </Scrollbar>
 
                     <TablePagination
+                        labelRowsPerPage="Dòng trên trang"
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
                         count={USERLIST.length}

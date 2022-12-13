@@ -79,7 +79,7 @@ function App() {
                             })}
                         </Route>
                     </Route>
-                    <Route path={routesConfig[404]} element={<Navigate to="/" />} />
+                    <Route path={routesConfig.PageNotFound} element={<Navigate to="/" />} />
                 </Routes>
             </Router>
         </>

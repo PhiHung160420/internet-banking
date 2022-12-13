@@ -33,10 +33,9 @@ import HeaderAction from '~/components/HeaderAction';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-    { id: 'name', label: 'Tài khoản', alignRight: false },
-    { id: 'balance', label: 'Số dư hiện tại', alignRight: false },
-    { id: 'status', label: 'Trạng thái', alignRight: false },
-    { id: '' },
+    { id: 'name', label: 'Số tài khoản', alignRight: false },
+    { id: 'balance', label: 'Tên gợi nhớ', alignRight: false },
+    { id: '', label: 'Thao tác', alignRight: true },
 ];
 
 // ----------------------------------------------------------------------
@@ -198,28 +197,15 @@ export default function RecipientAccount() {
                                                     <TableCell component="th" scope="row" padding="none">
                                                         <Stack direction="row" alignItems="center" spacing={2}>
                                                             <Avatar alt={name} src={avatarUrl} />
-                                                            <Typography variant="subtitle2" noWrap>
-                                                                {name}
-                                                            </Typography>
+
+                                                            <Label sx={{ textTransform: 'none' }}>{name}</Label>
                                                         </Stack>
                                                     </TableCell>
+
                                                     <TableCell align="left">
-                                                        <Label
-                                                            sx={{ textTransform: 'none' }}
-                                                            color={(status === 'banned' && 'error') || 'success'}
-                                                        >
+                                                        <Typography variant="subtitle2" noWrap>
                                                             {balance}
-                                                        </Label>
-                                                    </TableCell>
-                                                    <TableCell align="left">
-                                                        <Label
-                                                            sx={{ textTransform: 'none' }}
-                                                            color={(status === 'banned' && 'error') || 'success'}
-                                                        >
-                                                            {status === 'banned'
-                                                                ? 'Tài khoản thường'
-                                                                : 'Tài khoản thanh toán'}
-                                                        </Label>
+                                                        </Typography>
                                                     </TableCell>
 
                                                     <TableCell align="right">
@@ -269,6 +255,7 @@ export default function RecipientAccount() {
                     </Scrollbar>
 
                     <TablePagination
+                        labelRowsPerPage="Dòng trên trang"
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
                         count={USERLIST.length}
