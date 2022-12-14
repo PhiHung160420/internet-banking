@@ -10,6 +10,8 @@ import ListCustomer from '~/pages/admin/ListCustomerPage';
 import AddCustomer from '~/pages/admin/AddCustomerPage';
 import UpdateCustomer from '~/pages/admin/UpdateCustomerPage';
 import ListTransaction from '~/pages/admin/ListTransactionPage';
+import BankAccountPage from '~/pages/client/BankAccountPage';
+import RecipientAccount from '~/pages/client/RecipientAccountPage';
 
 // Layout = null mean EmptyLayout
 // Layout = undefined mean DefaultLayout

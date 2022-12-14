@@ -29,6 +29,8 @@ import Label from '~/components/label';
 import TableListHead from '~/components/Table/TableListHead';
 import TableListToolbar from '~/components/Table/TableListToolbar';
 import HeaderAction from '~/components/HeaderAction';
+import { DELETE, EDIT } from '~/constant';
+import CustomModal from '~/components/CustomModal';
 
 // ----------------------------------------------------------------------
 
@@ -70,6 +72,7 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function RecipientAccount() {
+    //
     const [open, setOpen] = useState(null);
 
     const [page, setPage] = useState(0);
@@ -287,14 +290,16 @@ export default function RecipientAccount() {
             >
                 <MenuItem>
                     <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-                    Edit
+                    {EDIT}
                 </MenuItem>
 
                 <MenuItem sx={{ color: 'error.main' }}>
                     <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-                    Delete
+                    {DELETE}
                 </MenuItem>
             </Popover>
+
+            <CustomModal></CustomModal>
         </>
     );
 }
