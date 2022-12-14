@@ -46,7 +46,11 @@ export default function Nav({ openNav, onCloseNav }) {
                 height: 1,
             }}
         >
-            <Box sx={{ px: 2, py: 2, display: 'inline-flex' }}>{/* <Logo /> */}</Box>
+            <Box sx={{ px: 2, py: 2, display: 'inline-flex' }}>
+                <Typography variant="h5" gutterBottom style={{ color: '#08ACCD' }}>
+                    Admin Dashboard
+                </Typography>
+            </Box>
 
             <Box sx={{ mb: 5, mx: 2.5 }}>
                 <Link underline="none">
@@ -59,7 +63,7 @@ export default function Nav({ openNav, onCloseNav }) {
                             </Typography>
 
                             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                                {account.role}
+                                Giao dịch viên
                             </Typography>
                         </Box>
                     </StyledAccount>

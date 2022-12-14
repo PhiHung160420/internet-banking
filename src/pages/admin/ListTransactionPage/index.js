@@ -21,21 +21,26 @@ import {
     Box,
 } from '@mui/material';
 
-import USERLIST from '~/_mock/user';
+// sections
+// mock
+import USERS from '~/_mock/user';
 import Iconify from '~/components/iconify';
 import Scrollbar from '~/components/scrollbar';
 import Label from '~/components/label';
 import TableListHead from '~/components/Table/TableListHead';
 import TableListToolbar from '~/components/Table/TableListToolbar';
 import HeaderAction from '~/components/HeaderAction';
+import { routesConfig } from '~/config/routesConfig';
+import { useNavigate } from 'react-router-dom';
 import { useConfirm } from 'material-ui-confirm';
 import { useSnackbar } from 'notistack';
 
 const TABLE_HEAD = [
-    { id: 'name', label: 'Tài khoản', alignRight: false },
-    { id: 'balance', label: 'Số dư hiện tại', alignRight: false },
-    { id: 'status', label: 'Trạng thái', alignRight: false },
-    { id: '' },
+    { id: 'name', label: 'Người chuyển', alignRight: false },
+    { id: 'name', label: 'Người nhận', alignRight: false },
+    { id: 'email', label: 'Số tài khoản', alignRight: false },
+    { id: 'phone', label: 'Số tiền', alignRight: false },
+    { id: 'address', label: 'Hình thức chuyển', alignRight: false },
 ];
 
 function descendingComparator(a, b, orderBy) {
@@ -67,14 +72,14 @@ function applySortFilter(array, comparator, query) {
     return stabilizedThis.map((el) => el[0]);
 }
 
-export default function BankAccountPage() {
+export default function ListTransaction() {
+    const navigate = useNavigate();
+
     const [open, setOpen] = useState(null);
 
     const [page, setPage] = useState(0);
 
     const [order, setOrder] = useState('asc');
-
-    const [selected, setSelected] = useState([]);
 
     const [orderBy, setOrderBy] = useState('name');
 
@@ -96,30 +101,6 @@ export default function BankAccountPage() {
         setOrderBy(property);
     };
 
-    const handleSelectAllClick = (event) => {
-        if (event.target.checked) {
-            const newSelecteds = USERLIST.map((n) => n.name);
-            setSelected(newSelecteds);
-            return;
-        }
-        setSelected([]);
-    };
-
-    const handleClick = (event, name) => {
-        const selectedIndex = selected.indexOf(name);
-        let newSelected = [];
-        if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, name);
-        } else if (selectedIndex === 0) {
-            newSelected = newSelected.concat(selected.slice(1));
-        } else if (selectedIndex === selected.length - 1) {
-            newSelected = newSelected.concat(selected.slice(0, -1));
-        } else if (selectedIndex > 0) {
-            newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
-        }
-        setSelected(newSelected);
-    };
-
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -134,55 +115,23 @@ export default function BankAccountPage() {
         setFilterName(event.target.value);
     };
 
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERS.length) : 0;
 
-    const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
+    const filteredUsers = applySortFilter(USERS, getComparator(order, orderBy), filterName);
 
     const isNotFound = !filteredUsers.length && !!filterName;
-
-    const confirm = useConfirm();
-    const { enqueueSnackbar } = useSnackbar();
-
-    const handleConfirm = (account = '222') => {
-        confirm({
-            description: (
-                <Box component="p">
-                    Bạn có chắc chọn tài khoản{' '}
-                    <Typography component="span" variant="h5">
-                        {account}
-                    </Typography>{' '}
-                    làm tài khoản thanh toán?
-                </Box>
-            ),
-        })
-            .then(async () => {
-                enqueueSnackbar('Thay đổi tài khoản thanh toán thành công', {
-                    variant: 'success',
-                });
-            })
-            .catch(() => {
-                /* ... */
-                enqueueSnackbar('Thay đổi tài khoản thanh toán thất bại', {
-                    variant: 'error',
-                });
-            });
-    };
 
     return (
         <>
             <Container>
                 <HeaderAction
                     text={{
-                        label: 'Danh sách tài khoản',
+                        label: 'Danh sách giao dịch',
                     }}
                 />
 
                 <Card>
-                    <TableListToolbar
-                        numSelected={selected.length}
-                        filterName={filterName}
-                        onFilterName={handleFilterByName}
-                    />
+                    <TableListToolbar filterName={filterName} onFilterName={handleFilterByName} />
 
                     <Scrollbar>
                         <TableContainer sx={{ minWidth: 800 }}>
@@ -191,69 +140,49 @@ export default function BankAccountPage() {
                                     order={order}
                                     orderBy={orderBy}
                                     headLabel={TABLE_HEAD}
-                                    rowCount={USERLIST.length}
-                                    numSelected={selected.length}
+                                    rowCount={USERS.length}
                                     onRequestSort={handleRequestSort}
-                                    onSelectAllClick={handleSelectAllClick}
                                 />
                                 <TableBody>
                                     {filteredUsers
                                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                         .map((row) => {
                                             const { id, name, status, avatarUrl, balance } = row;
-                                            const selectedUser = selected.indexOf(name) !== -1;
 
                                             return (
-                                                <TableRow
-                                                    hover
-                                                    key={id}
-                                                    tabIndex={-1}
-                                                    role="checkbox"
-                                                    selected={selectedUser}
-                                                >
-                                                    <TableCell padding="checkbox">
-                                                        <Checkbox
-                                                            checked={selectedUser}
-                                                            onChange={(event) => handleClick(event, name)}
-                                                        />
-                                                    </TableCell>
+                                                <TableRow hover key={id}>
+                                                    <TableCell></TableCell>
 
-                                                    <TableCell component="th" scope="row" padding="none">
-                                                        <Stack direction="row" alignItems="center" spacing={2}>
-                                                            <Avatar alt={name} src={avatarUrl} />
-                                                            <Typography variant="subtitle2" noWrap>
+                                                    <TableCell align="left">
+                                                        <Stack direction="row" alignItems="center">
+                                                            <Typography variant="subtitle" noWrap>
                                                                 {name}
                                                             </Typography>
                                                         </Stack>
                                                     </TableCell>
+
                                                     <TableCell align="left">
-                                                        <Label
-                                                            sx={{ textTransform: 'none' }}
-                                                            // color={(status === 'banned' && 'error') || 'success'}
-                                                        >
-                                                            {balance}
-                                                        </Label>
-                                                    </TableCell>
-                                                    <TableCell align="left">
-                                                        <Label
-                                                            sx={{ textTransform: 'none', cursor: 'pointer' }}
-                                                            color={(status === 'banned' && 'error') || 'success'}
-                                                            onClick={() => handleConfirm(name)}
-                                                        >
-                                                            {status === 'banned'
-                                                                ? 'Tài khoản thường'
-                                                                : 'Tài khoản thanh toán'}
-                                                        </Label>
+                                                        <Typography variant="subtitle" noWrap>
+                                                            {name}
+                                                        </Typography>
                                                     </TableCell>
 
-                                                    <TableCell align="right">
-                                                        <IconButton
-                                                            size="large"
-                                                            color="inherit"
-                                                            onClick={handleOpenMenu}
-                                                        >
-                                                            <Iconify icon={'eva:more-vertical-fill'} />
-                                                        </IconButton>
+                                                    <TableCell align="left">
+                                                        <Typography variant="subtitle" noWrap>
+                                                            {name}
+                                                        </Typography>
+                                                    </TableCell>
+
+                                                    <TableCell align="left">
+                                                        <Typography variant="subtitle" noWrap>
+                                                            {name}
+                                                        </Typography>
+                                                    </TableCell>
+
+                                                    <TableCell align="left">
+                                                        <Typography variant="subtitle" noWrap>
+                                                            {name}
+                                                        </Typography>
                                                     </TableCell>
                                                 </TableRow>
                                             );
@@ -293,10 +222,10 @@ export default function BankAccountPage() {
                     </Scrollbar>
 
                     <TablePagination
-                        labelRowsPerPage="Dòng trên trang"
+                        labelRowsPerPage="Số dòng"
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
-                        count={USERLIST.length}
+                        count={USERS.length}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onPageChange={handleChangePage}
@@ -325,12 +254,12 @@ export default function BankAccountPage() {
             >
                 <MenuItem>
                     <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-                    Edit
+                    Chỉnh sửa
                 </MenuItem>
 
                 <MenuItem sx={{ color: 'error.main' }}>
                     <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-                    Delete
+                    Xoá
                 </MenuItem>
             </Popover>
         </>

@@ -2,12 +2,12 @@ import { Box, Container, Grid, Typography } from '@mui/material';
 import { AccountProfile } from '~/components/account/account-profile';
 import { AccountProfileDetails } from '~/components/account/account-profile-details';
 
-export default function AddCustomer() {
+export default function UpdateCustomer() {
     return (
         <>
             <Container maxWidth="xl">
                 <Typography sx={{ mb: 3 }} variant="h4">
-                    Tạo tài khoản
+                    Cập nhật tài khoản
                 </Typography>
 
                 <Grid container spacing={3}>

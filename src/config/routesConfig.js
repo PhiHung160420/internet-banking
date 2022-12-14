@@ -13,6 +13,8 @@ export const routesConfig = {
     dashboard: '/admin/dashboard',
     customers: '/admin/customers',
     addCustomer: '/admin/customer/add',
+    updateCustomer: '/admin/customer/update',
+    transactionList: '/admin/transactions',
 
     // Page Not Found
     PageNotFound: '/*',

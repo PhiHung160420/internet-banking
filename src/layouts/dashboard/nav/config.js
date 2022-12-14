@@ -67,7 +67,7 @@ const navAdmin = [
     {
         id: 'Dashboard',
         title: 'Danh sách giao dịch',
-        path: routesConfig.customerBankAcc,
+        path: routesConfig.transactionList,
         icon: <RiExchangeBoxLine {...styledIcon} />,
     },
 ];

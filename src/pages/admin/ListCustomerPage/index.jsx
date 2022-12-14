@@ -18,6 +18,7 @@ import {
     IconButton,
     TableContainer,
     TablePagination,
+    Box,
 } from '@mui/material';
 
 // sections
@@ -31,6 +32,8 @@ import TableListToolbar from '~/components/Table/TableListToolbar';
 import HeaderAction from '~/components/HeaderAction';
 import { routesConfig } from '~/config/routesConfig';
 import { useNavigate } from 'react-router-dom';
+import { useConfirm } from 'material-ui-confirm';
+import { useSnackbar } from 'notistack';
 
 const TABLE_HEAD = [
     { id: 'name', label: 'Tên', alignRight: false },
@@ -72,6 +75,10 @@ function applySortFilter(array, comparator, query) {
 
 export default function ListCustomer() {
     const navigate = useNavigate();
+
+    const confirm = useConfirm();
+
+    const { enqueueSnackbar } = useSnackbar();
 
     const [open, setOpen] = useState(null);
 
@@ -125,6 +132,30 @@ export default function ListCustomer() {
         setSelected(newSelected);
     };
 
+    const handleConfirm = (account) => {
+        confirm({
+            description: (
+                <Box component="p">
+                    Bạn có chắc muốn xoá tài khoản{' '}
+                    <Typography component="span" variant="h6">
+                        {account}
+                    </Typography>{' '}
+                    ?
+                </Box>
+            ),
+        })
+            .then(async () => {
+                enqueueSnackbar('Xoá tài khoản thành công', {
+                    variant: 'success',
+                });
+            })
+            .catch(() => {
+                enqueueSnackbar('Xoá tài khoản thất bại', {
+                    variant: 'error',
+                });
+            });
+    };
+
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -145,8 +176,12 @@ export default function ListCustomer() {
 
     const isNotFound = !filteredUsers.length && !!filterName;
 
-    const navigateTo = () => {
+    const addCustomer = () => {
         navigate(routesConfig.addCustomer);
+    };
+
+    const updateCustomer = () => {
+        navigate(routesConfig.updateCustomer);
     };
 
     return (
@@ -158,7 +193,7 @@ export default function ListCustomer() {
                         button: 'Thêm nhân viên',
                     }}
                     hasAdd
-                    onClick={navigateTo}
+                    onClick={addCustomer}
                 />
 
                 <Card>
@@ -312,12 +347,12 @@ export default function ListCustomer() {
                     },
                 }}
             >
-                <MenuItem>
+                <MenuItem onClick={updateCustomer}>
                     <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
                     Chỉnh sửa
                 </MenuItem>
 
-                <MenuItem sx={{ color: 'error.main' }}>
+                <MenuItem onClick={() => handleConfirm('test')} sx={{ color: 'error.main' }}>
                     <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
                     Xoá
                 </MenuItem>
