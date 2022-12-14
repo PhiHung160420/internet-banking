@@ -1,6 +1,5 @@
 // component
 import { routesConfig } from '~/config/routesConfig';
-import SvgColor from '../../../components/svg-color';
 import { MdHistory, MdSwitchAccount, MdOutlineFormatListBulleted } from 'react-icons/md';
 import { BiTransfer, BiNotification } from 'react-icons/bi';
 import { BsCardList } from 'react-icons/bs';
@@ -28,7 +27,7 @@ const navCustomer = [
     {
         id: 'Transfer',
         title: 'Chuyển khoản',
-        path: '/dashboard/products',
+        path: routesConfig.transfer,
         icon: <BiTransfer {...styledIcon} />,
     },
     {

@@ -10,6 +10,7 @@ import ListCustomer from '~/pages/admin/ListCustomerPage';
 import AddCustomer from '~/pages/admin/AddCustomerPage';
 import UpdateCustomer from '~/pages/admin/UpdateCustomerPage';
 import ListTransaction from '~/pages/admin/ListTransactionPage';
+import TransferPage from '~/pages/Client/TransferPage';
 
 // Layout = null mean EmptyLayout
 // Layout = undefined mean DefaultLayout
@@ -20,6 +21,7 @@ export const privateRoutes = [
     { path: routesConfig.home, element: HomePage },
     { path: routesConfig.customerBankAcc, element: BankAccountPage },
     { path: routesConfig.customerRecipientAcc, element: RecipientAccount },
+    { path: routesConfig.transfer, element: TransferPage },
 ];
 
 export const adminRoutes = [
