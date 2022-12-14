@@ -1,12 +1,12 @@
 import { useState } from 'react';
 // @mui
-import { Link, Stack, IconButton, InputAdornment, Checkbox, Box } from '@mui/material';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { LoadingButton } from '@mui/lab';
-import Iconify from '~/components/iconify';
-import InputField from '~/components/modules/form/InputField';
+import { Box, IconButton, InputAdornment, Link, Stack } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
+import Iconify from '~/components/iconify';
+import InputField from '~/components/modules/form/InputField';
 // components
 
 // ----------------------------------------------------------------------

@@ -31,6 +31,7 @@ import TableListToolbar from '~/components/Table/TableListToolbar';
 import HeaderAction from '~/components/HeaderAction';
 import { DELETE, EDIT } from '~/constant';
 import CustomModal from '~/components/CustomModal';
+import RecipientAccountForm from '~/components/forms/RecipientAccount';
 
 // ----------------------------------------------------------------------
 
@@ -72,6 +73,18 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function RecipientAccount() {
+    const [modalState, setModalState] = useState({
+        open: false,
+        data: {},
+    });
+    const [isUpdate, setIsUpdate] = useState(false);
+    const handleOpenModal = (update, data) => {
+        setModalState((prev) => ({
+            ...prev,
+            open: true,
+        }));
+        setIsUpdate(update);
+    };
     //
     const [open, setOpen] = useState(null);
 
@@ -87,12 +100,20 @@ export default function RecipientAccount() {
 
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
-    const handleOpenMenu = (event) => {
+    const handleOpenMenu = (event, row) => {
         setOpen(event.currentTarget);
+        setModalState((prev) => ({
+            data: row,
+            open: false,
+        }));
     };
 
     const handleCloseMenu = () => {
         setOpen(null);
+        setModalState((prev) => ({
+            data: {},
+            open: false,
+        }));
     };
 
     const handleRequestSort = (event, property) => {
@@ -154,6 +175,7 @@ export default function RecipientAccount() {
                         button: 'Thêm thiết lập',
                     }}
                     hasAdd
+                    onClick={() => handleOpenModal(false, {})}
                 />
 
                 <Card>
@@ -179,7 +201,7 @@ export default function RecipientAccount() {
                                     {filteredUsers
                                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                         .map((row) => {
-                                            const { id, name, status, avatarUrl, balance } = row;
+                                            const { id, name, avatarUrl, balance } = row;
                                             const selectedUser = selected.indexOf(name) !== -1;
 
                                             return (
@@ -215,7 +237,7 @@ export default function RecipientAccount() {
                                                         <IconButton
                                                             size="large"
                                                             color="inherit"
-                                                            onClick={handleOpenMenu}
+                                                            onClick={(e) => handleOpenMenu(e, row)}
                                                         >
                                                             <Iconify icon={'eva:more-vertical-fill'} />
                                                         </IconButton>
@@ -288,7 +310,7 @@ export default function RecipientAccount() {
                     },
                 }}
             >
-                <MenuItem>
+                <MenuItem onClick={() => handleOpenModal(true)}>
                     <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
                     {EDIT}
                 </MenuItem>
@@ -299,7 +321,18 @@ export default function RecipientAccount() {
                 </MenuItem>
             </Popover>
 
-            <CustomModal></CustomModal>
+            <CustomModal
+                open={modalState.open}
+                setOpen={(value) =>
+                    setModalState((prev) => ({
+                        ...prev,
+                        open: value,
+                    }))
+                }
+                title={isUpdate ? 'Chỉnh sửa' : 'Tạo mới'}
+            >
+                <RecipientAccountForm dataForm={modalState.data} isUpdate={isUpdate} />
+            </CustomModal>
         </>
     );
 }
