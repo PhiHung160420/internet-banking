@@ -25,6 +25,7 @@ function TransferMenu({ selected, setSelected }) {
             <List component="nav" aria-label="secondary mailbox folder">
                 {menuTransfer.map((item) => (
                     <ListItemButton
+                        key={item.type}
                         sx={{
                             '&.Mui-selected': {
                                 bgcolor: 'action.selected',

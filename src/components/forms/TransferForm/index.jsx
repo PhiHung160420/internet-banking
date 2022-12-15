@@ -8,6 +8,8 @@ import { FaAddressBook } from 'react-icons/fa';
 import * as yup from 'yup';
 import InputField from '~/components/modules/form/InputField';
 import SelectField from '~/components/modules/form/SelectField';
+import { useDispatch } from 'react-redux';
+import { actSubmitTransfer } from '~/store/action/transferAction';
 // components
 
 // ----------------------------------------------------------------------
@@ -16,8 +18,9 @@ const schema = yup.object().shape({
     account: yup.string().required('Username is required').min(4, 'Username is required to have at least 4 characters'),
     amount: yup.string().required('Password is required').min(6, 'Password is required to have at least 4 characters'),
 });
-export default function TransferForm({ selected }) {
+export default function TransferForm({ selected, setStep }) {
     const [showPassword, setShowPassword] = useState(false);
+    const dispatch = useDispatch();
 
     const { control, handleSubmit } = useForm({
         defaultValues: { account: '', amount: '' },
@@ -25,7 +28,8 @@ export default function TransferForm({ selected }) {
         resolver: yupResolver(schema),
     });
     const onSubmit = (data) => {
-        alert(JSON.stringify(data));
+        dispatch(actSubmitTransfer(data));
+        setStep(2);
     };
 
     return (
@@ -59,7 +63,7 @@ export default function TransferForm({ selected }) {
             </Stack>
 
             <LoadingButton sx={{ my: 2 }} fullWidth size="large" type="submit" variant="contained">
-                Chuyển khoản
+                Tiếp tục
             </LoadingButton>
         </Box>
     );

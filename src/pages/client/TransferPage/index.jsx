@@ -1,54 +1,44 @@
-import { Avatar, Card, CardHeader, Grid, IconButton, Typography } from '@mui/material';
-import { Container, Stack } from '@mui/system';
-import React, { useState } from 'react';
+import { Grid } from '@mui/material';
+import { Container } from '@mui/system';
+import { useEffect, useState } from 'react';
 import HeaderAction from '~/components/HeaderAction';
 import { menuTransfer } from '~/components/Transfer/data';
 import TransferMenu from '~/components/Transfer/TransferMenu';
-import { MdMoreVert } from 'react-icons/md';
-import TransferForm from '~/components/forms/TransferForm';
+import TransferInfo from '~/components/Transfer/TransferInfo';
+import TransferCheck from '~/components/Transfer/TransferCheck';
+import TransferOTP from '~/components/Transfer/TransferOTP';
 
 function TransferPage() {
     const [selected, setSelected] = useState(menuTransfer[0].type);
+
+    const [step, setStep] = useState(1);
+
+    const renderTransferComponent = () => {
+        switch (step) {
+            case 1:
+                return <TransferInfo selected={selected} setStep={setStep} />;
+            case 2:
+                return <TransferCheck setStep={setStep} />;
+            case 3:
+                return <TransferOTP setStep={setStep} />;
+            default:
+                break;
+        }
+    };
+
+    useEffect(() => {
+        setStep(1);
+    }, [selected]);
+
     return (
         <>
             <Container>
                 <HeaderAction text={{ label: 'Chuyển khoản' }} />
 
-                <Grid container spacing={2}>
-                    <Grid item xs={7}>
-                        <Stack gap={2} p={4}>
-                            <Card>
-                                <CardHeader
-                                    sx={{ p: 3 }}
-                                    avatar={<Avatar aria-label="recipe">R</Avatar>}
-                                    action={
-                                        <IconButton sx={{ display: 'flex' }} aria-label="settings">
-                                            <MdMoreVert sx={{ alignItems: 'center' }} />
-                                        </IconButton>
-                                    }
-                                    title={
-                                        <Stack>
-                                            <Typography sx={{ fontWeight: 500 }} variant="subtitle1" component={'p'}>
-                                                Nguồn tiền
-                                            </Typography>
-                                            <Typography sx={{ fontWeight: 500 }} variant="subtitle2">
-                                                07887818012
-                                            </Typography>
-                                            <Typography variant="h5">07887818012</Typography>
-                                        </Stack>
-                                    }
-                                />
-                            </Card>
-                            <Typography ml={2} variant="h5" component="h5">
-                                CHUYỂN TIỀN ĐẾN
-                            </Typography>
-
-                            <Card sx={{ p: 3 }}>
-                                <TransferForm selected={selected} />
-                            </Card>
-                        </Stack>
+                <Grid container spacing={3}>
+                    <Grid item xs={8}>
+                        {renderTransferComponent()}
                     </Grid>
-                    <Grid item xs={1}></Grid>
                     <Grid item xs={4}>
                         <TransferMenu selected={selected} setSelected={setSelected} />
                     </Grid>
