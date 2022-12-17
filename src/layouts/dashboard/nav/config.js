@@ -45,7 +45,7 @@ const navCustomer = [
     {
         id: 'TransactionHistory',
         title: 'Lịch sử giao dịch',
-        path: '/404',
+        path: '/transaction',
         icon: <MdHistory {...styledIcon} />,
     },
 ];

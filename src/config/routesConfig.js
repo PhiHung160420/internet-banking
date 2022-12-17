@@ -9,6 +9,7 @@ export const routesConfig = {
     customerBankAcc: '/bank-account',
     customerRecipientAcc: '/recipient-account',
     transfer: '/transfer',
+    transaction: '/transaction',
 
     // Admin Page
     dashboard: '/admin/dashboard',

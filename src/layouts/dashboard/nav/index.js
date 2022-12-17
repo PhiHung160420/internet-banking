@@ -47,9 +47,11 @@ export default function Nav({ openNav, onCloseNav }) {
             }}
         >
             <Box sx={{ px: 2, py: 2, display: 'inline-flex' }}>
-                <Typography variant="h5" gutterBottom style={{ color: '#08ACCD' }}>
-                    Admin Dashboard
-                </Typography>
+                {IS_ADMIN ? (
+                    <Typography variant="h5" gutterBottom style={{ color: '#08ACCD' }}>
+                        Admin Dashboard
+                    </Typography>
+                ) : null}
             </Box>
 
             <Box sx={{ mb: 5, mx: 2.5 }}>
@@ -73,20 +75,6 @@ export default function Nav({ openNav, onCloseNav }) {
             <NavSection data={IS_ADMIN ? navAdmin : navCustomer} />
 
             <Box sx={{ flexGrow: 1 }} />
-
-            <Box sx={{ px: 2.5, pb: 3, mt: 10 }}>
-                <Stack alignItems="center" spacing={3} sx={{ pt: 5, borderRadius: 2, position: 'relative' }}>
-                    <Box sx={{ textAlign: 'center' }}></Box>
-
-                    <Button
-                        href="https://material-ui.com/store/items/minimal-dashboard/"
-                        target="_blank"
-                        variant="contained"
-                    >
-                        Đăng xuất
-                    </Button>
-                </Stack>
-            </Box>
         </Scrollbar>
     );
 
