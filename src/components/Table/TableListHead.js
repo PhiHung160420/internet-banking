@@ -17,6 +17,7 @@ const visuallyHidden = {
 };
 
 TableListHead.propTypes = {
+    isShowCheckBox: PropTypes.bool,
     order: PropTypes.oneOf(['asc', 'desc']),
     orderBy: PropTypes.string,
     rowCount: PropTypes.number,
@@ -34,6 +35,7 @@ export default function TableListHead({
     numSelected,
     onRequestSort,
     onSelectAllClick,
+    isShowCheckBox = true,
 }) {
     const createSortHandler = (property) => (event) => {
         onRequestSort(event, property);
@@ -42,13 +44,16 @@ export default function TableListHead({
     return (
         <TableHead>
             <TableRow>
-                <TableCell padding="checkbox">
-                    <Checkbox
-                        indeterminate={numSelected > 0 && numSelected < rowCount}
-                        checked={rowCount > 0 && numSelected === rowCount}
-                        onChange={onSelectAllClick}
-                    />
-                </TableCell>
+                {isShowCheckBox ? (
+                    <TableCell padding="checkbox">
+                        <Checkbox
+                            indeterminate={numSelected > 0 && numSelected < rowCount}
+                            checked={rowCount > 0 && numSelected === rowCount}
+                            onChange={onSelectAllClick}
+                        />
+                    </TableCell>
+                ) : null}
+
                 {headLabel.map((headCell) => (
                     <TableCell
                         key={headCell.id}

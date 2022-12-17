@@ -16,6 +16,7 @@ export const routesConfig = {
     debtPayment: (id = ':debtId') => {
         return `/debt-payment/${id}`;
     },
+    transaction: '/transaction',
 
     // Admin Page
     dashboard: '/admin/dashboard',

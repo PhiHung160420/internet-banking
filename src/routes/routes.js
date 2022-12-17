@@ -13,6 +13,7 @@ import TransferPage from '~/pages/Client/TransferPage';
 import DebtReminderPage from '~/pages/Client/DebtReminderPage';
 import DebtManagementPage from '~/pages/Client/DebtManagementPage';
 import DebtPaymentPage from '~/pages/Client/DebtPaymentPage';
+import TransactionPage from '~/pages/Client/TransactionPage';
 
 // Layout = null mean EmptyLayout
 // Layout = undefined mean DefaultLayout
@@ -27,6 +28,7 @@ export const privateRoutes = [
     { path: routesConfig.debtReminder, element: DebtReminderPage },
     { path: routesConfig.debtManagement, element: DebtManagementPage },
     { path: routesConfig.debtPayment(), element: DebtPaymentPage },
+    { path: routesConfig.transaction, element: TransactionPage },
 ];
 
 export const adminRoutes = [

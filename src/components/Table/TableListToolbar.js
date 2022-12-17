@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 // @mui
 import { styled, alpha } from '@mui/material/styles';
-import { Toolbar, Tooltip, IconButton, Typography, OutlinedInput, InputAdornment } from '@mui/material';
+import { Toolbar, Tooltip, IconButton, Typography, OutlinedInput, InputAdornment, Container } from '@mui/material';
 import Iconify from '../iconify';
 // component
 
@@ -33,12 +33,20 @@ const StyledSearch = styled(OutlinedInput)(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 TableListToolbar.propTypes = {
+    isShowSearchInput: PropTypes.bool,
     numSelected: PropTypes.number,
     filterName: PropTypes.string,
     onFilterName: PropTypes.func,
+    onClickFilter: PropTypes.func,
 };
 
-export default function TableListToolbar({ numSelected, filterName, onFilterName }) {
+export default function TableListToolbar({
+    isShowSearchInput = true,
+    numSelected,
+    filterName,
+    onFilterName,
+    onClickFilter,
+}) {
     return (
         <StyledRoot
             sx={{
@@ -52,7 +60,7 @@ export default function TableListToolbar({ numSelected, filterName, onFilterName
                 <Typography component="div" variant="subtitle1">
                     {numSelected} selected
                 </Typography>
-            ) : (
+            ) : isShowSearchInput ? (
                 <StyledSearch
                     value={filterName}
                     onChange={onFilterName}
@@ -63,6 +71,8 @@ export default function TableListToolbar({ numSelected, filterName, onFilterName
                         </InputAdornment>
                     }
                 />
+            ) : (
+                <Container maxWidth="sm" />
             )}
 
             {numSelected > 0 ? (
@@ -73,7 +83,7 @@ export default function TableListToolbar({ numSelected, filterName, onFilterName
                 </Tooltip>
             ) : (
                 <Tooltip title="Filter list">
-                    <IconButton>
+                    <IconButton onClick={onClickFilter}>
                         <Iconify icon="ic:round-filter-list" />
                     </IconButton>
                 </Tooltip>
