@@ -1,1 +1,2 @@
 export const SUBMIT_TRANSFER = 'SUBMIT_TRANSFER';
+export const GET_ACCOUNT_INFO = 'GET_ACCOUNT_INFO';

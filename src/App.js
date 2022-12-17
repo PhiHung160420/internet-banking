@@ -4,7 +4,7 @@ import { adminRoutes, privateRoutes, publicRoutes } from './routes/routes';
 import DefaultLayout from './layouts/DefaultLayout';
 import { Fragment } from 'react';
 import PrivateRoutes from './utils/PrivateRoutes';
-import { routesConfig } from './config/routesConfig';
+import { DEFAULT_ROUTES, routesConfig } from './config/routesConfig';
 import AdminRoutes from './utils/AdminRoutes';
 import DashboardLayout from './layouts/dashboard/DashboardLayout';
 
@@ -79,7 +79,7 @@ function App() {
                             })}
                         </Route>
                     </Route>
-                    <Route path={routesConfig.PageNotFound} element={<Navigate to="/" />} />
+                    <Route path={routesConfig.PageNotFound} element={<Navigate to={DEFAULT_ROUTES} />} />
                 </Routes>
             </Router>
         </>

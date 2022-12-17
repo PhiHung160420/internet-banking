@@ -1,3 +1,5 @@
+import { IS_ADMIN } from '~/constant';
+
 export const routesConfig = {
     // Public routes
     login: '/login',
@@ -9,6 +11,11 @@ export const routesConfig = {
     customerBankAcc: '/bank-account',
     customerRecipientAcc: '/recipient-account',
     transfer: '/transfer',
+    debtManagement: '/debt-management',
+    debtReminder: '/debt-reminder',
+    debtPayment: (id = ':debtId') => {
+        return `/debt-payment/${id}`;
+    },
 
     // Admin Page
     dashboard: '/admin/dashboard',
@@ -20,3 +27,5 @@ export const routesConfig = {
     // Page Not Found
     PageNotFound: '/*',
 };
+
+export const DEFAULT_ROUTES = IS_ADMIN ? routesConfig.dashboard : routesConfig.customerBankAcc;

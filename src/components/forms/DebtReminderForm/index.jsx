@@ -1,14 +1,15 @@
 // @mui
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LoadingButton } from '@mui/lab';
-import { Box, MenuItem, Stack } from '@mui/material';
+import { Box, Stack } from '@mui/material';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import * as yup from 'yup';
 import AccountTransform from '~/components/AccountTransform';
 import InputField from '~/components/modules/form/InputField';
-import SelectField from '~/components/modules/form/SelectField';
-import { actSubmitTransfer } from '~/store/action/transferAction';
+import { SUBMIT, UPDATE } from '~/constant';
+import { actGetAccountInfo } from '~/store/action/transferAction';
 // components
 
 // ----------------------------------------------------------------------
@@ -25,40 +26,47 @@ const schema = yup.object().shape({
 
         .min(10000, 'Số tiền thấp nhất là 10.000 VND'),
 });
-export default function TransferForm({ selected, setStep }) {
-    const dispatch = useDispatch();
-
+export default function DebtReminderForm({ dataForm, isUpdate, openModal }) {
+    const initValue = { account: '', account_name: '' };
+    const updateValue = {
+        ...initValue,
+        account: dataForm.name,
+    };
     const { control, handleSubmit, watch } = useForm({
+        defaultValues: isUpdate ? updateValue : initValue,
+
         resolver: yupResolver(schema),
     });
     const onSubmit = (data) => {
-        dispatch(actSubmitTransfer(data));
-        setStep(2);
+        console.log(data);
     };
 
-    return (
-        <Box component={'form'} onSubmit={handleSubmit(onSubmit)}>
-            <Stack spacing={3}>
-                {selected === 'INTERBANK' && (
-                    <SelectField name="bank_name" label="Ngân hàng" control={control}>
-                        <MenuItem value="">
-                            <em>None</em>
-                        </MenuItem>
-                        <MenuItem value={10}>Ten</MenuItem>
-                        <MenuItem value={20}>Twenty</MenuItem>
-                        <MenuItem value={30}>Thirty</MenuItem>
-                    </SelectField>
-                )}
+    const dispatch = useDispatch();
+    useEffect(() => {
+        if (!openModal) {
+            dispatch(actGetAccountInfo({}));
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [openModal]);
 
-                <AccountTransform control={control} name="account" watch={watch} />
+    return (
+        <Box my={2} component={'form'} onSubmit={handleSubmit(onSubmit)}>
+            <Stack spacing={3}>
+                <AccountTransform
+                    isUpdate={isUpdate}
+                    openModal={openModal}
+                    control={control}
+                    name="account"
+                    watch={watch}
+                />
 
                 <InputField name="amount" label="Số tiền VND" control={control} />
 
-                <InputField name="note" label="Nội dung chuyển tiền" multiline rows={4} control={control} />
+                <InputField name="note" label="Nội dung nhắc nợ" multiline rows={4} control={control} />
             </Stack>
 
             <LoadingButton sx={{ my: 2 }} fullWidth size="large" type="submit" variant="contained">
-                Tiếp tục
+                {isUpdate ? UPDATE : SUBMIT}
             </LoadingButton>
         </Box>
     );

@@ -1,0 +1,362 @@
+import { filter } from 'lodash';
+import { useState } from 'react';
+// @mui
+import {
+    Avatar,
+    Box,
+    Card,
+    Checkbox,
+    Container,
+    IconButton,
+    MenuItem,
+    Paper,
+    Popover,
+    Stack,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TablePagination,
+    TableRow,
+    Typography,
+} from '@mui/material';
+
+// sections
+// mock
+import { useConfirm } from 'material-ui-confirm';
+import { useSnackbar } from 'notistack';
+import CustomModal from '~/components/CustomModal';
+import DebtReminderForm from '~/components/forms/DebtReminderForm';
+import HeaderAction from '~/components/HeaderAction';
+import Iconify from '~/components/iconify';
+import Label from '~/components/label';
+import Scrollbar from '~/components/scrollbar';
+import TableListHead from '~/components/Table/TableListHead';
+import TableListToolbar from '~/components/Table/TableListToolbar';
+import { DELETE } from '~/constant';
+import USERLIST from '~/_mock/user';
+
+// ----------------------------------------------------------------------
+
+const TABLE_HEAD = [
+    { id: 'name', label: 'Số tài khoản', alignRight: false },
+    { id: 'balance', label: 'Tên gợi nhớ', alignRight: false },
+    { id: '', label: 'Thao tác', alignRight: true },
+];
+
+// ----------------------------------------------------------------------
+
+function descendingComparator(a, b, orderBy) {
+    if (b[orderBy] < a[orderBy]) {
+        return -1;
+    }
+    if (b[orderBy] > a[orderBy]) {
+        return 1;
+    }
+    return 0;
+}
+
+function getComparator(order, orderBy) {
+    return order === 'desc'
+        ? (a, b) => descendingComparator(a, b, orderBy)
+        : (a, b) => -descendingComparator(a, b, orderBy);
+}
+
+function applySortFilter(array, comparator, query) {
+    const stabilizedThis = array.map((el, index) => [el, index]);
+    stabilizedThis.sort((a, b) => {
+        const order = comparator(a[0], b[0]);
+        if (order !== 0) return order;
+        return a[1] - b[1];
+    });
+    if (query) {
+        return filter(array, (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+    }
+    return stabilizedThis.map((el) => el[0]);
+}
+
+export default function DebtReminderPage() {
+    const [modalState, setModalState] = useState({
+        open: false,
+        data: {},
+    });
+    const [isUpdate, setIsUpdate] = useState(false);
+    const handleOpenModal = (update, data) => {
+        setModalState((prev) => ({
+            ...prev,
+            open: true,
+        }));
+        setIsUpdate(update);
+    };
+    //
+    const [open, setOpen] = useState(null);
+
+    const [page, setPage] = useState(0);
+
+    const [order, setOrder] = useState('asc');
+
+    const [selected, setSelected] = useState([]);
+
+    const [orderBy, setOrderBy] = useState('name');
+
+    const [filterName, setFilterName] = useState('');
+
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+
+    const handleOpenMenu = (event, row) => {
+        setOpen(event.currentTarget);
+        setModalState((prev) => ({
+            data: row,
+            open: false,
+        }));
+    };
+
+    const handleCloseMenu = () => {
+        setOpen(null);
+        setModalState((prev) => ({
+            data: {},
+            open: false,
+        }));
+    };
+
+    const handleRequestSort = (event, property) => {
+        const isAsc = orderBy === property && order === 'asc';
+        setOrder(isAsc ? 'desc' : 'asc');
+        setOrderBy(property);
+    };
+
+    const handleSelectAllClick = (event) => {
+        if (event.target.checked) {
+            const newSelecteds = USERLIST.map((n) => n.name);
+            setSelected(newSelecteds);
+            return;
+        }
+        setSelected([]);
+    };
+
+    const handleClick = (event, name) => {
+        const selectedIndex = selected.indexOf(name);
+        let newSelected = [];
+        if (selectedIndex === -1) {
+            newSelected = newSelected.concat(selected, name);
+        } else if (selectedIndex === 0) {
+            newSelected = newSelected.concat(selected.slice(1));
+        } else if (selectedIndex === selected.length - 1) {
+            newSelected = newSelected.concat(selected.slice(0, -1));
+        } else if (selectedIndex > 0) {
+            newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
+        }
+        setSelected(newSelected);
+    };
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setPage(0);
+        setRowsPerPage(parseInt(event.target.value, 10));
+    };
+
+    const handleFilterByName = (event) => {
+        setPage(0);
+        setFilterName(event.target.value);
+    };
+
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+
+    const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
+
+    const isNotFound = !filteredUsers.length && !!filterName;
+    const confirm = useConfirm();
+    const { enqueueSnackbar } = useSnackbar();
+
+    const handleConfirm = (fullname) => {
+        confirm({
+            description: (
+                <Box component="p">
+                    Xóa nhắc nợ này sẽ gửi thông báo đến{' '}
+                    <Typography component="span" variant="h5">
+                        {fullname}
+                    </Typography>{' '}
+                    bạn có chắc chắn thực hiện?
+                </Box>
+            ),
+        })
+            .then(async () => {
+                enqueueSnackbar('Xóa thành công, thông báo đã được gửi!', {
+                    variant: 'success',
+                });
+            })
+            .catch(() => {
+                /* ... */
+                enqueueSnackbar('Xóa thất bại', {
+                    variant: 'error',
+                });
+            });
+    };
+    return (
+        <>
+            <Container>
+                <HeaderAction
+                    text={{
+                        label: 'Danh sách nhắc nợ',
+                        button: 'Thêm nhắc nợ',
+                    }}
+                    hasAdd
+                    onClick={() => handleOpenModal(false, {})}
+                />
+
+                <Card>
+                    <TableListToolbar
+                        numSelected={selected.length}
+                        filterName={filterName}
+                        onFilterName={handleFilterByName}
+                    />
+
+                    <Scrollbar>
+                        <TableContainer sx={{ minWidth: 800 }}>
+                            <Table>
+                                <TableListHead
+                                    order={order}
+                                    orderBy={orderBy}
+                                    headLabel={TABLE_HEAD}
+                                    rowCount={USERLIST.length}
+                                    numSelected={selected.length}
+                                    onRequestSort={handleRequestSort}
+                                    onSelectAllClick={handleSelectAllClick}
+                                />
+                                <TableBody>
+                                    {filteredUsers
+                                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                        .map((row) => {
+                                            const { id, name, avatarUrl, balance } = row;
+                                            const selectedUser = selected.indexOf(name) !== -1;
+
+                                            return (
+                                                <TableRow
+                                                    hover
+                                                    key={id}
+                                                    tabIndex={-1}
+                                                    role="checkbox"
+                                                    selected={selectedUser}
+                                                >
+                                                    <TableCell padding="checkbox">
+                                                        <Checkbox
+                                                            checked={selectedUser}
+                                                            onChange={(event) => handleClick(event, name)}
+                                                        />
+                                                    </TableCell>
+
+                                                    <TableCell component="th" scope="row" padding="none">
+                                                        <Stack direction="row" alignItems="center" spacing={2}>
+                                                            <Avatar alt={name} src={avatarUrl} />
+
+                                                            <Label sx={{ textTransform: 'none' }}>{name}</Label>
+                                                        </Stack>
+                                                    </TableCell>
+
+                                                    <TableCell align="left">
+                                                        <Typography variant="subtitle2" noWrap>
+                                                            {balance}
+                                                        </Typography>
+                                                    </TableCell>
+
+                                                    <TableCell align="right">
+                                                        <IconButton
+                                                            size="large"
+                                                            color="inherit"
+                                                            onClick={(e) => handleOpenMenu(e, row)}
+                                                        >
+                                                            <Iconify icon={'eva:more-vertical-fill'} />
+                                                        </IconButton>
+                                                    </TableCell>
+                                                </TableRow>
+                                            );
+                                        })}
+                                    {emptyRows > 0 && (
+                                        <TableRow style={{ height: 53 * emptyRows }}>
+                                            <TableCell colSpan={6} />
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+
+                                {isNotFound && (
+                                    <TableBody>
+                                        <TableRow>
+                                            <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
+                                                <Paper
+                                                    sx={{
+                                                        textAlign: 'center',
+                                                    }}
+                                                >
+                                                    <Typography variant="h6" paragraph>
+                                                        Not found
+                                                    </Typography>
+
+                                                    <Typography variant="body2">
+                                                        No results found for &nbsp;
+                                                        <strong>&quot;{filterName}&quot;</strong>.
+                                                        <br /> Try checking for typos or using complete words.
+                                                    </Typography>
+                                                </Paper>
+                                            </TableCell>
+                                        </TableRow>
+                                    </TableBody>
+                                )}
+                            </Table>
+                        </TableContainer>
+                    </Scrollbar>
+
+                    <TablePagination
+                        labelRowsPerPage="Dòng trên trang"
+                        rowsPerPageOptions={[5, 10, 25]}
+                        component="div"
+                        count={USERLIST.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                    />
+                </Card>
+            </Container>
+
+            <Popover
+                open={Boolean(open)}
+                anchorEl={open}
+                onClose={handleCloseMenu}
+                anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                PaperProps={{
+                    sx: {
+                        p: 1,
+                        width: 140,
+                        '& .MuiMenuItem-root': {
+                            px: 1,
+                            typography: 'body2',
+                            borderRadius: 0.75,
+                        },
+                    },
+                }}
+            >
+                <MenuItem sx={{ color: 'error.main' }} onClick={() => handleConfirm(modalState.data?.name)}>
+                    <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
+                    {DELETE}
+                </MenuItem>
+            </Popover>
+
+            <CustomModal
+                open={modalState.open}
+                setOpen={(value) =>
+                    setModalState((prev) => ({
+                        ...prev,
+                        open: value,
+                    }))
+                }
+                title={isUpdate ? 'Chỉnh sửa' : 'Tạo mới'}
+            >
+                <DebtReminderForm openModal={modalState.open} dataForm={modalState.data} isUpdate={isUpdate} />
+            </CustomModal>
+        </>
+    );
+}

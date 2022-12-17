@@ -33,13 +33,13 @@ const navCustomer = [
     {
         id: 'DebtManagement',
         title: 'Quản lý nợ',
-        path: '/dashboard/blog',
+        path: routesConfig.debtManagement,
         icon: <BsCardList {...styledIcon} />,
     },
     {
         id: 'DebtReminder',
         title: 'Quản lý nhắc nợ',
-        path: '/login',
+        path: routesConfig.debtReminder,
         icon: <BiNotification {...styledIcon} />,
     },
     {

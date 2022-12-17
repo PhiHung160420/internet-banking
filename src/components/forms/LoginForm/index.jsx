@@ -9,8 +9,6 @@ import Iconify from '~/components/iconify';
 import InputField from '~/components/modules/form/InputField';
 // components
 
-// ----------------------------------------------------------------------
-
 const schema = yup.object().shape({
     username: yup
         .string()
