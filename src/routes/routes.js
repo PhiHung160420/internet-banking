@@ -2,10 +2,10 @@ import { routesConfig } from '~/config/routesConfig';
 // Public Page
 import LoginPage from '~/pages/LoginPage';
 // Private Page
-import AddCustomer from '~/pages/admin/AddCustomerPage';
-import ListCustomer from '~/pages/admin/ListCustomerPage';
-import ListTransaction from '~/pages/admin/ListTransactionPage';
-import UpdateCustomer from '~/pages/admin/UpdateCustomerPage';
+import AddCustomer from '~/pages/Admin/AddCustomerPage';
+import ListCustomer from '~/pages/Admin/ListCustomerPage';
+import ListTransaction from '~/pages/Admin/ListTransactionPage';
+import UpdateCustomer from '~/pages/Admin/UpdateCustomerPage';
 import AdminPage from '~/pages/AdminPage';
 import BankAccountPage from '~/pages/Client/BankAccountPage';
 import RecipientAccount from '~/pages/Client/RecipientAccountPage';
