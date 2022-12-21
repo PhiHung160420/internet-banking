@@ -1,9 +1,10 @@
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import { IS_ADMIN } from '~/constant';
+import { ROLE_ADMIN, ROLE_KEY } from '~/constant';
 
 function AdminRoutes() {
-    return IS_ADMIN ? <Outlet /> : <Navigate to="/" />;
+    const currRole = localStorage.getItem(ROLE_KEY);
+    return currRole === ROLE_ADMIN ? <Outlet /> : <Navigate to="/" />;
 }
 
 export default AdminRoutes;

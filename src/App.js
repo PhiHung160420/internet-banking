@@ -7,6 +7,8 @@ import PrivateRoutes from './utils/PrivateRoutes';
 import { DEFAULT_ROUTES, routesConfig } from './config/routesConfig';
 import AdminRoutes from './utils/AdminRoutes';
 import DashboardLayout from './layouts/dashboard/DashboardLayout';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
     return (
@@ -82,6 +84,7 @@ function App() {
                     <Route path={routesConfig.PageNotFound} element={<Navigate to={DEFAULT_ROUTES} />} />
                 </Routes>
             </Router>
+            <ToastContainer />
         </>
     );
 }

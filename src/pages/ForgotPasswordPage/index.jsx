@@ -1,12 +1,12 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { IS_LOGIN, ROLE_KEY } from '~/constant';
+import { ROLE_KEY } from '~/constant';
 // @mui
 import { styled } from '@mui/material/styles';
-import { Link, Container, Typography } from '@mui/material';
+import { Container, Typography } from '@mui/material';
 import Logo from '~/components/logo';
 import useResponsive from '~/hooks/useResponsive';
-import LoginForm from '~/components/forms/LoginForm';
+import ForgotPasswordForm from '~/components/forms/ForgotPasswordForm';
 
 const StyledRoot = styled('div')(({ theme }) => ({
     [theme.breakpoints.up('md')]: {
@@ -34,7 +34,7 @@ const StyledContent = styled('div')(({ theme }) => ({
     padding: theme.spacing(12, 0),
 }));
 
-function LoginPage() {
+function ForgotPasswordPage() {
     const mdUp = useResponsive('up', 'md');
 
     return localStorage.getItem(ROLE_KEY) ? (
@@ -62,9 +62,9 @@ function LoginPage() {
                 <Container maxWidth="sm">
                     <StyledContent>
                         <Typography variant="h4" gutterBottom>
-                            Đăng nhập
+                            Quên mật khẩu
                         </Typography>
-                        <LoginForm />
+                        <ForgotPasswordForm />
                     </StyledContent>
                 </Container>
             </StyledRoot>
@@ -72,4 +72,4 @@ function LoginPage() {
     );
 }
 
-export default LoginPage;
+export default ForgotPasswordPage;

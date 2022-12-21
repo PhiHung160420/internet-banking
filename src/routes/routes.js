@@ -14,11 +14,15 @@ import DebtReminderPage from '~/pages/Client/DebtReminderPage';
 import DebtManagementPage from '~/pages/Client/DebtManagementPage';
 import DebtPaymentPage from '~/pages/Client/DebtPaymentPage';
 import TransactionPage from '~/pages/Client/TransactionPage';
+import ForgotPasswordPage from '~/pages/ForgotPasswordPage';
 
 // Layout = null mean EmptyLayout
 // Layout = undefined mean DefaultLayout
 // All customize Layout is layout key
-export const publicRoutes = [{ path: routesConfig.login, element: LoginPage, layout: null }];
+export const publicRoutes = [
+    { path: routesConfig.login, element: LoginPage, layout: null },
+    { path: routesConfig.forgotPassword, element: ForgotPasswordPage, layout: null }
+];
 
 export const privateRoutes = [
     // { path: routesConfig.home, element: HomePage },

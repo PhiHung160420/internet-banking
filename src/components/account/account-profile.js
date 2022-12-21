@@ -1,5 +1,6 @@
 import { Avatar, Box, Button, Card, CardActions, CardContent, Divider, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
+import { PLACEHOLDER_AVATAR } from '~/constant';
 
 const useStyles = makeStyles({
     leftContainer: {
@@ -14,34 +15,22 @@ const useStyles = makeStyles({
     },
 });
 
-const user = {
-    avatar: '/static/images/avatars/avatar_6.png',
-    city: 'Los Angeles',
-    country: 'USA',
-    jobTitle: 'Senior Developer',
-    name: 'Katarina Smith',
-    timezone: 'GTM-7',
-};
-
 export const AccountProfile = (props) => {
     const styles = useStyles();
+    const { user } = props;
+
     return (
         <Card {...props}>
             <CardContent>
                 <Box className={styles.leftContainer}>
-                    <Avatar src={user.avatar} className={styles.avatar} />
+                    <Avatar src={PLACEHOLDER_AVATAR} className={styles.avatar} />
 
                     <Typography color="textPrimary" gutterBottom variant="h5">
-                        {user.name}
+                        {user?.fullName || 'Vui lòng nhập tên nhân viên'}
                     </Typography>
                 </Box>
             </CardContent>
             <Divider />
-            <CardActions>
-                <Button color="primary" fullWidth variant="text">
-                    Tải hình ảnh
-                </Button>
-            </CardActions>
         </Card>
     );
 };

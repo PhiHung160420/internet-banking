@@ -3,6 +3,7 @@ import { IS_ADMIN } from '~/constant';
 export const routesConfig = {
     // Public routes
     login: '/login',
+    forgotPassword: '/forgot-password',
 
     // Private routes
 
