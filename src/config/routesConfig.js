@@ -1,4 +1,4 @@
-import { IS_ADMIN } from '~/constant';
+import {ROLE_ADMIN, ROLE_KEY } from '~/constant';
 
 export const routesConfig = {
     // Public routes
@@ -30,4 +30,4 @@ export const routesConfig = {
     PageNotFound: '/*',
 };
 
-export const DEFAULT_ROUTES = IS_ADMIN ? routesConfig.dashboard : routesConfig.customerBankAcc;
+export const DEFAULT_ROUTES = localStorage.getItem(ROLE_KEY) === ROLE_ADMIN ? routesConfig.dashboard : routesConfig.customerBankAcc;

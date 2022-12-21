@@ -9,9 +9,8 @@ import Iconify from '../../../components/iconify';
 //
 import Searchbar from './Searchbar';
 import AccountPopover from './AccountPopover';
-import LanguagePopover from './LanguagePopover';
 import NotificationsPopover from './NotificationsPopover';
-import { IS_ADMIN } from '~/constant';
+import { ROLE_ADMIN, ROLE_KEY } from '~/constant';
 
 // ----------------------------------------------------------------------
 
@@ -68,7 +67,7 @@ export default function Header({ onOpenNav }) {
                         sm: 1,
                     }}
                 >
-                    {IS_ADMIN ? null : <NotificationsPopover />}
+                    {localStorage.getItem(ROLE_KEY) === ROLE_ADMIN ? null : <NotificationsPopover />}
                     <AccountPopover />
                 </Stack>
             </StyledToolbar>

@@ -12,7 +12,7 @@ import useResponsive from '../../../hooks/useResponsive';
 import Scrollbar from '../../../components/scrollbar';
 import NavSection from '../../../components/nav-section';
 import { navAdmin, navCustomer } from './config';
-import { IS_ADMIN } from '~/constant';
+import { ROLE_ADMIN, ROLE_KEY } from '~/constant';
 
 const NAV_WIDTH = 280;
 
@@ -47,7 +47,7 @@ export default function Nav({ openNav, onCloseNav }) {
             }}
         >
             <Box sx={{ px: 2, py: 2, display: 'inline-flex' }}>
-                {IS_ADMIN ? (
+                {localStorage.getItem(ROLE_KEY) === ROLE_ADMIN ? (
                     <Typography variant="h5" gutterBottom style={{ color: '#08ACCD' }}>
                         Admin Dashboard
                     </Typography>
@@ -72,7 +72,7 @@ export default function Nav({ openNav, onCloseNav }) {
                 </Link>
             </Box>
 
-            <NavSection data={IS_ADMIN ? navAdmin : navCustomer} />
+            <NavSection data={localStorage.getItem(ROLE_KEY) === ROLE_ADMIN ? navAdmin : navCustomer} />
 
             <Box sx={{ flexGrow: 1 }} />
         </Scrollbar>
