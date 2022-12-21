@@ -47,9 +47,12 @@ export default function LoginForm() {
             localStorage.setItem(REFRESHTOEKN_KEY, res?.data?.refreshToken);
 
             if (res?.data) {
-                if (res?.data?.role === ROLE_CUSTOMER || res?.data?.role === ROLE_EMPLOYEE) {
+                if (res?.data?.role === ROLE_CUSTOMER) {
                     localStorage.setItem(ROLE_KEY, ROLE_CUSTOMER);
                     navigate('/');
+                } else if (res?.data?.role === ROLE_EMPLOYEE) {
+                    localStorage.setItem(ROLE_KEY, ROLE_EMPLOYEE);
+                    navigate('/employee/list-customer');
                 } else {
                     localStorage.setItem(ROLE_KEY, ROLE_ADMIN);
                     navigate('/admin/dashboard');

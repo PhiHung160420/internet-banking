@@ -3,9 +3,9 @@ import { useState } from 'react';
 import { AccountProfile } from '~/components/account/account-profile';
 import { AccountProfileDetails } from '~/components/account/account-profile-details';
 import { routesConfig } from '~/config/routesConfig';
-import { ROLE_CUSTOMER, ROLE_EMPLOYEE } from '~/constant';
+import { ROLE_CUSTOMER } from '~/constant';
 
-export default function AddCustomer() {
+export default function EmployeeAddCustomer() {
     const [user, setUser] = useState({
         fullName: '',
         email: '',
@@ -25,15 +25,15 @@ export default function AddCustomer() {
 
                 <Grid container spacing={3}>
                     <Grid item lg={4} md={6} xs={12}>
-                        <AccountProfile user={user} />
+                        <AccountProfile user={user} namePlaceholder={`Vui lòng nhập tên khách hàng`} />
                     </Grid>
 
                     <Grid item lg={8} md={6} xs={12}>
                         <AccountProfileDetails
-                            role={ROLE_EMPLOYEE}
+                            role={ROLE_CUSTOMER}
                             user={user}
                             setUserInfo={(value) => setUser({ ...user, ...value })}
-                            redirectUrl={routesConfig.customers}
+                            redirectUrl={routesConfig.employeeListCustomer}
                         />
                     </Grid>
                 </Grid>

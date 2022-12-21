@@ -10,7 +10,7 @@ import Iconify from '../../../components/iconify';
 import Searchbar from './Searchbar';
 import AccountPopover from './AccountPopover';
 import NotificationsPopover from './NotificationsPopover';
-import { ROLE_ADMIN, ROLE_KEY } from '~/constant';
+import { ROLE_ADMIN, ROLE_EMPLOYEE, ROLE_KEY } from '~/constant';
 
 // ----------------------------------------------------------------------
 
@@ -41,6 +41,7 @@ Header.propTypes = {
 };
 
 export default function Header({ onOpenNav }) {
+    const currentRole = localStorage.getItem(ROLE_KEY);
     return (
         <StyledRoot>
             <StyledToolbar>
@@ -67,7 +68,7 @@ export default function Header({ onOpenNav }) {
                         sm: 1,
                     }}
                 >
-                    {localStorage.getItem(ROLE_KEY) === ROLE_ADMIN ? null : <NotificationsPopover />}
+                    {currentRole === ROLE_ADMIN || currentRole === ROLE_EMPLOYEE ? null : <NotificationsPopover />}
                     <AccountPopover />
                 </Stack>
             </StyledToolbar>

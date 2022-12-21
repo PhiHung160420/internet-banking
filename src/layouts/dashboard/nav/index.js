@@ -11,8 +11,8 @@ import useResponsive from '../../../hooks/useResponsive';
 // components
 import Scrollbar from '../../../components/scrollbar';
 import NavSection from '../../../components/nav-section';
-import { navAdmin, navCustomer } from './config';
-import { ROLE_ADMIN, ROLE_KEY } from '~/constant';
+import { navAdmin, navCustomer, navEmployee } from './config';
+import { ROLE_ADMIN, ROLE_EMPLOYEE, ROLE_KEY } from '~/constant';
 
 const NAV_WIDTH = 280;
 
@@ -31,8 +31,8 @@ Nav.propTypes = {
 
 export default function Nav({ openNav, onCloseNav }) {
     const { pathname } = useLocation();
-
     const isDesktop = useResponsive('up', 'lg');
+    const currentRole = localStorage.getItem(ROLE_KEY);
 
     useEffect(() => {
         if (openNav) {
@@ -47,9 +47,13 @@ export default function Nav({ openNav, onCloseNav }) {
             }}
         >
             <Box sx={{ px: 2, py: 2, display: 'inline-flex' }}>
-                {localStorage.getItem(ROLE_KEY) === ROLE_ADMIN ? (
+                {currentRole === ROLE_ADMIN ? (
                     <Typography variant="h5" gutterBottom style={{ color: '#08ACCD' }}>
                         Admin Dashboard
+                    </Typography>
+                ) : currentRole === ROLE_EMPLOYEE ? (
+                    <Typography variant="h5" gutterBottom style={{ color: '#08ACCD' }}>
+                        Teller Dashboard
                     </Typography>
                 ) : null}
             </Box>
@@ -65,14 +69,20 @@ export default function Nav({ openNav, onCloseNav }) {
                             </Typography>
 
                             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                                Giao dịch viên
+                                {currentRole === ROLE_ADMIN
+                                    ? 'Admin'
+                                    : currentRole === ROLE_EMPLOYEE
+                                    ? 'Giao dịch viên'
+                                    : 'Khách hàng'}
                             </Typography>
                         </Box>
                     </StyledAccount>
                 </Link>
             </Box>
 
-            <NavSection data={localStorage.getItem(ROLE_KEY) === ROLE_ADMIN ? navAdmin : navCustomer} />
+            <NavSection
+                data={currentRole === ROLE_ADMIN ? navAdmin : currentRole === ROLE_EMPLOYEE ? navEmployee : navCustomer}
+            />
 
             <Box sx={{ flexGrow: 1 }} />
         </Scrollbar>

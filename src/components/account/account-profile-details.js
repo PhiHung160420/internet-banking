@@ -1,11 +1,10 @@
-import { useEffect, useState } from 'react';
-import { Box, Button, Card, CardContent, CardHeader, Divider, Grid, TextField } from '@mui/material';
+import { useEffect } from 'react';
+import { Box, Button, Card, CardContent, CardHeader, Divider, Grid } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { REGEX_VNPHONE, ROLE_EMPLOYEE } from '~/constant';
+import { REGEX_VNPHONE } from '~/constant';
 import InputField from '../modules/form/InputField';
-import { options } from 'numeral';
 import { userSignup } from '~/services/auth';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -33,7 +32,7 @@ const schema = yup.object().shape({
 });
 
 export const AccountProfileDetails = (props) => {
-    const { user, setUserInfo } = props;
+    const { user, setUserInfo, role, redirectUrl } = props;
     const navigate = useNavigate();
 
     const { control, handleSubmit, watch, setError } = useForm({
@@ -63,17 +62,17 @@ export const AccountProfileDetails = (props) => {
                 phoneNumber,
                 address,
                 password,
-                roleCode: ROLE_EMPLOYEE,
+                roleCode: role,
             });
 
             if (res?.data?.id) {
-                navigate('/admin/customers');
-                toast.success('Tạo tài khoản nhân viên thành công');
+                navigate(redirectUrl);
+                toast.success('Tạo tài khoản thành công');
             } else {
-                toast.error('Tạo tài khoản nhân viên thất bại');
+                toast.error('Tạo tài khoản thất bại');
             }
         } catch (error) {
-            toast.error('Tạo tài khoản nhân viên thất bại');
+            toast.error('Tạo tài khoản thất bại');
         }
     };
 
