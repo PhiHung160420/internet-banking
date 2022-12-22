@@ -4,7 +4,7 @@ import { ROLE_ADMIN, ROLE_KEY } from '~/constant';
 
 function AdminRoutes() {
     const currRole = localStorage.getItem(ROLE_KEY);
-    return currRole === ROLE_ADMIN ? <Outlet /> : <Navigate to="/" />;
+    return currRole === ROLE_ADMIN ? <Outlet /> : <Navigate to="/login" />;
 }
 
 export default AdminRoutes;

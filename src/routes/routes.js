@@ -15,6 +15,10 @@ import DebtManagementPage from '~/pages/Client/DebtManagementPage';
 import DebtPaymentPage from '~/pages/Client/DebtPaymentPage';
 import TransactionPage from '~/pages/Client/TransactionPage';
 import ForgotPasswordPage from '~/pages/ForgotPasswordPage';
+import EmployeeListCustomer from '~/pages/Employee/ListCustomer';
+import EmployeeAddCustomer from '~/pages/Employee/AddCustomer';
+import EmployeeTransactionHistory from '~/pages/Employee/TransactionHistory';
+import EmployeeRechargeMoney from '~/pages/Employee/RechargeMoney ';
 
 // Layout = null mean EmptyLayout
 // Layout = undefined mean DefaultLayout
@@ -41,4 +45,11 @@ export const adminRoutes = [
     { path: routesConfig.addCustomer, element: AddCustomer },
     { path: routesConfig.updateCustomer, element: UpdateCustomer },
     { path: routesConfig.transactionList, element: ListTransaction },
+];
+
+export const employeeRoutes = [
+    { path: routesConfig.employeeListCustomer, element: EmployeeListCustomer },
+    { path: routesConfig.employeeAddCustomer, element: EmployeeAddCustomer },
+    { path: routesConfig.employeeTrasaction, element: EmployeeTransactionHistory },
+    { path: routesConfig.employeeRecharge, element: EmployeeRechargeMoney },
 ];

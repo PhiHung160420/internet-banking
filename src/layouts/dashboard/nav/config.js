@@ -71,4 +71,25 @@ const navAdmin = [
     },
 ];
 
-export { navCustomer, navAdmin };
+const navEmployee = [
+    {
+        id: 'Customers',
+        title: 'Danh sách khách hàng',
+        path: routesConfig.employeeListCustomer,
+        icon: <FiUsers {...styledIcon} />,
+    },
+    {
+        id: 'Dashboard',
+        title: 'Danh sách giao dịch',
+        path: routesConfig.employeeTrasaction,
+        icon: <RiExchangeBoxLine {...styledIcon} />,
+    },
+    {
+        id: 'TransactionHistory',
+        title: 'Lịch sử giao dịch',
+        path: routesConfig.employeeRecharge,
+        icon: <MdHistory {...styledIcon} />,
+    },
+];
+
+export { navCustomer, navAdmin, navEmployee };

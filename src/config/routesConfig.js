@@ -1,4 +1,4 @@
-import {ROLE_ADMIN, ROLE_KEY } from '~/constant';
+import {ROLE_ADMIN, ROLE_EMPLOYEE, ROLE_KEY } from '~/constant';
 
 export const routesConfig = {
     // Public routes
@@ -26,8 +26,14 @@ export const routesConfig = {
     updateCustomer: '/admin/customer/update',
     transactionList: '/admin/transactions',
 
+    //employee Page
+    employeeListCustomer: '/employee/list-customer',
+    employeeAddCustomer: '/employee/add-customer',
+    employeeRecharge: '/employee/recharge',
+    employeeTrasaction: '/employee/transaction',
+
     // Page Not Found
     PageNotFound: '/*',
 };
 
-export const DEFAULT_ROUTES = localStorage.getItem(ROLE_KEY) === ROLE_ADMIN ? routesConfig.dashboard : routesConfig.customerBankAcc;
+export const DEFAULT_ROUTES = localStorage.getItem(ROLE_KEY) === ROLE_ADMIN ? routesConfig.dashboard : localStorage.getItem(ROLE_KEY) === ROLE_EMPLOYEE ? routesConfig.employeeListCustomer :  routesConfig.customerBankAcc;

@@ -17,7 +17,7 @@ const useStyles = makeStyles({
 
 export const AccountProfile = (props) => {
     const styles = useStyles();
-    const { user } = props;
+    const { user, namePlaceholder} = props;
 
     return (
         <Card {...props}>
@@ -26,7 +26,7 @@ export const AccountProfile = (props) => {
                     <Avatar src={PLACEHOLDER_AVATAR} className={styles.avatar} />
 
                     <Typography color="textPrimary" gutterBottom variant="h5">
-                        {user?.fullName || 'Vui lòng nhập tên nhân viên'}
+                        {user?.fullName || namePlaceholder || 'Vui lòng nhập tên nhân viên'}
                     </Typography>
                 </Box>
             </CardContent>
