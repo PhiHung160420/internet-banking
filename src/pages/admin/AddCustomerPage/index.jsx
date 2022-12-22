@@ -1,4 +1,4 @@
-import { Box, Container, Grid, Typography } from '@mui/material';
+import { Container, Grid, Typography } from '@mui/material';
 import { useState } from 'react';
 import { AccountProfile } from '~/components/account/account-profile';
 import { AccountProfileDetails } from '~/components/account/account-profile-details';

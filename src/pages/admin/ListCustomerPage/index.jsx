@@ -2,38 +2,37 @@ import { filter } from 'lodash';
 import { useState } from 'react';
 // @mui
 import {
-    Card,
-    Table,
-    Stack,
-    Paper,
     Avatar,
-    Popover,
+    Box,
+    Card,
     Checkbox,
-    TableRow,
+    Container,
+    IconButton,
     MenuItem,
+    Paper,
+    Popover,
+    Stack,
+    Table,
     TableBody,
     TableCell,
-    Container,
-    Typography,
-    IconButton,
     TableContainer,
     TablePagination,
-    Box,
+    TableRow,
+    Typography,
 } from '@mui/material';
 
 // sections
 // mock
-import USERS from '~/_mock/user';
-import Iconify from '~/components/iconify';
-import Scrollbar from '~/components/scrollbar';
-import Label from '~/components/label';
-import TableListHead from '~/components/Table/TableListHead';
-import TableListToolbar from '~/components/Table/TableListToolbar';
-import HeaderAction from '~/components/HeaderAction';
-import { routesConfig } from '~/config/routesConfig';
-import { useNavigate } from 'react-router-dom';
 import { useConfirm } from 'material-ui-confirm';
 import { useSnackbar } from 'notistack';
+import { useNavigate } from 'react-router-dom';
+import HeaderAction from '~/components/HeaderAction';
+import Iconify from '~/components/iconify';
+import Scrollbar from '~/components/scrollbar';
+import TableListHead from '~/components/Table/TableListHead';
+import TableListToolbar from '~/components/Table/TableListToolbar';
+import { routesConfig } from '~/config/routesConfig';
+import USERS from '~/_mock/user';
 
 const TABLE_HEAD = [
     { id: 'name', label: 'Tên', alignRight: false },

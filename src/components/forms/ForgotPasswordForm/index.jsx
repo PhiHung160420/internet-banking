@@ -1,13 +1,12 @@
-import { useState } from 'react';
 // @mui
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LoadingButton } from '@mui/lab';
 import { Box, Stack } from '@mui/material';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import * as yup from 'yup';
 import InputField from '~/components/modules/form/InputField';
-import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
 
 const schema = yup.object().shape({
     email: yup.string().email('Email sai định dạng').required('Email không được bỏ trống'),

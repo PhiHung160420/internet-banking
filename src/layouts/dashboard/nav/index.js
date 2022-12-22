@@ -2,17 +2,17 @@ import PropTypes from 'prop-types';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 // @mui
-import { styled, alpha } from '@mui/material/styles';
-import { Box, Link, Button, Drawer, Typography, Avatar, Stack } from '@mui/material';
+import { Avatar, Box, Drawer, Link, Typography } from '@mui/material';
+import { alpha, styled } from '@mui/material/styles';
 // mock
 import account from '../../../_mock/account';
 // hooks
 import useResponsive from '../../../hooks/useResponsive';
 // components
-import Scrollbar from '../../../components/scrollbar';
-import NavSection from '../../../components/nav-section';
-import { navAdmin, navCustomer } from './config';
 import { ROLE_ADMIN, ROLE_KEY } from '~/constant';
+import NavSection from '../../../components/nav-section';
+import Scrollbar from '../../../components/scrollbar';
+import { navAdmin, navCustomer } from './config';
 
 const NAV_WIDTH = 280;
 

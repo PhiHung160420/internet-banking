@@ -1,14 +1,13 @@
-import { useEffect, useState } from 'react';
-import { Box, Button, Card, CardContent, CardHeader, Divider, Grid, TextField } from '@mui/material';
-import { useForm } from 'react-hook-form';
-import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { REGEX_VNPHONE, ROLE_EMPLOYEE } from '~/constant';
-import InputField from '../modules/form/InputField';
-import { options } from 'numeral';
-import { userSignup } from '~/services/auth';
+import { Box, Button, Card, CardContent, CardHeader, Divider, Grid } from '@mui/material';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import * as yup from 'yup';
+import { REGEX_VNPHONE, ROLE_EMPLOYEE } from '~/constant';
+import { userSignup } from '~/services/auth';
+import InputField from '../modules/form/InputField';
 
 const schema = yup.object().shape({
     fullName: yup
@@ -80,6 +79,7 @@ export const AccountProfileDetails = (props) => {
     useEffect(() => {
         const subscription = watch((value, { name, type }) => (name === 'fullName' ? setUserInfo(value) : ''));
         return () => subscription.unsubscribe();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [watch]);
 
     return (

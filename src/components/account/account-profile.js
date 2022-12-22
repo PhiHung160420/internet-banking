@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, Card, CardActions, CardContent, Divider, Typography } from '@mui/material';
+import { Avatar, Box, Card, CardContent, Divider, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { PLACEHOLDER_AVATAR } from '~/constant';
 

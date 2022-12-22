@@ -1,8 +1,7 @@
 import { Box, Button, Card, Divider, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
-import React from 'react';
 import { useSelector } from 'react-redux';
-import CardAccount from '~/components/CardAccount';
+import TransferAccountInfo from '../TransferAccountInfo';
 
 function TransferCheck({ setStep }) {
     const { transfer } = useSelector((state) => state.transferReducer);
@@ -19,10 +18,18 @@ function TransferCheck({ setStep }) {
 
             <Box flex={1} gap={1}>
                 <Card>
-                    <CardAccount fullname={'PHAN PHI HÙNG'} account="2342-214-522" />
-
-                    <Divider variant="inset" />
-                    <CardAccount fullname={transfer?.fullname} account={transfer?.account} />
+                    <TransferAccountInfo
+                        transfer={{
+                            from: {
+                                fullname: 'Phan Phi Hùng',
+                                account: '22192-22-455-22',
+                            },
+                            to: {
+                                fullname: 'Hy Quỳnh',
+                                account: '242444-5255',
+                            },
+                        }}
+                    />
                     <Divider variant="middle" />
                     <Box p={3}>
                         <Typography variant="body2">Nội dung chuyển tiền</Typography>
