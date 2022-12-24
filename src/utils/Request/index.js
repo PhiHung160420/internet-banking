@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { ACCESSTOKEN_KEY, API_SERVER_URL } from '~/constant';
+import { ACCESS_TOKEN_KEY, API_SERVER_URL } from '~/constant';
 
 export const errorHandler = (error) => {
     const { response } = error;
@@ -25,7 +25,7 @@ export function request(initialRequest) {
         {
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${localStorage.getItem(ACCESSTOKEN_KEY) || ''}`,
+                Authorization: `Bearer ${localStorage.getItem(ACCESS_TOKEN_KEY) || ''}`,
                 ...initialRequest.headers,
             },
             ...options,

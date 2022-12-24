@@ -59,6 +59,7 @@ function App() {
                                 />
                             );
                         })}
+                        {/* ADMIN ROUTES */}
                         <Route element={<AdminRoutes />}>
                             {adminRoutes.map((route, index) => {
                                 const Page = route.element;
@@ -82,6 +83,7 @@ function App() {
                             })}
                         </Route>
 
+                        {/* EMPLOYEE ROUTES */}
                         <Route element={<EmployeeRoutes />}>
                             {employeeRoutes.map((route, index) => {
                                 const Page = route.element;

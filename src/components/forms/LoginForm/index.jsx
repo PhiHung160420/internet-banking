@@ -10,9 +10,9 @@ import InputField from '~/components/modules/form/InputField';
 import { userLogin } from '~/services/auth';
 import { toast } from 'react-toastify';
 import {
-    ACCESSTOKEN_KEY,
-    RECAPCHA_SITEKEY,
-    REFRESHTOEKN_KEY,
+    ACCESS_TOKEN_KEY,
+    RE_CAPCHA_SITEKEY,
+    REFRESH_TOKEN_KEY,
     ROLE_ADMIN,
     ROLE_CUSTOMER,
     ROLE_EMPLOYEE,
@@ -43,8 +43,8 @@ export default function LoginForm() {
 
             const { email, password } = data;
             const res = await userLogin({ email, password });
-            localStorage.setItem(ACCESSTOKEN_KEY, res?.data?.accessToken);
-            localStorage.setItem(REFRESHTOEKN_KEY, res?.data?.refreshToken);
+            localStorage.setItem(ACCESS_TOKEN_KEY, res?.data?.accessToken);
+            localStorage.setItem(REFRESH_TOKEN_KEY, res?.data?.refreshToken);
 
             if (res?.data) {
                 if (res?.data?.role === ROLE_CUSTOMER) {
@@ -97,7 +97,7 @@ export default function LoginForm() {
                 </Link>
             </Stack>
 
-            <ReCAPTCHA sitekey={RECAPCHA_SITEKEY} onChange={recapchaOnChange} style={{ width: '100%' }} />
+            <ReCAPTCHA sitekey={RE_CAPCHA_SITEKEY} onChange={recapchaOnChange} style={{ width: '100%' }} />
             <div style={{ marginTop: '20px' }}>
                 <LoadingButton fullWidth size="large" type="submit" variant="contained">
                     Đăng nhập
