@@ -1,27 +1,26 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 // @mui
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LoadingButton } from '@mui/lab';
-import { Box, Button, IconButton, InputAdornment, Link, Stack } from '@mui/material';
+import { Box, IconButton, InputAdornment, Link, Stack } from '@mui/material';
+import ReCAPTCHA from 'react-google-recaptcha';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import * as yup from 'yup';
 import Iconify from '~/components/iconify';
 import InputField from '~/components/modules/form/InputField';
-import { userLogin } from '~/services/auth';
-import { toast } from 'react-toastify';
 import {
     ACCESS_TOKEN_KEY,
-    RE_CAPCHA_SITEKEY,
     REFRESH_TOKEN_KEY,
+    RE_CAPCHA_SITEKEY,
     ROLE_ADMIN,
     ROLE_CUSTOMER,
     ROLE_EMPLOYEE,
     ROLE_KEY,
 } from '~/constant';
-import { useNavigate } from 'react-router-dom';
-import ReCAPTCHA from 'react-google-recaptcha';
-import { useLayoutEffect } from 'react';
-// components
+import { userLogin } from '~/services/auth';
+import { routesConfig } from '~/config/routesConfig';
 
 const schema = yup.object().shape({
     email: yup.string().email('Email sai định dạng').required('Email không được bỏ trống'),
@@ -50,18 +49,18 @@ export default function LoginForm() {
             if (res?.data) {
                 if (res?.data?.role === ROLE_CUSTOMER) {
                     localStorage.setItem(ROLE_KEY, ROLE_CUSTOMER);
-                    navigate('/');
+                    navigate(routesConfig.home);
                 } else if (res?.data?.role === ROLE_EMPLOYEE) {
                     localStorage.setItem(ROLE_KEY, ROLE_EMPLOYEE);
-                    navigate('/employee/list-customer');
-                } else {
+                    navigate(routesConfig.employeeListCustomer);
+                } else if (res?.data?.role === ROLE_ADMIN) {
                     localStorage.setItem(ROLE_KEY, ROLE_ADMIN);
-                    navigate('/admin/dashboard');
+                    navigate(routesConfig.dashboard);
                 }
                 toast.success('Đăng nhập thành công');
             }
         } catch (error) {
-            toast.error(error?.data?.message || 'Đăng nhập thất lại');
+            toast.error(error?.data?.message || 'Đăng nhập thất bại');
         }
     };
 
@@ -69,7 +68,6 @@ export default function LoginForm() {
         setCapchaValue(value);
     }
 
-  
     return (
         <Box component={'form'} onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={3}>
@@ -99,12 +97,7 @@ export default function LoginForm() {
                 </Link>
             </Stack>
 
-            <ReCAPTCHA
-                hl="vi"
-                sitekey={RE_CAPCHA_SITEKEY}
-                onChange={recapchaOnChange}
-                style={{ width: '100%' }}
-            />
+            <ReCAPTCHA hl="vi" sitekey={RE_CAPCHA_SITEKEY} onChange={recapchaOnChange} style={{ width: '100%' }} />
             <div style={{ marginTop: '20px' }}>
                 <LoadingButton fullWidth size="large" type="submit" variant="contained">
                     Đăng nhập

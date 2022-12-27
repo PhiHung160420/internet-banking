@@ -64,7 +64,7 @@ const navAdmin = [
         icon: <FiUsers {...styledIcon} />,
     },
     {
-        id: 'Dashboard',
+        id: 'ListTransaction',
         title: 'Danh sách giao dịch',
         path: routesConfig.transactionList,
         icon: <RiExchangeBoxLine {...styledIcon} />,

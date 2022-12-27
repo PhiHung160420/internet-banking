@@ -1,12 +1,11 @@
-import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { IS_LOGIN, ROLE_KEY } from '~/constant';
+import { ROLE_KEY } from '~/constant';
 // @mui
+import { Container, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { Link, Container, Typography } from '@mui/material';
+import LoginForm from '~/components/forms/LoginForm';
 import Logo from '~/components/logo';
 import useResponsive from '~/hooks/useResponsive';
-import LoginForm from '~/components/forms/LoginForm';
 
 const StyledRoot = styled('div')(({ theme }) => ({
     [theme.breakpoints.up('md')]: {

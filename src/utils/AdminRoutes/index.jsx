@@ -1,10 +1,9 @@
-import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import { ROLE_ADMIN, ROLE_KEY } from '~/constant';
+import { useAuth } from '~/hooks/useAuth';
 
 function AdminRoutes() {
-    const currRole = localStorage.getItem(ROLE_KEY);
-    return currRole === ROLE_ADMIN ? <Outlet /> : <Navigate to="/login" />;
+    const { IS_ADMIN } = useAuth();
+    return IS_ADMIN ? <Outlet /> : <Navigate to="/login" />;
 }
 
 export default AdminRoutes;

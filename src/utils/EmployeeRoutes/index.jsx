@@ -1,10 +1,9 @@
-import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import { ROLE_EMPLOYEE, ROLE_KEY } from '~/constant';
+import { useAuth } from '~/hooks/useAuth';
 
 function EmployeeRoutes() {
-    const currRole = localStorage.getItem(ROLE_KEY);
-    return currRole === ROLE_EMPLOYEE ? <Outlet /> : <Navigate to="/login" />;
+    const { IS_EMPLOYEE } = useAuth();
+    return IS_EMPLOYEE ? <Outlet /> : <Navigate to="/login" />;
 }
 
 export default EmployeeRoutes;

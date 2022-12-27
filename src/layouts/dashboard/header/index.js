@@ -1,16 +1,16 @@
 import PropTypes from 'prop-types';
 // @mui
+import { AppBar, Box, IconButton, Stack, Toolbar } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { Box, Stack, AppBar, Toolbar, IconButton } from '@mui/material';
 // utils
 import { bgBlur } from '../../../utils/cssStyles';
 // components
 import Iconify from '../../../components/iconify';
 //
-import Searchbar from './Searchbar';
+import { useAuth } from '~/hooks/useAuth';
 import AccountPopover from './AccountPopover';
 import NotificationsPopover from './NotificationsPopover';
-import { ROLE_ADMIN, ROLE_EMPLOYEE, ROLE_KEY } from '~/constant';
+import Searchbar from './Searchbar';
 
 // ----------------------------------------------------------------------
 
@@ -41,7 +41,7 @@ Header.propTypes = {
 };
 
 export default function Header({ onOpenNav }) {
-    const currentRole = localStorage.getItem(ROLE_KEY);
+    const { IS_ADMIN, IS_EMPLOYEE } = useAuth();
     return (
         <StyledRoot>
             <StyledToolbar>
@@ -68,7 +68,7 @@ export default function Header({ onOpenNav }) {
                         sm: 1,
                     }}
                 >
-                    {currentRole === ROLE_ADMIN || currentRole === ROLE_EMPLOYEE ? null : <NotificationsPopover />}
+                    {IS_ADMIN || IS_EMPLOYEE ? null : <NotificationsPopover />}
                     <AccountPopover />
                 </Stack>
             </StyledToolbar>

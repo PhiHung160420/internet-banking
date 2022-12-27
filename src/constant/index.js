@@ -7,9 +7,9 @@ export const ROLE_EMPLOYEE = 'ROLE_EMPLOYEE';
 export const ROLE_CUSTOMER = 'ROLE_CUSTOMER';
 export const ROLE_ADMIN = 'ROLE_ADMIN';
 
-export const IS_LOGIN = localStorage.getItem(ROLE_KEY) ? true : false;
-export const IS_ADMIN = localStorage.getItem(ROLE_KEY) === ROLE_ADMIN ? true : false;
-export const IS_EMPLOYEE = localStorage.getItem(ROLE_KEY) === ROLE_EMPLOYEE ? true : false;
+// export const IS_LOGIN = localStorage.getItem(ROLE_KEY) ? true : false;
+// export const IS_ADMIN = localStorage.getItem(ROLE_KEY) === ROLE_ADMIN ? true : false;
+// export const IS_EMPLOYEE = localStorage.getItem(ROLE_KEY) === ROLE_EMPLOYEE ? true : false;
 
 export const TRANSACTION_LIST = [
     {
