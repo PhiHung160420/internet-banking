@@ -1,5 +1,5 @@
 import { filter } from 'lodash';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 // @mui
 import {
     Avatar,
@@ -33,6 +33,8 @@ import TableListHead from '~/components/Table/TableListHead';
 import TableListToolbar from '~/components/Table/TableListToolbar';
 import { routesConfig } from '~/config/routesConfig';
 import USERS from '~/_mock/user';
+import { accountRequest } from '~/services/accounts';
+import { PAGINATION } from '~/constant/pagination';
 
 const TABLE_HEAD = [
     { id: 'name', label: 'Tên', alignRight: false },
@@ -93,8 +95,11 @@ export default function ListCustomer() {
 
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
-    const handleOpenMenu = (event) => {
+    const [rowData, setRowData] = useState({});
+
+    const handleOpenMenu = (event, row) => {
         setOpen(event.currentTarget);
+        setRowData(row)
     };
 
     const handleCloseMenu = () => {
@@ -156,12 +161,18 @@ export default function ListCustomer() {
     };
 
     const handleChangePage = (event, newPage) => {
-        setPage(newPage);
+        setPagination((prev) => ({
+            ...prev,
+            page: newPage,
+        }));
     };
 
     const handleChangeRowsPerPage = (event) => {
-        setPage(0);
-        setRowsPerPage(parseInt(event.target.value, 10));
+        setPagination((prev) => ({
+            ...prev,
+            page: 0,
+            size: event.target.value,
+        }));
     };
 
     const handleFilterByName = (event) => {
@@ -180,8 +191,51 @@ export default function ListCustomer() {
     };
 
     const updateCustomer = () => {
-        navigate(routesConfig.updateCustomer);
+        navigate(routesConfig.updateCustomer, {
+            state: {
+                dataUser: rowData,
+                isUpdate: true,
+            },
+        });
     };
+
+    //Fetch API
+
+    const [accountList, setAccountList] = useState([]);
+
+    const [pagination, setPagination] = useState({
+        page: PAGINATION.PAGE,
+        size: PAGINATION.SIZE,
+        totalElements: 10,
+        totalPages: 1,
+    });
+    const fetchAccountList = async () => {
+        const payload = {
+            page: pagination.page,
+            size: pagination.size,
+            sort: 'createdAt,asc',
+        };
+        try {
+            const res = await accountRequest.getList(payload);
+
+            setAccountList(res.data.content);
+
+            const paginationRes = {
+                ...pagination,
+                page: res?.data?.pageable?.pageNumber,
+                totalElements: res?.data?.totalElements,
+                totalPages: res?.data?.totalPages,
+            };
+
+            setPagination(paginationRes);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    useEffect(() => {
+        fetchAccountList();
+    }, [pagination.page, pagination.size]);
 
     return (
         <>
@@ -215,72 +269,70 @@ export default function ListCustomer() {
                                     onSelectAllClick={handleSelectAllClick}
                                 />
                                 <TableBody>
-                                    {filteredUsers
-                                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                        .map((row) => {
-                                            const { id, name, status, avatarUrl, balance } = row;
-                                            const selectedUser = selected.indexOf(name) !== -1;
+                                    {accountList.map((row) => {
+                                        const { fullName, accountNumber, type } = row;
+                                        const selectedUser = selected.indexOf(accountNumber) !== -1;
 
-                                            return (
-                                                <TableRow
-                                                    hover
-                                                    key={id}
-                                                    tabIndex={-1}
-                                                    role="checkbox"
-                                                    selected={selectedUser}
-                                                >
-                                                    <TableCell padding="checkbox">
-                                                        <Checkbox
-                                                            checked={selectedUser}
-                                                            onChange={(event) => handleClick(event, name)}
-                                                        />
-                                                    </TableCell>
+                                        return (
+                                            <TableRow
+                                                hover
+                                                key={accountNumber}
+                                                tabIndex={-1}
+                                                role="checkbox"
+                                                selected={selectedUser}
+                                            >
+                                                <TableCell padding="checkbox">
+                                                    <Checkbox
+                                                        checked={selectedUser}
+                                                        onChange={(event) => handleClick(event, accountNumber)}
+                                                    />
+                                                </TableCell>
 
-                                                    <TableCell component="th" scope="row" padding="none">
-                                                        <Stack direction="row" alignItems="center" spacing={2}>
-                                                            <Avatar alt={name} src={avatarUrl} />
-                                                            <Typography variant="subtitle2" noWrap>
-                                                                {name}
-                                                            </Typography>
-                                                        </Stack>
-                                                    </TableCell>
-
-                                                    <TableCell align="left">
-                                                        <Typography variant="subtitle" noWrap>
-                                                            {name}
+                                                <TableCell component="th" scope="row" padding="none">
+                                                    <Stack direction="row" alignItems="center" spacing={2}>
+                                                        {/* <Avatar alt={name} src={avatarUrl} /> */}
+                                                        <Typography variant="subtitle2" noWrap>
+                                                            {fullName}
                                                         </Typography>
-                                                    </TableCell>
+                                                    </Stack>
+                                                </TableCell>
 
-                                                    <TableCell align="left">
-                                                        <Typography variant="subtitle" noWrap>
-                                                            {name}
-                                                        </Typography>
-                                                    </TableCell>
+                                                <TableCell align="left">
+                                                    <Typography variant="subtitle" noWrap>
+                                                        {accountNumber}
+                                                    </Typography>
+                                                </TableCell>
 
-                                                    <TableCell align="left">
-                                                        <Typography variant="subtitle" noWrap>
-                                                            {name}
-                                                        </Typography>
-                                                    </TableCell>
+                                                <TableCell align="left">
+                                                    <Typography variant="subtitle" noWrap>
+                                                        {fullName}
+                                                    </Typography>
+                                                </TableCell>
 
-                                                    <TableCell align="left">
-                                                        <Typography variant="subtitle" noWrap>
-                                                            {name}
-                                                        </Typography>
-                                                    </TableCell>
+                                                <TableCell align="left">
+                                                    <Typography variant="subtitle" noWrap>
+                                                        {fullName}
+                                                    </Typography>
+                                                </TableCell>
 
-                                                    <TableCell align="right">
-                                                        <IconButton
-                                                            size="large"
-                                                            color="inherit"
-                                                            onClick={handleOpenMenu}
-                                                        >
-                                                            <Iconify icon={'eva:more-vertical-fill'} />
-                                                        </IconButton>
-                                                    </TableCell>
-                                                </TableRow>
-                                            );
-                                        })}
+                                                <TableCell align="left">
+                                                    <Typography variant="subtitle" noWrap>
+                                                        {type}
+                                                    </Typography>
+                                                </TableCell>
+
+                                                <TableCell align="right">
+                                                    <IconButton
+                                                        size="large"
+                                                        color="inherit"
+                                                        onClick={(e) => handleOpenMenu(e, row)}
+                                                    >
+                                                        <Iconify icon={'eva:more-vertical-fill'} />
+                                                    </IconButton>
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })}
                                     {emptyRows > 0 && (
                                         <TableRow style={{ height: 53 * emptyRows }}>
                                             <TableCell colSpan={6} />
@@ -319,9 +371,9 @@ export default function ListCustomer() {
                         labelRowsPerPage="Số dòng"
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
-                        count={USERS.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
+                        count={pagination.totalElements}
+                        rowsPerPage={pagination.size}
+                        page={pagination.page}
                         onPageChange={handleChangePage}
                         onRowsPerPageChange={handleChangeRowsPerPage}
                     />

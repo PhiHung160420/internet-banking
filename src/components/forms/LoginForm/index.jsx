@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 // @mui
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LoadingButton } from '@mui/lab';
-import { Box, IconButton, InputAdornment, Link, Stack } from '@mui/material';
+import { Box, Button, IconButton, InputAdornment, Link, Stack } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import Iconify from '~/components/iconify';
@@ -20,6 +20,7 @@ import {
 } from '~/constant';
 import { useNavigate } from 'react-router-dom';
 import ReCAPTCHA from 'react-google-recaptcha';
+import { useLayoutEffect } from 'react';
 // components
 
 const schema = yup.object().shape({
@@ -68,6 +69,7 @@ export default function LoginForm() {
         setCapchaValue(value);
     }
 
+  
     return (
         <Box component={'form'} onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={3}>
@@ -97,7 +99,12 @@ export default function LoginForm() {
                 </Link>
             </Stack>
 
-            <ReCAPTCHA sitekey={RE_CAPCHA_SITEKEY} onChange={recapchaOnChange} style={{ width: '100%' }} />
+            <ReCAPTCHA
+                hl="vi"
+                sitekey={RE_CAPCHA_SITEKEY}
+                onChange={recapchaOnChange}
+                style={{ width: '100%' }}
+            />
             <div style={{ marginTop: '20px' }}>
                 <LoadingButton fullWidth size="large" type="submit" variant="contained">
                     Đăng nhập

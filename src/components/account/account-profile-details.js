@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Button, Card, CardContent, CardHeader, Divider, Grid } from '@mui/material';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import * as yup from 'yup';
 import { REGEX_VNPHONE } from '~/constant';
@@ -28,16 +28,20 @@ const schema = yup.object().shape({
         .string()
         .required('Mật khẩu không được bỏ trống')
         .min(6, 'Mật khẩu không được bỏ trống và có ít nhất 6 kí tự'),
-    confirmPassword: yup.string().required('Mật khẩu nhập lại không được bỏ trống'),
+    confirmPassword: yup
+        .string()
+        .required('Mật khẩu nhập lại không được bỏ trống')
+        .oneOf([yup.ref('password')], 'Mật khẩu nhập lại không chính xác'),
 });
 
 export const AccountProfileDetails = (props) => {
-    const { user, setUserInfo, role, redirectUrl } = props;
+    const { user, setUserInfo, role, redirectUrl, isUpdate } = props;
+
+    console.log(user);
     const navigate = useNavigate();
 
     const { control, handleSubmit, watch, setError } = useForm({
         defaultValues: user,
-
         resolver: yupResolver(schema),
     });
 
@@ -48,6 +52,7 @@ export const AccountProfileDetails = (props) => {
     };
 
     const onSubmit = async (value) => {
+        console.log(value);
         try {
             const { fullName, birthday, email, phoneNumber, address, password, confirmPassword } = value;
 
