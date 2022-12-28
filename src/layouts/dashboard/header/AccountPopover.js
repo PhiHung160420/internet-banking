@@ -31,7 +31,7 @@ export default function AccountPopover() {
 
     const handleClose = () => {
         localStorage.clear();
-        navigate('/login');
+        navigate('/login', { replace: true });
         window.location.reload();
     };
 

@@ -8,7 +8,6 @@ function TransferOTP({ setStep }) {
     const [otpValue, setOtpValue] = useState();
 
     const handleChange = (otp) => {
-        console.log(otp);
         setOtpValue(otp);
     };
     return (

@@ -1,9 +1,9 @@
-import { Box, Container, Grid, Typography } from '@mui/material';
+import { Container, Grid, Typography } from '@mui/material';
 import { useState } from 'react';
 import { AccountProfile } from '~/components/account/account-profile';
 import { AccountProfileDetails } from '~/components/account/account-profile-details';
 import { routesConfig } from '~/config/routesConfig';
-import { ROLE_CUSTOMER, ROLE_EMPLOYEE } from '~/constant';
+import { ROLE_EMPLOYEE } from '~/constant';
 
 export default function AddCustomer() {
     const [user, setUser] = useState({

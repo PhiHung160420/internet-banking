@@ -25,7 +25,7 @@ import EmployeeRechargeMoney from '~/pages/Employee/RechargeMoney ';
 // All customize Layout is layout key
 export const publicRoutes = [
     { path: routesConfig.login, element: LoginPage, layout: null },
-    { path: routesConfig.forgotPassword, element: ForgotPasswordPage, layout: null }
+    { path: routesConfig.forgotPassword, element: ForgotPasswordPage, layout: null },
 ];
 
 export const privateRoutes = [
@@ -50,6 +50,6 @@ export const adminRoutes = [
 export const employeeRoutes = [
     { path: routesConfig.employeeListCustomer, element: EmployeeListCustomer },
     { path: routesConfig.employeeAddCustomer, element: EmployeeAddCustomer },
-    { path: routesConfig.employeeTrasaction, element: EmployeeTransactionHistory },
+    { path: routesConfig.employeeTransaction, element: EmployeeTransactionHistory },
     { path: routesConfig.employeeRecharge, element: EmployeeRechargeMoney },
 ];
