@@ -59,8 +59,8 @@ export default function AccountPopover() {
 
             <Popover
                 open={Boolean(open)}
+                onClose={() => setOpen(false)}
                 anchorEl={open}
-                onClose={handleClose}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                 transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                 PaperProps={{
@@ -86,9 +86,7 @@ export default function AccountPopover() {
 
                 <Stack sx={{ p: 1 }}>
                     {MENU_OPTIONS.map((option) => (
-                        <MenuItem key={option.label} onClick={handleClose}>
-                            {option.label}
-                        </MenuItem>
+                        <MenuItem key={option.label}>{option.label}</MenuItem>
                     ))}
                 </Stack>
 

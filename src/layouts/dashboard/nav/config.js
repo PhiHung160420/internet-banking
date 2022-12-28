@@ -79,8 +79,8 @@ const navEmployee = [
         icon: <FiUsers {...styledIcon} />,
     },
     {
-        id: 'Dashboard',
-        title: 'Danh sách giao dịch',
+        id: 'Recharge',
+        title: 'Nạp tiền tài khoản',
         path: routesConfig.employeeTrasaction,
         icon: <RiExchangeBoxLine {...styledIcon} />,
     },

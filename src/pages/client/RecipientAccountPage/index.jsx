@@ -1,5 +1,5 @@
 import { filter } from 'lodash';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 // @mui
 import {
     Card,
@@ -8,7 +8,6 @@ import {
     Paper,
     Avatar,
     Popover,
-    Checkbox,
     TableRow,
     MenuItem,
     TableBody,
@@ -18,6 +17,7 @@ import {
     IconButton,
     TableContainer,
     TablePagination,
+    Tooltip,
 } from '@mui/material';
 
 // sections
@@ -27,11 +27,18 @@ import Iconify from '~/components/iconify';
 import Scrollbar from '~/components/scrollbar';
 import Label from '~/components/label';
 import TableListHead from '~/components/Table/TableListHead';
-import TableListToolbar from '~/components/Table/TableListToolbar';
 import HeaderAction from '~/components/HeaderAction';
 import { DELETE, EDIT } from '~/constant';
 import CustomModal from '~/components/CustomModal';
 import RecipientAccountForm from '~/components/forms/RecipientAccount';
+import { toast } from 'react-toastify';
+import {
+    createRecipientAccount,
+    deleteRecipientAccount,
+    getRecipientAccount,
+    updateRecipientAccount,
+} from '~/services/recipient';
+import { LoadingButton } from '@mui/lab';
 
 // ----------------------------------------------------------------------
 
@@ -78,6 +85,29 @@ export default function RecipientAccount() {
         data: {},
     });
     const [isUpdate, setIsUpdate] = useState(false);
+    const [open, setOpen] = useState(null);
+    const [page, setPage] = useState(0);
+    const [order, setOrder] = useState('asc');
+    const [orderBy, setOrderBy] = useState('name');
+    const [filterName, setFilterName] = useState('');
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [listRecipinent, setListRecipinent] = useState([]);
+
+    const getListRecipinent = async () => {
+        try {
+            const result = await getRecipientAccount();
+            if (result?.data) {
+                setListRecipinent(result?.data);
+            }
+        } catch (error) {
+            console.log('getListRecipinent error >>> ', error);
+        }
+    };
+
+    useEffect(() => {
+        getListRecipinent();
+    }, []);
+
     const handleOpenModal = (update, data) => {
         setModalState((prev) => ({
             ...prev,
@@ -85,20 +115,6 @@ export default function RecipientAccount() {
         }));
         setIsUpdate(update);
     };
-    //
-    const [open, setOpen] = useState(null);
-
-    const [page, setPage] = useState(0);
-
-    const [order, setOrder] = useState('asc');
-
-    const [selected, setSelected] = useState([]);
-
-    const [orderBy, setOrderBy] = useState('name');
-
-    const [filterName, setFilterName] = useState('');
-
-    const [rowsPerPage, setRowsPerPage] = useState(5);
 
     const handleOpenMenu = (event, row) => {
         setOpen(event.currentTarget);
@@ -122,30 +138,6 @@ export default function RecipientAccount() {
         setOrderBy(property);
     };
 
-    const handleSelectAllClick = (event) => {
-        if (event.target.checked) {
-            const newSelecteds = USERLIST.map((n) => n.name);
-            setSelected(newSelecteds);
-            return;
-        }
-        setSelected([]);
-    };
-
-    const handleClick = (event, name) => {
-        const selectedIndex = selected.indexOf(name);
-        let newSelected = [];
-        if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, name);
-        } else if (selectedIndex === 0) {
-            newSelected = newSelected.concat(selected.slice(1));
-        } else if (selectedIndex === selected.length - 1) {
-            newSelected = newSelected.concat(selected.slice(0, -1));
-        } else if (selectedIndex > 0) {
-            newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
-        }
-        setSelected(newSelected);
-    };
-
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -155,16 +147,73 @@ export default function RecipientAccount() {
         setRowsPerPage(parseInt(event.target.value, 10));
     };
 
-    const handleFilterByName = (event) => {
-        setPage(0);
-        setFilterName(event.target.value);
-    };
-
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
 
     const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
 
     const isNotFound = !filteredUsers.length && !!filterName;
+
+    const handleCreateRecipient = async (account, name) => {
+        try {
+            const result = await createRecipientAccount(account, name);
+            if (result?.data?.id) {
+                setModalState({
+                    data: {},
+                    open: false,
+                });
+                getListRecipinent();
+                return toast.success('Tạo tài khoản gợi nhớ thành công');
+            }
+            return toast.error('Tạo tài khoản gợi nhớ thất bại');
+        } catch (error) {
+            return toast.error('Tạo tài khoản gợi nhớ thất bại');
+        }
+    };
+
+    const handleUpdateRecipient = async (id, account, name) => {
+        try {
+            const result = await updateRecipientAccount(id, account, name);
+            if (result?.data?.id) {
+                const currRecipient = [...listRecipinent]?.map((item) => {
+                    if (item?.id === id) {
+                        return {
+                            ...item,
+                            recipientAccountNumber: result?.data?.recipientAccountNumber,
+                            reminiscentName: result?.data?.reminiscentName,
+                        };
+                    }
+                    return item;
+                });
+                setListRecipinent(currRecipient);
+                setModalState({
+                    data: {},
+                    open: false,
+                });
+                return toast.success('Cập nhật tài khoản gợi nhớ thành công');
+            }
+            return toast.error('Cập nhật tài khoản gợi nhớ thất bại');
+        } catch (error) {
+            return toast.error('Cập nhật tài khoản gợi nhớ thất bại');
+        }
+    };
+
+    const handleDeleteRecipient = async (id) => {
+        try {
+            const result = await deleteRecipientAccount(id);
+            if (result) {
+                setModalState({
+                    data: {},
+                    open: false,
+                });
+                setOpen(null);
+                getListRecipinent();
+                return toast.success('Xoá tài khoản gợi nhớ thành công');
+            }
+            return toast.error('Xoá tài khoản gợi nhớ thất bại');
+        } catch (error) {
+            return toast.error('Xoá tài khoản gợi nhớ thất bại');
+        }
+    };
 
     return (
         <>
@@ -179,57 +228,48 @@ export default function RecipientAccount() {
                 />
 
                 <Card>
-                    <TableListToolbar
-                        numSelected={selected.length}
-                        filterName={filterName}
-                        onFilterName={handleFilterByName}
-                    />
-
                     <Scrollbar>
                         <TableContainer sx={{ minWidth: 800 }}>
                             <Table>
                                 <TableListHead
+                                    isShowCheckBox={false}
                                     order={order}
                                     orderBy={orderBy}
                                     headLabel={TABLE_HEAD}
-                                    rowCount={USERLIST.length}
-                                    numSelected={selected.length}
+                                    rowCount={listRecipinent.length}
                                     onRequestSort={handleRequestSort}
-                                    onSelectAllClick={handleSelectAllClick}
                                 />
                                 <TableBody>
-                                    {filteredUsers
+                                    {listRecipinent
                                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                         .map((row) => {
-                                            const { id, name, avatarUrl, balance } = row;
-                                            const selectedUser = selected.indexOf(name) !== -1;
-
+                                            const {
+                                                id,
+                                                recipientAccountName,
+                                                recipientAccountNumber,
+                                                reminiscentName,
+                                            } = row;
                                             return (
-                                                <TableRow
-                                                    hover
-                                                    key={id}
-                                                    tabIndex={-1}
-                                                    role="checkbox"
-                                                    selected={selectedUser}
-                                                >
-                                                    <TableCell padding="checkbox">
-                                                        <Checkbox
-                                                            checked={selectedUser}
-                                                            onChange={(event) => handleClick(event, name)}
-                                                        />
-                                                    </TableCell>
-
-                                                    <TableCell component="th" scope="row" padding="none">
+                                                <TableRow hover key={id} tabIndex={-1}>
+                                                    <TableCell
+                                                        component="th"
+                                                        scope="row"
+                                                        padding="none"
+                                                        style={{ paddingLeft: '20px' }}
+                                                    >
                                                         <Stack direction="row" alignItems="center" spacing={2}>
-                                                            <Avatar alt={name} src={avatarUrl} />
-
-                                                            <Label sx={{ textTransform: 'none' }}>{name}</Label>
+                                                            <Tooltip title={recipientAccountName} placement={`top`}>
+                                                                <Avatar>{recipientAccountName[0]}</Avatar>
+                                                            </Tooltip>
+                                                            <Label sx={{ textTransform: 'none' }}>
+                                                                {recipientAccountNumber}
+                                                            </Label>
                                                         </Stack>
                                                     </TableCell>
 
                                                     <TableCell align="left">
                                                         <Typography variant="subtitle2" noWrap>
-                                                            {balance}
+                                                            {reminiscentName}
                                                         </Typography>
                                                     </TableCell>
 
@@ -283,7 +323,7 @@ export default function RecipientAccount() {
                         labelRowsPerPage="Dòng trên trang"
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
-                        count={USERLIST.length}
+                        count={listRecipinent.length}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onPageChange={handleChangePage}
@@ -315,7 +355,16 @@ export default function RecipientAccount() {
                     {EDIT}
                 </MenuItem>
 
-                <MenuItem sx={{ color: 'error.main' }}>
+                <MenuItem
+                    sx={{ color: 'error.main' }}
+                    onClick={() => {
+                        setModalState((prev) => ({
+                            ...prev,
+                            open: true,
+                            isDelete: true,
+                        }));
+                    }}
+                >
                     <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
                     {DELETE}
                 </MenuItem>
@@ -329,9 +378,30 @@ export default function RecipientAccount() {
                         open: value,
                     }))
                 }
-                title={isUpdate ? 'Chỉnh sửa' : 'Tạo mới'}
+                title={modalState?.isDelete ? 'Xác nhận xoá' : isUpdate ? 'Chỉnh sửa' : 'Tạo mới'}
             >
-                <RecipientAccountForm dataForm={modalState.data} isUpdate={isUpdate} />
+                {modalState?.isDelete ? (
+                    <>
+                        <div>Bạn xác nhận xoá dữ liệu này</div>
+                        <LoadingButton
+                            sx={{ my: 2 }}
+                            fullWidth
+                            size="large"
+                            variant="contained"
+                            color="error"
+                            onClick={() => handleDeleteRecipient(modalState?.data?.id)}
+                        >
+                            Xoá
+                        </LoadingButton>
+                    </>
+                ) : (
+                    <RecipientAccountForm
+                        dataForm={modalState.data}
+                        isUpdate={isUpdate}
+                        handleCreateRecipient={(account, name) => handleCreateRecipient(account, name)}
+                        handleUpdateRecipient={(id, account, name) => handleUpdateRecipient(id, account, name)}
+                    />
+                )}
             </CustomModal>
         </>
     );
