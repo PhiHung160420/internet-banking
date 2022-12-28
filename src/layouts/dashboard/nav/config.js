@@ -81,13 +81,13 @@ const navEmployee = [
     {
         id: 'Recharge',
         title: 'Nạp tiền tài khoản',
-        path: routesConfig.employeeTrasaction,
+        path: routesConfig.employeeRecharge,
         icon: <RiExchangeBoxLine {...styledIcon} />,
     },
     {
         id: 'TransactionHistory',
         title: 'Lịch sử giao dịch',
-        path: routesConfig.employeeRecharge,
+        path: routesConfig.employeeTransaction,
         icon: <MdHistory {...styledIcon} />,
     },
 ];

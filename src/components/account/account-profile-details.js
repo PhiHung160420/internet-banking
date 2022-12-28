@@ -37,7 +37,6 @@ const schema = yup.object().shape({
 export const AccountProfileDetails = (props) => {
     const { user, setUserInfo, role, redirectUrl, isUpdate } = props;
 
-    console.log(user);
     const navigate = useNavigate();
 
     const { control, handleSubmit, watch, setError } = useForm({
@@ -52,7 +51,6 @@ export const AccountProfileDetails = (props) => {
     };
 
     const onSubmit = async (value) => {
-        console.log(value);
         try {
             const { fullName, birthday, email, phoneNumber, address, password, confirmPassword } = value;
 
