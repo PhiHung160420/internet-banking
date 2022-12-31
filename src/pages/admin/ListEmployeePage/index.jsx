@@ -2,7 +2,6 @@ import { filter } from 'lodash';
 import { useEffect, useState } from 'react';
 // @mui
 import {
-    Avatar,
     Box,
     Card,
     Checkbox,
@@ -11,7 +10,6 @@ import {
     MenuItem,
     Paper,
     Popover,
-    Stack,
     Table,
     TableBody,
     TableCell,
@@ -20,10 +18,8 @@ import {
     TableRow,
     Typography,
 } from '@mui/material';
-import moment from 'moment';
-// sections
-// mock
 import { useConfirm } from 'material-ui-confirm';
+import moment from 'moment';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
 import HeaderAction from '~/components/HeaderAction';
@@ -32,9 +28,9 @@ import Scrollbar from '~/components/scrollbar';
 import TableListHead from '~/components/Table/TableListHead';
 import TableListToolbar from '~/components/Table/TableListToolbar';
 import { routesConfig } from '~/config/routesConfig';
-import USERS from '~/_mock/user';
-import { accountRequest } from '~/services/accounts';
 import { PAGINATION } from '~/constant/pagination';
+import { accountRequest } from '~/services/accounts';
+import USERS from '~/_mock/user';
 
 const TABLE_HEAD = [
     { id: 'name', label: 'Tên', alignRight: false },
@@ -42,7 +38,7 @@ const TABLE_HEAD = [
     { id: 'phone', label: 'Điện thoại', alignRight: false },
     { id: 'birthday', label: 'Ngày sinh', alignRight: false },
     { id: 'address', label: 'Địa chỉ', alignRight: false },
-    { id: '', label: 'Thao tác', alignRight: true },
+    { id: '', label: '', alignRight: false },
 ];
 
 function descendingComparator(a, b, orderBy) {
@@ -78,6 +74,8 @@ export default function ListEmployee() {
     const navigate = useNavigate();
 
     const confirm = useConfirm();
+
+    console.log('re-render');
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -268,7 +266,6 @@ export default function ListEmployee() {
                                 />
                                 <TableBody>
                                     {accountList.map((row) => {
-                                        console.log('row: ', row);
                                         const { fullName, phoneNumber, address, email, birthday } = row;
                                         const selectedUser = selected.indexOf(phoneNumber) !== -1;
 
@@ -287,12 +284,10 @@ export default function ListEmployee() {
                                                     />
                                                 </TableCell>
 
-                                                <TableCell component="th" scope="row" padding="none">
-                                                    <Stack direction="row" alignItems="center" spacing={2}>
-                                                        <Typography variant="subtitle2" noWrap>
-                                                            {fullName}
-                                                        </Typography>
-                                                    </Stack>
+                                                <TableCell component="th" scope="row">
+                                                    <Typography variant="subtitle2" noWrap>
+                                                        {fullName}
+                                                    </Typography>
                                                 </TableCell>
 
                                                 <TableCell align="left">
