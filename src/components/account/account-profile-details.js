@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Button, Card, CardContent, CardHeader, Divider, Grid } from '@mui/material';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import * as yup from 'yup';
 import { REGEX_VNPHONE } from '~/constant';
@@ -37,7 +37,6 @@ const schema = yup.object().shape({
 export const AccountProfileDetails = (props) => {
     const { user, setUserInfo, role, redirectUrl, isUpdate } = props;
 
-    console.log(user);
     const navigate = useNavigate();
 
     const { control, handleSubmit, watch, setError } = useForm({
@@ -52,7 +51,6 @@ export const AccountProfileDetails = (props) => {
     };
 
     const onSubmit = async (value) => {
-        console.log(value);
         try {
             const { fullName, birthday, email, phoneNumber, address, password, confirmPassword } = value;
 
@@ -75,6 +73,9 @@ export const AccountProfileDetails = (props) => {
                 toast.success('Tạo tài khoản thành công');
             } else {
                 toast.error('Tạo tài khoản thất bại');
+            }
+
+            if (isUpdate) {
             }
         } catch (error) {
             toast.error('Tạo tài khoản thất bại');
@@ -117,12 +118,13 @@ export const AccountProfileDetails = (props) => {
                                 label="Ngày sinh"
                                 name="birthday"
                                 onChange={handleChange}
+                                InputLabelProps={{ shrink: true }}
                                 control={control}
                                 value={user?.birthday}
                                 variant="outlined"
                                 type="date"
                                 inputProps={{
-                                    autocomplete: 'new-birthdate',
+                                    autocomplete: 'new-birthday',
                                     form: {
                                         autocomplete: 'off',
                                     },
@@ -154,6 +156,7 @@ export const AccountProfileDetails = (props) => {
                                 onChange={handleChange}
                                 type="number"
                                 value={user?.phoneNumber}
+                                maxLength={10}
                                 variant="outlined"
                                 control={control}
                                 inputProps={{

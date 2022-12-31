@@ -2,10 +2,10 @@ import { routesConfig } from '~/config/routesConfig';
 // Public Page
 import LoginPage from '~/pages/LoginPage';
 // Private Page
-import AddCustomer from '~/pages/Admin/AddCustomerPage';
-import ListCustomer from '~/pages/Admin/ListCustomerPage';
+import AddEmployee from '~/pages/Admin/AddEmployeePage';
+import ListEmployee from '~/pages/Admin/ListEmployeePage';
 import ListTransaction from '~/pages/Admin/ListTransactionPage';
-import UpdateCustomer from '~/pages/Admin/UpdateCustomerPage';
+import UpdateEmployee from '~/pages/Admin/UpdateCustomerPage';
 import AdminPage from '~/pages/AdminPage';
 import BankAccountPage from '~/pages/Client/BankAccountPage';
 import RecipientAccount from '~/pages/Client/RecipientAccountPage';
@@ -41,9 +41,9 @@ export const privateRoutes = [
 
 export const adminRoutes = [
     { path: routesConfig.dashboard, element: AdminPage },
-    { path: routesConfig.customers, element: ListCustomer },
-    { path: routesConfig.addCustomer, element: AddCustomer },
-    { path: routesConfig.updateCustomer, element: UpdateCustomer },
+    { path: routesConfig.employees, element: ListEmployee },
+    { path: routesConfig.addEmployee, element: AddEmployee },
+    { path: routesConfig.updateEmployee, element: UpdateEmployee },
     { path: routesConfig.transactionList, element: ListTransaction },
 ];
 

@@ -60,7 +60,7 @@ const navAdmin = [
     {
         id: 'Customers',
         title: 'Danh sách nhân viên',
-        path: routesConfig.customers,
+        path: routesConfig.employees,
         icon: <FiUsers {...styledIcon} />,
     },
     {
@@ -79,15 +79,15 @@ const navEmployee = [
         icon: <FiUsers {...styledIcon} />,
     },
     {
-        id: 'Dashboard',
-        title: 'Danh sách giao dịch',
-        path: routesConfig.employeeTrasaction,
+        id: 'Recharge',
+        title: 'Nạp tiền tài khoản',
+        path: routesConfig.employeeRecharge,
         icon: <RiExchangeBoxLine {...styledIcon} />,
     },
     {
         id: 'TransactionHistory',
         title: 'Lịch sử giao dịch',
-        path: routesConfig.employeeRecharge,
+        path: routesConfig.employeeTransaction,
         icon: <MdHistory {...styledIcon} />,
     },
 ];

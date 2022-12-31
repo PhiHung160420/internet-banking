@@ -8,4 +8,11 @@ export const accountRequest = {
             params,
         });
     },
+    create: async (body) => {
+        return request({
+            method: 'POST',
+            url: '/users',
+            body,
+        });
+    },
 };

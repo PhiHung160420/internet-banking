@@ -5,7 +5,7 @@ import { AccountProfileDetails } from '~/components/account/account-profile-deta
 import { routesConfig } from '~/config/routesConfig';
 import { ROLE_EMPLOYEE } from '~/constant';
 
-export default function AddCustomer() {
+export default function AddEmployee() {
     const [user, setUser] = useState({
         fullName: '',
         email: '',
@@ -33,7 +33,7 @@ export default function AddCustomer() {
                             role={ROLE_EMPLOYEE}
                             user={user}
                             setUserInfo={(value) => setUser({ ...user, ...value })}
-                            redirectUrl={routesConfig.customers}
+                            redirectUrl={routesConfig.employees}
                         />
                     </Grid>
                 </Grid>

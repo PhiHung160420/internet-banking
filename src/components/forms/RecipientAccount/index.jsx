@@ -11,26 +11,37 @@ import { SUBMIT, UPDATE } from '~/constant';
 // ----------------------------------------------------------------------
 
 const schema = yup.object().shape({
-    account: yup.string().required('Username is required').min(4, 'Username is required to have at least 4 characters'),
+    account: yup
+        .string()
+        .required('Số tài khoản không được bỏ trống')
+        .matches(/^[0-9]+$/, 'Số tài khoản chỉ chứa kí tự số'),
     account_name: yup
         .string()
-        .required('Password is required')
-        .min(6, 'Password is required to have at least 4 characters'),
+        .required('Tên gợi nhớ không được bỏ trống')
+        .min(2, 'Tên gợi nhớ phải có ít nhất 2 kí tự'),
 });
-export default function RecipientAccountForm({ dataForm, isUpdate }) {
+
+export default function RecipientAccountForm({ dataForm, isUpdate, handleCreateRecipient, handleUpdateRecipient }) {
     const initValue = { account: '', account_name: '' };
     const updateValue = {
         ...initValue,
-        account: dataForm.name,
-        account_name: dataForm.balance,
+        account: dataForm.recipientAccountNumber,
+        account_name: dataForm.reminiscentName,
     };
+
     const { control, handleSubmit } = useForm({
         defaultValues: isUpdate ? updateValue : initValue,
         resolver: yupResolver(schema),
     });
+
     const onSubmit = (data) => {
-        console.log(data);
-        alert(JSON.stringify(data));
+        const { account, account_name } = data;
+        if (!isUpdate) {
+            return handleCreateRecipient(account, account_name);
+        }
+        if (dataForm?.id) {
+            handleUpdateRecipient(dataForm?.id, account, account_name);
+        }
     };
 
     return (

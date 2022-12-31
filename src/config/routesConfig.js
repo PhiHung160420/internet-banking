@@ -21,9 +21,9 @@ export const routesConfig = {
 
     // Admin Page
     dashboard: '/admin/dashboard',
-    customers: '/admin/customers',
-    addCustomer: '/admin/customer/add',
-    updateCustomer: '/admin/customer/update',
+    employees: '/admin/employees',
+    addEmployee: '/admin/employee/add',
+    updateEmployee: '/admin/employee/update',
     transactionList: '/admin/transactions',
 
     // Employee Page

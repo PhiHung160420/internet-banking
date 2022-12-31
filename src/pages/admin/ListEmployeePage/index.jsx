@@ -20,7 +20,7 @@ import {
     TableRow,
     Typography,
 } from '@mui/material';
-
+import moment from 'moment';
 // sections
 // mock
 import { useConfirm } from 'material-ui-confirm';
@@ -40,8 +40,8 @@ const TABLE_HEAD = [
     { id: 'name', label: 'Tên', alignRight: false },
     { id: 'email', label: 'Email', alignRight: false },
     { id: 'phone', label: 'Điện thoại', alignRight: false },
+    { id: 'birthday', label: 'Ngày sinh', alignRight: false },
     { id: 'address', label: 'Địa chỉ', alignRight: false },
-    { id: 'role', label: 'Chức vụ', alignRight: false },
     { id: '', label: 'Thao tác', alignRight: true },
 ];
 
@@ -74,7 +74,7 @@ function applySortFilter(array, comparator, query) {
     return stabilizedThis.map((el) => el[0]);
 }
 
-export default function ListCustomer() {
+export default function ListEmployee() {
     const navigate = useNavigate();
 
     const confirm = useConfirm();
@@ -99,7 +99,7 @@ export default function ListCustomer() {
 
     const handleOpenMenu = (event, row) => {
         setOpen(event.currentTarget);
-        setRowData(row)
+        setRowData(row);
     };
 
     const handleCloseMenu = () => {
@@ -187,19 +187,17 @@ export default function ListCustomer() {
     const isNotFound = !filteredUsers.length && !!filterName;
 
     const addCustomer = () => {
-        navigate(routesConfig.addCustomer);
+        navigate(routesConfig.addEmployee);
     };
 
     const updateCustomer = () => {
-        navigate(routesConfig.updateCustomer, {
+        navigate(routesConfig.updateEmployee, {
             state: {
                 dataUser: rowData,
                 isUpdate: true,
             },
         });
     };
-
-    //Fetch API
 
     const [accountList, setAccountList] = useState([]);
 
@@ -213,7 +211,7 @@ export default function ListCustomer() {
         const payload = {
             page: pagination.page,
             size: pagination.size,
-            sort: 'createdAt,asc',
+            sort: 'createdAt,desc',
         };
         try {
             const res = await accountRequest.getList(payload);
@@ -270,13 +268,14 @@ export default function ListCustomer() {
                                 />
                                 <TableBody>
                                     {accountList.map((row) => {
-                                        const { fullName, accountNumber, type } = row;
-                                        const selectedUser = selected.indexOf(accountNumber) !== -1;
+                                        console.log('row: ', row);
+                                        const { fullName, phoneNumber, address, email, birthday } = row;
+                                        const selectedUser = selected.indexOf(phoneNumber) !== -1;
 
                                         return (
                                             <TableRow
                                                 hover
-                                                key={accountNumber}
+                                                key={phoneNumber}
                                                 tabIndex={-1}
                                                 role="checkbox"
                                                 selected={selectedUser}
@@ -284,13 +283,12 @@ export default function ListCustomer() {
                                                 <TableCell padding="checkbox">
                                                     <Checkbox
                                                         checked={selectedUser}
-                                                        onChange={(event) => handleClick(event, accountNumber)}
+                                                        onChange={(event) => handleClick(event, phoneNumber)}
                                                     />
                                                 </TableCell>
 
                                                 <TableCell component="th" scope="row" padding="none">
                                                     <Stack direction="row" alignItems="center" spacing={2}>
-                                                        {/* <Avatar alt={name} src={avatarUrl} /> */}
                                                         <Typography variant="subtitle2" noWrap>
                                                             {fullName}
                                                         </Typography>
@@ -299,25 +297,25 @@ export default function ListCustomer() {
 
                                                 <TableCell align="left">
                                                     <Typography variant="subtitle" noWrap>
-                                                        {accountNumber}
+                                                        {email}
                                                     </Typography>
                                                 </TableCell>
 
                                                 <TableCell align="left">
                                                     <Typography variant="subtitle" noWrap>
-                                                        {fullName}
+                                                        {phoneNumber}
                                                     </Typography>
                                                 </TableCell>
 
                                                 <TableCell align="left">
                                                     <Typography variant="subtitle" noWrap>
-                                                        {fullName}
+                                                        {moment(birthday).format('DD/MM/YYYY')}
                                                     </Typography>
                                                 </TableCell>
 
                                                 <TableCell align="left">
                                                     <Typography variant="subtitle" noWrap>
-                                                        {type}
+                                                        {address}
                                                     </Typography>
                                                 </TableCell>
 

@@ -180,7 +180,7 @@ export default function EmployeeListCustomer() {
     };
 
     const updateCustomer = () => {
-        navigate(routesConfig.updateCustomer);
+        navigate(routesConfig.updateEmployee);
     };
 
     return (

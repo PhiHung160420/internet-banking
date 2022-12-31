@@ -6,9 +6,8 @@ import { AccountProfileDetails } from '~/components/account/account-profile-deta
 import { routesConfig } from '~/config/routesConfig';
 import { ROLE_EMPLOYEE } from '~/constant';
 
-export default function UpdateCustomer() {
+export default function UpdateEmployee() {
     const location = useLocation();
-    console.log(location);
     const { dataUser, isUpdate } = location.state;
 
     const [user, setUser] = useState();
@@ -30,7 +29,7 @@ export default function UpdateCustomer() {
                             user={dataUser}
                             isUpdate={isUpdate}
                             setUserInfo={(value) => setUser({ ...user, ...value })}
-                            redirectUrl={routesConfig.customers}
+                            redirectUrl={routesConfig.employees}
                         />
                     </Grid>
                 </Grid>
