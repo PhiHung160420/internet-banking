@@ -31,6 +31,7 @@ import TableListToolbar from '~/components/Table/TableListToolbar';
 import { routesConfig } from '~/config/routesConfig';
 import { PAGINATION } from '~/constant/pagination';
 import USERS from '~/_mock/user';
+import { toast } from 'react-toastify';
 
 const TABLE_HEAD = [
     { id: 'name', label: 'Tên', alignRight: false },
@@ -74,8 +75,6 @@ export default function ListEmployee() {
     const navigate = useNavigate();
 
     const confirm = useConfirm();
-
-    const { enqueueSnackbar } = useSnackbar();
 
     const [open, setOpen] = useState(null);
 
@@ -145,14 +144,24 @@ export default function ListEmployee() {
             ),
         })
             .then(async () => {
-                enqueueSnackbar('Xoá tài khoản thành công', {
-                    variant: 'success',
-                });
+                const result = await accountAPI.delete(rowData.id);
+                console.log('result: ', result);
+                if (result?.status === 200) {
+                    handleCloseMenu();
+                    fetchAccountList();
+                    // enqueueSnackbar('Xoá tài khoản thành công', {
+                    //     variant: 'success',
+                    // });
+                    toast.success('Xoá tài khoản thành công');
+                } else {
+                    // enqueueSnackbar('Xoá tài khoản thất bại', {
+                    //     variant: 'error',
+                    // });
+                    toast.success('Xoá tài khoản thất bại');
+                }
             })
             .catch(() => {
-                enqueueSnackbar('Xoá tài khoản thất bại', {
-                    variant: 'error',
-                });
+                return;
             });
     };
 
@@ -266,7 +275,7 @@ export default function ListEmployee() {
                                     {accountList.map((row) => {
                                         const { fullName, phoneNumber, address, email, birthday } = row;
                                         const selectedUser = selected.indexOf(phoneNumber) !== -1;
-
+                                        console.log('row": ', row);
                                         return (
                                             <TableRow
                                                 hover

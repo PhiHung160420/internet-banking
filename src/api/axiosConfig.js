@@ -1,7 +1,5 @@
 import axios from 'axios';
-import { parse } from 'qs';
-import { stringify } from 'qs';
-import queryString from 'query-string';
+import { parse, stringify } from 'qs';
 import { toast } from 'react-toastify';
 import { ACCESS_TOKEN_KEY, API_SERVER_URL, REFRESH_TOKEN_KEY } from '~/constant';
 import { clearStorage } from '~/utils/storage';
@@ -22,7 +20,6 @@ const axiosClient = axios.create({
 // axios.defaults.baseURL = process.env.REACT_APP_API;
 
 axiosClient.interceptors.request.use(async (config) => {
-    console.log(config);
     const accessToken = localStorage.getItem(ACCESS_TOKEN_KEY);
 
     if (!!accessToken) {
@@ -42,9 +39,6 @@ axiosClient.interceptors.response.use(
         return response;
     },
     async (error) => {
-        console.log(error);
-
-        //Kiểm tra nếu lỗi token thì trở về trang đâng nhập
         const { response, config } = error;
         const statusCode = response?.status;
         const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
@@ -57,15 +51,11 @@ axiosClient.interceptors.response.use(
                 const errorCode = error?.status;
                 if (errorCode === 400) {
                     clearStorage();
-                    toast.error('Phiên làm việc hết hạn. Vui lòng đăng nhập lại!', {
-                        onClose: () => {
-                            window.location = '/login';
-                        },
-                    });
+                    window.alert('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại!');
+                    window.location = '/login';
                 }
             }
         } else {
-            console.log('response.data: ', response.data);
             throw response.data;
             // toast.error(response?.data?.message || 'Xử lí tác vụ thất bại');
         }
