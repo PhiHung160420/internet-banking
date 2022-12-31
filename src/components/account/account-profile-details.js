@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import * as yup from 'yup';
+import accountAPI from '~/api/accountAPI';
 import { REGEX_VNPHONE } from '~/constant';
 import { userSignup } from '~/services/auth';
 import InputField from '../modules/form/InputField';
@@ -58,7 +59,7 @@ export const AccountProfileDetails = (props) => {
                 return setError('confirmPassword', { message: 'Mật khẩu nhập lại không chính xác' });
             }
 
-            const res = await userSignup({
+            const res = await accountAPI.createAccount({
                 fullName,
                 birthday,
                 email,
@@ -68,7 +69,7 @@ export const AccountProfileDetails = (props) => {
                 roleCode: role,
             });
 
-            if (res?.data?.id) {
+            if (res?.id) {
                 navigate(redirectUrl);
                 toast.success('Tạo tài khoản thành công');
             } else {

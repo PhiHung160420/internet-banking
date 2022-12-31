@@ -31,6 +31,7 @@ import { routesConfig } from '~/config/routesConfig';
 import { PAGINATION } from '~/constant/pagination';
 import { accountRequest } from '~/services/accounts';
 import USERS from '~/_mock/user';
+import accountAPI from '~/api/accountAPI';
 
 const TABLE_HEAD = [
     { id: 'name', label: 'Tên', alignRight: false },
@@ -212,15 +213,14 @@ export default function ListEmployee() {
             sort: 'createdAt,desc',
         };
         try {
-            const res = await accountRequest.getList(payload);
-
-            setAccountList(res.data.content);
+            const res = await accountAPI.getList(payload);
+            setAccountList(res.content);
 
             const paginationRes = {
                 ...pagination,
-                page: res?.data?.pageable?.pageNumber,
-                totalElements: res?.data?.totalElements,
-                totalPages: res?.data?.totalPages,
+                page: res?.pageable?.pageNumber,
+                totalElements: res?.totalElements,
+                totalPages: res?.totalPages,
             };
 
             setPagination(paginationRes);
