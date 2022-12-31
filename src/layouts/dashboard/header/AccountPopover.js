@@ -5,6 +5,8 @@ import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton, Popover 
 // mocks_
 import account from '../../../_mock/account';
 import { useNavigate } from 'react-router-dom';
+import CustomModal from '~/components/CustomModal';
+import ChangePasswordForm from '~/components/forms/ChangePasswordForm';
 
 // ----------------------------------------------------------------------
 
@@ -16,6 +18,9 @@ const MENU_OPTIONS = [
     {
         label: 'Đổi mật khẩu',
         icon: 'eva:settings-2-fill',
+        onClick: (openModal) => {
+            openModal();
+        },
     },
 ];
 
@@ -33,6 +38,12 @@ export default function AccountPopover() {
         localStorage.clear();
         navigate('/login', { replace: true });
         window.location.reload();
+    };
+
+    const [openModal, setOpenModal] = useState(false);
+
+    const handleOpenModal = () => {
+        setOpenModal(true);
     };
 
     return (
@@ -86,7 +97,9 @@ export default function AccountPopover() {
 
                 <Stack sx={{ p: 1 }}>
                     {MENU_OPTIONS.map((option) => (
-                        <MenuItem key={option.label}>{option.label}</MenuItem>
+                        <MenuItem onClick={() => option.onClick(handleOpenModal)} key={option.label}>
+                            {option.label}
+                        </MenuItem>
                     ))}
                 </Stack>
 
@@ -96,6 +109,10 @@ export default function AccountPopover() {
                     Đăng xuất
                 </MenuItem>
             </Popover>
+
+            <CustomModal title={"Đổi mật khẩu"} open={openModal} setOpen={(value) => setOpenModal(value)}>
+                <ChangePasswordForm closeModal={() => setOpenModal(false)} />
+            </CustomModal>
         </>
     );
 }
