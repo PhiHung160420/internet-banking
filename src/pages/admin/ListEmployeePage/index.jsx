@@ -22,6 +22,7 @@ import { useConfirm } from 'material-ui-confirm';
 import moment from 'moment';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
+import accountAPI from '~/api/accountAPI';
 import HeaderAction from '~/components/HeaderAction';
 import Iconify from '~/components/iconify';
 import Scrollbar from '~/components/scrollbar';
@@ -29,9 +30,7 @@ import TableListHead from '~/components/Table/TableListHead';
 import TableListToolbar from '~/components/Table/TableListToolbar';
 import { routesConfig } from '~/config/routesConfig';
 import { PAGINATION } from '~/constant/pagination';
-import { accountRequest } from '~/services/accounts';
 import USERS from '~/_mock/user';
-import accountAPI from '~/api/accountAPI';
 
 const TABLE_HEAD = [
     { id: 'name', label: 'Tên', alignRight: false },
@@ -75,8 +74,6 @@ export default function ListEmployee() {
     const navigate = useNavigate();
 
     const confirm = useConfirm();
-
-    console.log('re-render');
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -214,6 +211,7 @@ export default function ListEmployee() {
         };
         try {
             const res = await accountAPI.getList(payload);
+
             setAccountList(res.content);
 
             const paginationRes = {

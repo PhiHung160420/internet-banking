@@ -26,7 +26,7 @@ export const TRANSACTION_LIST = [
     },
 ];
 
-export const REGEX_VNPHONE = /(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/;
+export const REGEX_VNPHONE = /(03|05|02|07|08|09|01[2|6|8|9])+([0-9]{8})\b/;
 export const API_SERVER_URL = 'http://8.219.120.205/internet-banking/api';
 export const PLACEHOLDER_AVATAR = '/static/images/avatars/avatar_6.png';
 export const RE_CAPCHA_SITEKEY = '6LciuJYjAAAAAKJ4gm2cS0BveAdBZ6rjIy05Z29d';

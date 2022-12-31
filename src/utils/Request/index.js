@@ -20,15 +20,13 @@ export const errorHandler = (error) => {
                 const errorCode = error?.response?.status;
                 if (errorCode === 400) {
                     clearStorage();
-                    toast.error('Phiên làm việc hết hạn. Vui lòng đăng nhập lại!', {
-                        onClose: () => {
-                            window.location = '/login';
-                        },
-                    });
+                    toast.error('Phiên làm việc hết hạn. Vui lòng đăng nhập lại!');
+                    window.location = '/login';
                 }
             });
     } else {
-        toast.error(response?.data?.message || 'Xử lí tác vụ thất bại');
+        console.log('response?.data?.message: ', response?.data?.message);
+        // toast.error(response?.data?.message || 'Xử lí tác vụ thất bại');
     }
     return error;
 };

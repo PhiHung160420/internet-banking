@@ -1,11 +1,14 @@
-import axiosClient from "../axiosClient"
+import axiosClient from '../axiosClient';
 
-const url = "/auth"
+const URL = '/auth';
+
 export const authAPI = {
-    
     refreshToken: async (data) => {
-        const url = "/auth/token/refresh"
-        const response = await axiosClient.post(url, data)
-        return response
-    }
-}
+        const response = await axiosClient.post(`${URL}/token/refresh`, data);
+        return response;
+    },
+    login: async (data) => {
+        const response = await axiosClient.post(`${URL}/login`, data);
+        return response;
+    },
+};

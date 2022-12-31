@@ -54,7 +54,6 @@ axiosClient.interceptors.response.use(
                 localStorage.setItem(ACCESS_TOKEN_KEY, res?.accessToken);
                 return axiosClient(config);
             } catch (error) {
-                console.warn('err', error);
                 const errorCode = error?.status;
                 if (errorCode === 400) {
                     clearStorage();
@@ -66,10 +65,11 @@ axiosClient.interceptors.response.use(
                 }
             }
         } else {
-            toast.error(response?.data?.message || 'Xử lí tác vụ thất bại');
+            console.log('response.data: ', response.data);
+            throw response.data;
+            // toast.error(response?.data?.message || 'Xử lí tác vụ thất bại');
         }
 
-        // Handle errors
         throw error.response?.data;
     },
 );

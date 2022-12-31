@@ -13,12 +13,12 @@ import {
     Radio,
     RadioGroup,
 } from '@mui/material';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import * as yup from 'yup';
+import { transactionAPI } from '~/api/transactionAPI';
 import InputField from '~/components/modules/form/InputField';
-import { transactionRequest } from '~/services/transaction';
 import { validateEmail } from '~/utils/util';
 
 const schema = yup.object().shape({
@@ -59,9 +59,11 @@ export default function EmployeeRechargeMoney() {
                 delete transactionData.recipientAccountNumber;
             }
 
-            const result = await transactionRequest.createTransaction(transactionData);
+            const result = await transactionAPI.create(transactionData);
 
-            if (result?.data?.status === 'DONE') {
+            console.log('result: ', result);
+
+            if (result?.status === 'DONE') {
                 return toast.success('Nạp tiền vào tài khoản thành công');
             }
 

@@ -2,43 +2,38 @@ import { filter } from 'lodash';
 import { useEffect, useState } from 'react';
 // @mui
 import {
-    Card,
-    Table,
-    Stack,
-    Paper,
     Avatar,
-    Popover,
-    TableRow,
+    Card,
+    Container,
+    IconButton,
     MenuItem,
+    Paper,
+    Popover,
+    Stack,
+    Table,
     TableBody,
     TableCell,
-    Container,
-    Typography,
-    IconButton,
     TableContainer,
     TablePagination,
+    TableRow,
     Tooltip,
+    Typography,
 } from '@mui/material';
 
 // sections
 // mock
-import USERLIST from '~/_mock/user';
-import Iconify from '~/components/iconify';
-import Scrollbar from '~/components/scrollbar';
-import Label from '~/components/label';
-import TableListHead from '~/components/Table/TableListHead';
-import HeaderAction from '~/components/HeaderAction';
-import { DELETE, EDIT } from '~/constant';
+import { LoadingButton } from '@mui/lab';
+import { toast } from 'react-toastify';
+import { recipientAPI } from '~/api/recipientAPI';
 import CustomModal from '~/components/CustomModal';
 import RecipientAccountForm from '~/components/forms/RecipientAccount';
-import { toast } from 'react-toastify';
-import {
-    createRecipientAccount,
-    deleteRecipientAccount,
-    getRecipientAccount,
-    updateRecipientAccount,
-} from '~/services/recipient';
-import { LoadingButton } from '@mui/lab';
+import HeaderAction from '~/components/HeaderAction';
+import Iconify from '~/components/iconify';
+import Label from '~/components/label';
+import Scrollbar from '~/components/scrollbar';
+import TableListHead from '~/components/Table/TableListHead';
+import { DELETE, EDIT } from '~/constant';
+import USERLIST from '~/_mock/user';
 
 // ----------------------------------------------------------------------
 
@@ -95,7 +90,7 @@ export default function RecipientAccount() {
 
     const getListRecipinent = async () => {
         try {
-            const result = await getRecipientAccount();
+            const result = await recipientAPI.get();
             if (result?.data) {
                 setListRecipinent(result?.data);
             }
@@ -155,8 +150,8 @@ export default function RecipientAccount() {
 
     const handleCreateRecipient = async (account, name) => {
         try {
-            const result = await createRecipientAccount(account, name);
-            if (result?.data?.id) {
+            const result = await recipientAPI.create(account, name);
+            if (result?.id) {
                 setModalState({
                     data: {},
                     open: false,
@@ -172,14 +167,14 @@ export default function RecipientAccount() {
 
     const handleUpdateRecipient = async (id, account, name) => {
         try {
-            const result = await updateRecipientAccount(id, account, name);
-            if (result?.data?.id) {
+            const result = await recipientAPI.update(id, account, name);
+            if (result?.id) {
                 const currRecipient = [...listRecipinent]?.map((item) => {
                     if (item?.id === id) {
                         return {
                             ...item,
-                            recipientAccountNumber: result?.data?.recipientAccountNumber,
-                            reminiscentName: result?.data?.reminiscentName,
+                            recipientAccountNumber: result?.recipientAccountNumber,
+                            reminiscentName: result?.reminiscentName,
                         };
                     }
                     return item;
@@ -199,7 +194,7 @@ export default function RecipientAccount() {
 
     const handleDeleteRecipient = async (id) => {
         try {
-            const result = await deleteRecipientAccount(id);
+            const result = await recipientAPI.delete(id);
             if (result) {
                 setModalState({
                     data: {},

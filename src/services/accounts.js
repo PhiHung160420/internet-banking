@@ -15,4 +15,10 @@ export const accountRequest = {
             body,
         });
     },
+    delete: async (params) => {
+        return request({
+            method: 'DELETE',
+            url: `/accounts/${params}`,
+        });
+    },
 };

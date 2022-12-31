@@ -19,8 +19,8 @@ import {
     ROLE_EMPLOYEE,
     ROLE_KEY,
 } from '~/constant';
-import { userLogin } from '~/services/auth';
 import { routesConfig } from '~/config/routesConfig';
+import { authAPI } from '~/api/authAPI';
 
 const schema = yup.object().shape({
     email: yup.string().email('Email sai định dạng').required('Email không được bỏ trống'),
@@ -42,25 +42,25 @@ export default function LoginForm() {
             }
 
             const { email, password } = data;
-            const res = await userLogin({ email, password });
-            localStorage.setItem(ACCESS_TOKEN_KEY, res?.data?.accessToken);
-            localStorage.setItem(REFRESH_TOKEN_KEY, res?.data?.refreshToken);
+            const res = await authAPI.login({ email, password });
+            localStorage.setItem(ACCESS_TOKEN_KEY, res?.accessToken);
+            localStorage.setItem(REFRESH_TOKEN_KEY, res?.refreshToken);
 
-            if (res?.data) {
-                if (res?.data?.role === ROLE_CUSTOMER) {
+            if (res) {
+                if (res?.role === ROLE_CUSTOMER) {
                     localStorage.setItem(ROLE_KEY, ROLE_CUSTOMER);
                     navigate(routesConfig.home);
-                } else if (res?.data?.role === ROLE_EMPLOYEE) {
+                } else if (res?.role === ROLE_EMPLOYEE) {
                     localStorage.setItem(ROLE_KEY, ROLE_EMPLOYEE);
                     navigate(routesConfig.employeeListCustomer);
-                } else if (res?.data?.role === ROLE_ADMIN) {
+                } else if (res?.role === ROLE_ADMIN) {
                     localStorage.setItem(ROLE_KEY, ROLE_ADMIN);
                     navigate(routesConfig.dashboard);
                 }
                 toast.success('Đăng nhập thành công');
             }
         } catch (error) {
-            toast.error(error?.data?.message || 'Đăng nhập thất bại');
+            toast.error(error.message || 'Đăng nhập thất bại');
         }
     };
 
