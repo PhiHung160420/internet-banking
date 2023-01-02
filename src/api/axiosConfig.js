@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { parse, stringify } from 'qs';
-import { toast } from 'react-toastify';
 import { ACCESS_TOKEN_KEY, API_SERVER_URL, REFRESH_TOKEN_KEY } from '~/constant';
 import { clearStorage } from '~/utils/storage';
 import { authAPI } from './authAPI';
@@ -17,8 +16,6 @@ const axiosClient = axios.create({
     },
 });
 
-// axios.defaults.baseURL = process.env.REACT_APP_API;
-
 axiosClient.interceptors.request.use(async (config) => {
     const accessToken = localStorage.getItem(ACCESS_TOKEN_KEY);
 
@@ -31,7 +28,6 @@ axiosClient.interceptors.request.use(async (config) => {
 
 axiosClient.interceptors.response.use(
     (response) => {
-        console.log(response);
         if (response && response.data) {
             return response.data;
         }
@@ -51,7 +47,7 @@ axiosClient.interceptors.response.use(
                 const errorCode = error?.status;
                 if (errorCode === 400) {
                     clearStorage();
-                    window.alert('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại!');
+                    window.alert('Phiên làm việc hết hạn. Vui lòng đăng nhập lại!');
                     window.location = '/login';
                 }
             }

@@ -20,8 +20,8 @@ import {
 } from '@mui/material';
 import { useConfirm } from 'material-ui-confirm';
 import moment from 'moment';
-import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import accountAPI from '~/api/accountAPI';
 import HeaderAction from '~/components/HeaderAction';
 import Iconify from '~/components/iconify';
@@ -29,9 +29,9 @@ import Scrollbar from '~/components/scrollbar';
 import TableListHead from '~/components/Table/TableListHead';
 import TableListToolbar from '~/components/Table/TableListToolbar';
 import { routesConfig } from '~/config/routesConfig';
+import { ROLE_KEY } from '~/constant';
 import { PAGINATION } from '~/constant/pagination';
 import USERS from '~/_mock/user';
-import { toast } from 'react-toastify';
 
 const TABLE_HEAD = [
     { id: 'name', label: 'Tên', alignRight: false },
@@ -145,7 +145,6 @@ export default function ListEmployee() {
         })
             .then(async () => {
                 const result = await accountAPI.delete(rowData.id);
-                console.log('result: ', result);
                 if (result?.status === 200) {
                     handleCloseMenu();
                     fetchAccountList();
@@ -212,11 +211,13 @@ export default function ListEmployee() {
         totalElements: 10,
         totalPages: 1,
     });
+
     const fetchAccountList = async () => {
         const payload = {
             page: pagination.page,
             size: pagination.size,
             sort: 'createdAt,desc',
+            type: 'ROLE_EMPLOYEE',
         };
         try {
             const res = await accountAPI.getList(payload);
@@ -274,8 +275,8 @@ export default function ListEmployee() {
                                 <TableBody>
                                     {accountList.map((row) => {
                                         const { fullName, phoneNumber, address, email, birthday } = row;
+                                        console.log('row: ', row);
                                         const selectedUser = selected.indexOf(phoneNumber) !== -1;
-                                        console.log('row": ', row);
                                         return (
                                             <TableRow
                                                 hover

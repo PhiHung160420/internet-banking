@@ -13,12 +13,11 @@ import Iconify from '~/components/iconify';
 
 export const AccountProfileDetails = (props) => {
     const { user, setUserInfo, role, redirectUrl, isUpdate } = props;
-
     const schema = yup.object().shape({
         fullName: yup
             .string()
             .required('Họ tên không được bỏ trống')
-            .min(4, 'Họ tên không được bỏ trống và có ít nhất 4 kí tự'),
+            .min(10, 'Họ tên không được bỏ trống và có ít nhất 10 kí tự'),
         email: yup.string().email('Email sai định dạng').required('Email không được bỏ trống'),
         birthday: yup.string().required('Ngày sinh không được bỏ trống'),
         address: yup
@@ -67,8 +66,7 @@ export const AccountProfileDetails = (props) => {
             if (password !== confirmPassword) {
                 return setError('confirmPassword', { message: 'Mật khẩu nhập lại không chính xác' });
             }
-
-            const result = await accountAPI.create({
+            const dataRequest = {
                 fullName,
                 birthday,
                 email,
@@ -76,14 +74,20 @@ export const AccountProfileDetails = (props) => {
                 address,
                 password,
                 roleCode: role,
-            });
+            };
+            let result;
+
+            if (isUpdate) {
+                result = await accountAPI.update(user?.userId, dataRequest);
+            } else {
+                result = await accountAPI.create(dataRequest);
+            }
             if (result) {
                 navigate(redirectUrl);
                 let message = isUpdate ? 'Cập nhật tài khoản thành công' : 'Tạo tài khoản thành công';
                 toast.success(message);
             }
         } catch (error) {
-            console.log('error2312: ', error);
             let msgError = isUpdate ? 'Cập nhật tài khoản thất bại' : 'Tạo tài khoản thất bại';
             toast.error(error?.message || msgError);
         }
@@ -92,7 +96,6 @@ export const AccountProfileDetails = (props) => {
     useEffect(() => {
         const subscription = watch((value, { name, type }) => (name === 'fullName' ? setUserInfo(value) : ''));
         return () => subscription.unsubscribe();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [watch]);
 
     return (
@@ -161,7 +164,6 @@ export const AccountProfileDetails = (props) => {
                                 label="Số điện thoại"
                                 name="phoneNumber"
                                 onChange={handleChange}
-                                // type="number"
                                 value={user?.phoneNumber}
                                 variant="outlined"
                                 control={control}

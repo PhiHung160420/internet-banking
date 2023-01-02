@@ -19,6 +19,10 @@ const accountAPI = {
         const res = await axiosConfig.delete(`${URL}/${id}`);
         return res;
     },
+    update: async (id, body) => {
+        const res = await axiosConfig.put(`/users/${id}`, body);
+        return res;
+    },
 };
 
 export default accountAPI;
