@@ -1,5 +1,5 @@
 import { filter } from 'lodash';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 // @mui
 import {
     Card,
@@ -23,6 +23,10 @@ import TableListHead from '~/components/Table/TableListHead';
 import TableListToolbar from '~/components/Table/TableListToolbar';
 import { TRANSACTION_LIST } from '~/constant';
 import USERLIST from '~/_mock/user';
+import { useLocation } from 'react-router-dom';
+import { PAGINATION } from '~/constant/pagination';
+import { transactionAPI } from '~/api/transactionAPI';
+import moment from 'moment';
 
 const TABLE_HEAD = [
     { id: 'date', label: 'Ngày', alignRight: false },
@@ -63,6 +67,10 @@ function applySortFilter(array, comparator, query) {
 export default function EmployeeTransactionHistory() {
     const [page, setPage] = useState(0);
 
+    const location = useLocation();
+
+    const dataUser = location?.state?.dataUser;
+
     const [order, setOrder] = useState('asc');
 
     const [orderBy, setOrderBy] = useState('name');
@@ -95,6 +103,58 @@ export default function EmployeeTransactionHistory() {
     const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
 
     const isNotFound = !filteredUsers.length && !!filterName;
+
+    const [transactions, setTransactions] = useState([]);
+
+    const [pagination, setPagination] = useState({
+        page: PAGINATION.PAGE,
+        size: PAGINATION.SIZE,
+        totalElements: 10,
+        totalPages: 1,
+    });
+
+    const getAmountType = (type, accountNumber, recipientAccountNumber) => {
+        switch (type) {
+            case 'DEPOSIT':
+                return 'success';
+            case 'TRANSFER': {
+                if (accountNumber === recipientAccountNumber) {
+                    return 'success';
+                }
+                return 'error';
+            }
+            default:
+                return '';
+        }
+    };
+
+    const fetchTransactionsById = async () => {
+        const payload = {
+            page: pagination.page,
+            size: pagination.size,
+            sort: 'createdAt,desc',
+        };
+        try {
+            const res = await transactionAPI.findById(dataUser?.id, 'DEPOSIT', payload);
+
+            setTransactions(res.content);
+
+            const paginationRes = {
+                ...pagination,
+                page: res?.pageable?.pageNumber,
+                totalElements: res?.totalElements,
+                totalPages: res?.totalPages,
+            };
+
+            setPagination(paginationRes);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    useEffect(() => {
+        fetchTransactionsById();
+    }, [pagination.page, pagination.size]);
 
     return (
         <>
@@ -135,44 +195,57 @@ export default function EmployeeTransactionHistory() {
                                     onRequestSort={handleRequestSort}
                                 />
                                 <TableBody>
-                                    {filteredUsers
-                                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                        .map((row) => {
-                                            const { id, name, status, balance } = row;
-
-                                            return (
-                                                <TableRow hover key={id} tabIndex={1} role="checkbox">
-                                                    <TableCell component="th" scope="row">
-                                                        <Stack direction="row" alignItems="center" spacing={2}>
-                                                            <Typography variant="subtitle2" noWrap>
-                                                                {name}
-                                                            </Typography>
-                                                        </Stack>
-                                                    </TableCell>
-                                                    <TableCell component="th" scope="row">
-                                                        <Stack direction="row" alignItems="center" spacing={2}>
-                                                            <Typography variant="subtitle2" noWrap>
-                                                                {name}
-                                                            </Typography>
-                                                        </Stack>
-                                                    </TableCell>
-                                                    <TableCell align="left">
-                                                        <Label
-                                                            sx={{ cursor: 'pointer' }}
-                                                            style={{}}
-                                                            color={(status === 'banned' && 'error') || 'success'}
-                                                        >
-                                                            {balance}
-                                                        </Label>
-                                                    </TableCell>
-                                                    <TableCell align="left">
-                                                        <Label sx={{ textTransform: 'none', cursor: 'pointer' }}>
-                                                            {balance}
-                                                        </Label>
-                                                    </TableCell>
-                                                </TableRow>
-                                            );
-                                        })}
+                                    {transactions.map((row) => {
+                                        const {
+                                            accountNumber,
+                                            amount,
+                                            content,
+                                            recipientAccountNumber,
+                                            tradingDate,
+                                            type,
+                                            balance,
+                                        } = row;
+                                        console.log('rows: ', row);
+                                        return (
+                                            <TableRow hover key={accountNumber} tabIndex={1} role="checkbox">
+                                                <TableCell component="th" scope="row">
+                                                    <Stack direction="row" alignItems="center" spacing={2}>
+                                                        <Typography variant="subtitle2" noWrap>
+                                                            {moment(tradingDate).format('DD/MM/YYYY')}
+                                                        </Typography>
+                                                    </Stack>
+                                                </TableCell>
+                                                <TableCell component="th" scope="row">
+                                                    <Stack direction="row" alignItems="center" spacing={2}>
+                                                        <Typography variant="subtitle2" noWrap>
+                                                            {content}
+                                                        </Typography>
+                                                    </Stack>
+                                                </TableCell>
+                                                <TableCell align="left">
+                                                    <Label
+                                                        sx={{ cursor: 'pointer' }}
+                                                        style={{}}
+                                                        color={getAmountType(
+                                                            type,
+                                                            accountNumber,
+                                                            recipientAccountNumber,
+                                                        )}
+                                                    >
+                                                        {amount}
+                                                    </Label>
+                                                </TableCell>
+                                                <TableCell align="left">
+                                                    <Label
+                                                        sx={{ textTransform: 'none', cursor: 'pointer' }}
+                                                        color={'info'}
+                                                    >
+                                                        {balance}
+                                                    </Label>
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })}
                                     {emptyRows > 0 && (
                                         <TableRow style={{ height: 53 * emptyRows }}>
                                             <TableCell colSpan={6} />

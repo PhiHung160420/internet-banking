@@ -7,4 +7,8 @@ export const transactionAPI = {
         const response = await axiosConfig.post(URL, data);
         return response;
     },
+    findById: async (id, type, data) => {
+        const response = await axiosConfig.get(`${URL}/history/${id}?type=${type}`, data);
+        return response;
+    },
 };

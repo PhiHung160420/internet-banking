@@ -11,4 +11,8 @@ export const authAPI = {
         const response = await axiosConfig.post(`${URL}/login`, data);
         return response;
     },
+    changePassword: async (data) => {
+        const response = await axiosConfig.post(`/users/change-password`, data);
+        return response;
+    },
 };

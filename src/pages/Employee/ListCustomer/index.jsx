@@ -166,7 +166,6 @@ export default function EmployeeListCustomer() {
                                 />
                                 <TableBody>
                                     {accountList.map((row) => {
-                                        console.log('row: ', row);
                                         const { fullName, phoneNumber, email, accountNumber } = row;
 
                                         return (

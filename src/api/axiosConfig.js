@@ -7,7 +7,7 @@ import { authAPI } from './authAPI';
 const defaultHeader = {
     'Content-Type': 'application/json',
 };
-const axiosClient = axios.create({
+const axiosConfig = axios.create({
     baseURL: API_SERVER_URL,
     headers: defaultHeader,
     paramsSerializer: {
@@ -16,7 +16,7 @@ const axiosClient = axios.create({
     },
 });
 
-axiosClient.interceptors.request.use(async (config) => {
+axiosConfig.interceptors.request.use(async (config) => {
     const accessToken = localStorage.getItem(ACCESS_TOKEN_KEY);
 
     if (!!accessToken) {
@@ -26,7 +26,7 @@ axiosClient.interceptors.request.use(async (config) => {
     return config;
 });
 
-axiosClient.interceptors.response.use(
+axiosConfig.interceptors.response.use(
     (response) => {
         if (response && response.data) {
             return response.data;
@@ -42,7 +42,7 @@ axiosClient.interceptors.response.use(
             try {
                 const res = await authAPI.refreshToken({ refreshToken });
                 localStorage.setItem(ACCESS_TOKEN_KEY, res?.accessToken);
-                return axiosClient(config);
+                return axiosConfig(config);
             } catch (error) {
                 const errorCode = error?.status;
                 if (errorCode === 400) {
@@ -60,4 +60,4 @@ axiosClient.interceptors.response.use(
     },
 );
 export { defaultHeader };
-export default axiosClient;
+export default axiosConfig;
