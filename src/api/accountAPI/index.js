@@ -11,6 +11,10 @@ const accountAPI = {
         const res = await axiosConfig.get(URL, { params });
         return res;
     },
+    getMyAccounts: async () => {
+        const res = await axiosConfig.get(`${URL}/info`);
+        return res;
+    },
     create: async (body) => {
         const res = await axiosConfig.post('/users', body);
         return res;
