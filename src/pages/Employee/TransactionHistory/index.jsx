@@ -27,6 +27,7 @@ import { useLocation } from 'react-router-dom';
 import { PAGINATION } from '~/constant/pagination';
 import { transactionAPI } from '~/api/transactionAPI';
 import moment from 'moment';
+import { handleMaskValue } from '~/utils/format';
 
 const TABLE_HEAD = [
     { id: 'date', label: 'Ngày', alignRight: false },
@@ -128,6 +129,12 @@ export default function EmployeeTransactionHistory() {
         }
     };
 
+    useEffect(() => {
+        if (selectedValue) {
+            fetchTransactionsById();
+        }
+    }, [selectedValue]);
+
     const fetchTransactionsById = async () => {
         const payload = {
             page: pagination.page,
@@ -135,7 +142,7 @@ export default function EmployeeTransactionHistory() {
             sort: 'createdAt,desc',
         };
         try {
-            const res = await transactionAPI.findById(dataUser?.id, 'DEPOSIT', payload);
+            const res = await transactionAPI.findById(dataUser?.id, selectedValue?.value, payload);
 
             setTransactions(res.content);
 
@@ -190,7 +197,7 @@ export default function EmployeeTransactionHistory() {
                                     order={order}
                                     orderBy={orderBy}
                                     headLabel={TABLE_HEAD}
-                                    rowCount={USERLIST.length}
+                                    rowCount={transactions.length}
                                     isShowCheckBox={false}
                                     onRequestSort={handleRequestSort}
                                 />
@@ -205,7 +212,6 @@ export default function EmployeeTransactionHistory() {
                                             type,
                                             balance,
                                         } = row;
-                                        console.log('rows: ', row);
                                         return (
                                             <TableRow hover key={accountNumber} tabIndex={1} role="checkbox">
                                                 <TableCell component="th" scope="row">
@@ -232,7 +238,7 @@ export default function EmployeeTransactionHistory() {
                                                             recipientAccountNumber,
                                                         )}
                                                     >
-                                                        {amount}
+                                                        {handleMaskValue(String(amount))}
                                                     </Label>
                                                 </TableCell>
                                                 <TableCell align="left">
@@ -240,7 +246,7 @@ export default function EmployeeTransactionHistory() {
                                                         sx={{ textTransform: 'none', cursor: 'pointer' }}
                                                         color={'info'}
                                                     >
-                                                        {balance}
+                                                        {handleMaskValue(String(balance))}
                                                     </Label>
                                                 </TableCell>
                                             </TableRow>
@@ -283,7 +289,7 @@ export default function EmployeeTransactionHistory() {
                         labelRowsPerPage="Dòng trên trang"
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
-                        count={USERLIST.length}
+                        count={transactions.length}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onPageChange={handleChangePage}

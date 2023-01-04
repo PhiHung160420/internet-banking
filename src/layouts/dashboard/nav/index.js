@@ -53,7 +53,7 @@ export default function Nav({ openNav, onCloseNav }) {
                     </Typography>
                 ) : IS_EMPLOYEE ? (
                     <Typography variant="h5" gutterBottom style={{ color: '#08ACCD' }}>
-                        Teller Dashboard
+                        Employee Dashboard
                     </Typography>
                 ) : null}
             </Box>
@@ -69,7 +69,7 @@ export default function Nav({ openNav, onCloseNav }) {
                             </Typography>
 
                             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                                {IS_ADMIN ? 'Admin' : IS_EMPLOYEE ? 'Giao dịch viên' : 'Khách hàng'}
+                                {IS_ADMIN ? 'Admin' : IS_EMPLOYEE ? 'Nhân viên' : 'Khách hàng'}
                             </Typography>
                         </Box>
                     </StyledAccount>

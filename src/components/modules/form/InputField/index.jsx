@@ -2,16 +2,16 @@ import { TextField } from '@mui/material';
 import React from 'react';
 import { useController } from 'react-hook-form';
 
-function InputField({ name, control, label, type, ...props }) {
+function InputField({ name, control, label, customOnChange = undefined, rules, type, ...props }) {
     const {
         field: { onChange, onBlur, value, ref },
         fieldState: { error },
     } = useController({
         name,
         control,
+        rules,
     });
 
-    //Render UI input as MUI Field, Antd or customize input field,....
     return (
         <TextField
             type={type}
@@ -22,7 +22,7 @@ function InputField({ name, control, label, type, ...props }) {
             helperText={error?.message}
             name={name}
             value={value}
-            onChange={onChange}
+            onChange={customOnChange ? (event) => customOnChange(event, onChange) : onChange}
             onBlur={onBlur}
         />
     );

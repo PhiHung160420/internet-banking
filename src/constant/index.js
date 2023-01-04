@@ -13,15 +13,15 @@ export const ROLE_ADMIN = 'ROLE_ADMIN';
 
 export const TRANSACTION_LIST = [
     {
-        value: 'TRANSACTION_RECEIVE_MONEY',
+        value: 'DEPOSIT',
         title: 'Giao dịch nhận tiền',
     },
     {
-        value: 'TRANSFER_TRANSACTION',
+        value: 'TRANSFER',
         title: 'Giao dịch chuyển khoản',
     },
     {
-        value: 'TRANSACTION_REMINDER_DEBT',
+        value: 'DEPOSIT',
         title: 'Giao dịch thanh toán nhắc nợ',
     },
 ];

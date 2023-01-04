@@ -1,4 +1,3 @@
-import { yupResolver } from '@hookform/resolvers/yup';
 import {
     Box,
     Button,
@@ -13,26 +12,42 @@ import {
     Radio,
     RadioGroup,
 } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import * as yup from 'yup';
 import { transactionAPI } from '~/api/transactionAPI';
 import InputField from '~/components/modules/form/InputField';
+import { handleMaskValue, handleParseMask } from '~/utils/format';
 import { validateEmail } from '~/utils/util';
 
-const schema = yup.object().shape({
-    account: yup.string().required('Thông tin tài khoản không được bỏ trống'),
-    money: yup.number().required('Số tiền không được bỏ trống').min(10000, 'Số tiền phải lớn hơn 10.000vnđ'),
-    content: yup.string().required('Nội dung không được bỏ trống'),
-});
-
 export default function EmployeeRechargeMoney() {
+    const location = useLocation();
+
+    const dataUser = location?.state?.dataUser;
+
     const [accountInfo, setAccountInfo] = useState('ACCOUNT_NUMBER');
-    const { control, handleSubmit, watch, setError } = useForm({
-        defaultValues: {},
-        resolver: yupResolver(schema),
+
+    const { control, handleSubmit, setError, reset } = useForm({
+        defaultValues: useMemo(() => {
+            return {
+                account: dataUser?.accountNumber || '',
+            };
+        }, [dataUser]),
     });
+
+    useEffect(() => {
+        if (dataUser) {
+            reset({
+                account: accountInfo === 'ACCOUNT_NUMBER' ? dataUser?.accountNumber + '' : dataUser?.email,
+            });
+        }
+    }, [accountInfo, dataUser]);
+
+    const onChangeAmount = (event, onChange) => {
+        let temp = handleMaskValue(event.target.value);
+        onChange(temp);
+    };
 
     const onSubmit = async (value) => {
         try {
@@ -48,7 +63,7 @@ export default function EmployeeRechargeMoney() {
             const transactionData = {
                 email: accountInfo === 'ACCOUNT_NUMBER' ? '' : account,
                 recipientAccountNumber: accountInfo === 'ACCOUNT' ? 0 : account,
-                amount: money,
+                amount: handleParseMask(money),
                 content: content,
                 type: 'DEPOSIT',
             };
@@ -61,15 +76,13 @@ export default function EmployeeRechargeMoney() {
 
             const result = await transactionAPI.create(transactionData);
 
-            console.log('result: ', result);
-
             if (result?.status === 'DONE') {
                 return toast.success('Nạp tiền vào tài khoản thành công');
             }
 
             return toast.error('Nạp tiền thất bại');
         } catch (error) {
-            return toast.error('Nạp tiền thất bại hoặc sai thông tin tài khoản');
+            return toast.error(error?.message);
         }
     };
 
@@ -107,16 +120,26 @@ export default function EmployeeRechargeMoney() {
                                         autocomplete: 'off',
                                     },
                                 }}
+                                rules={{ required: 'Thông tin tài khoản không được bỏ trống' }}
                             />
                         </Grid>
                         <Grid item md={12} xs={12}>
                             <InputField
-                                type={'number'}
+                                type={'text'}
                                 fullWidth
                                 label="Số tiền"
                                 name="money"
                                 control={control}
                                 variant="outlined"
+                                customOnChange={onChangeAmount}
+                                rules={{
+                                    required: 'Số tiền không được bỏ trống',
+                                    validate: {
+                                        min: (value) => {
+                                            return handleParseMask(value) > 10000 || 'Số tiền nạp tối thiểu là 10.000đ';
+                                        },
+                                    },
+                                }}
                             />
                         </Grid>
                         <Grid item md={12} xs={12}>
@@ -132,6 +155,7 @@ export default function EmployeeRechargeMoney() {
                                         autocomplete: 'off',
                                     },
                                 }}
+                                rules={{ required: 'Nội dung không được bỏ trống' }}
                             />
                         </Grid>
                     </Grid>

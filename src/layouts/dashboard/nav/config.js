@@ -84,12 +84,12 @@ const navEmployee = [
         path: routesConfig.employeeRecharge,
         icon: <RiExchangeBoxLine {...styledIcon} />,
     },
-    {
-        id: 'TransactionHistory',
-        title: 'Lịch sử giao dịch',
-        path: routesConfig.employeeTransaction,
-        icon: <MdHistory {...styledIcon} />,
-    },
+    // {
+    //     id: 'TransactionHistory',
+    //     title: 'Lịch sử giao dịch',
+    //     path: routesConfig.employeeTransaction,
+    //     icon: <MdHistory {...styledIcon} />,
+    // },
 ];
 
 export { navCustomer, navAdmin, navEmployee };
