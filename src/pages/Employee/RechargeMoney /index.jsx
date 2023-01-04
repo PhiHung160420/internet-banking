@@ -82,7 +82,7 @@ export default function EmployeeRechargeMoney() {
 
             return toast.error('Nạp tiền thất bại');
         } catch (error) {
-            return toast.error(error?.message);
+            return toast.error(error?.message || 'Nạp tiền thất bại');
         }
     };
 
