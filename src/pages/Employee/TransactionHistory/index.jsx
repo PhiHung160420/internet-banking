@@ -91,12 +91,18 @@ export default function EmployeeTransactionHistory() {
     };
 
     const handleChangePage = (event, newPage) => {
-        setPage(newPage);
+        setPagination((prev) => ({
+            ...prev,
+            page: newPage,
+        }));
     };
 
     const handleChangeRowsPerPage = (event) => {
-        setPage(0);
-        setRowsPerPage(parseInt(event.target.value, 10));
+        setPagination((prev) => ({
+            ...prev,
+            page: 0,
+            size: event.target.value,
+        }));
     };
 
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;

@@ -129,6 +129,8 @@ export default function BankAccountPage() {
         fetchAccounts();
     }, []);
 
+    const lockAccount = () => {};
+
     return (
         <>
             <Container>
@@ -232,7 +234,7 @@ export default function BankAccountPage() {
                 PaperProps={{
                     sx: {
                         p: 1,
-                        width: 140,
+                        width: 180,
                         '& .MuiMenuItem-root': {
                             px: 1,
                             typography: 'body2',
@@ -241,14 +243,14 @@ export default function BankAccountPage() {
                     },
                 }}
             >
-                <MenuItem>
-                    <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-                    Edit
+                <MenuItem onClick={lockAccount}>
+                    <Iconify icon={'mdi:account-lock'} sx={{ mr: 2 }} />
+                    Khoá tài khoản
                 </MenuItem>
 
-                <MenuItem sx={{ color: 'error.main' }}>
-                    <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-                    Delete
+                <MenuItem>
+                    <Iconify icon={'mdi:account-lock-open'} sx={{ mr: 2 }} />
+                    Mở khoá tài khoản
                 </MenuItem>
             </Popover>
         </>
