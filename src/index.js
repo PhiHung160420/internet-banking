@@ -10,6 +10,7 @@ import ThemeProvider from './theme';
 import { ConfirmProvider } from 'material-ui-confirm';
 import { confirmConfig, notistackConfig } from './config/configProvider';
 import { SnackbarProvider } from 'notistack';
+import { LoadingProvider } from './providers/LoadingProvider';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -20,11 +21,13 @@ root.render(
                     <ConfirmProvider
                         defaultOptions={{
                             confirmationButtonProps: { autoFocus: true },
-                            ...confirmConfig
+                            ...confirmConfig,
                         }}
                     >
                         <SnackbarProvider {...notistackConfig}>
-                            <App />
+                            <LoadingProvider>
+                                <App />
+                            </LoadingProvider>
                         </SnackbarProvider>
                     </ConfirmProvider>
                 </ThemeProvider>

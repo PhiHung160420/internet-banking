@@ -1,10 +1,12 @@
 import { Box, Button, Card, Divider, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 import { useSelector } from 'react-redux';
+import { handleMaskValue } from '~/utils/format';
 import TransferAccountInfo from '../TransferAccountInfo';
 
 function TransferCheck({ setStep }) {
-    const { transfer } = useSelector((state) => state.transferReducer);
+    const { transfer, account_info } = useSelector((state) => state.transferReducer);
+    const { authInfo } = useSelector((state) => state.authReducer);
 
     const handleSubmitCheck = () => {
         setStep(3);
@@ -13,7 +15,7 @@ function TransferCheck({ setStep }) {
         <Stack flexDirection={'row'}>
             <Box flex={1} textAlign="center">
                 <Typography variant="h5">SỐ TIỀN GIAO DỊCH</Typography>
-                <Typography variant="h5">{transfer.amount}</Typography>
+                <Typography variant="h5">{handleMaskValue(transfer.amount)} VND</Typography>
             </Box>
 
             <Box flex={1} gap={1}>
@@ -21,12 +23,12 @@ function TransferCheck({ setStep }) {
                     <TransferAccountInfo
                         transfer={{
                             from: {
-                                fullname: 'Phan Phi Hùng',
-                                account: '22192-22-455-22',
+                                fullname: authInfo.fullName,
+                                account: authInfo.accountNumber,
                             },
                             to: {
-                                fullname: 'Hy Quỳnh',
-                                account: '242444-5255',
+                                fullname: account_info.fullname,
+                                account: transfer.account,
                             },
                         }}
                     />

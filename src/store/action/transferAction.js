@@ -9,3 +9,8 @@ export const actGetAccountInfo = (data) => ({
     type: GET_ACCOUNT_INFO,
     payload: data,
 });
+
+export const actResetTransfer = () => ({
+    type: GET_ACCOUNT_INFO,
+    payload: {},
+});

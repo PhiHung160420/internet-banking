@@ -15,6 +15,10 @@ const accountAPI = {
         const res = await axiosConfig.get(`${URL}/info`);
         return res;
     },
+    getInfoAccountByAccountNumber: async (accountNum) => {
+        const res = await axiosConfig.get(`${URL}/${accountNum}`);
+        return res;
+    },
     create: async (body) => {
         const res = await axiosConfig.post('/users', body);
         return res;

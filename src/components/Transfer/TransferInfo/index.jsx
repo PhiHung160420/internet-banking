@@ -1,9 +1,12 @@
 import { Avatar, Card, CardHeader, IconButton, Stack, Typography } from '@mui/material';
 import { MdMoreVert } from 'react-icons/md';
+import { useSelector } from 'react-redux';
 
 import TransferForm from '~/components/forms/TransferForm';
+import { handleMaskValue } from '~/utils/format';
 
 function TransferInfo({ selected, setStep }) {
+    const { authInfo } = useSelector((state) => state.authReducer);
     return (
         <Stack gap={2} p={4}>
             <Card>
@@ -21,9 +24,9 @@ function TransferInfo({ selected, setStep }) {
                                 Nguồn tiền
                             </Typography>
                             <Typography sx={{ fontWeight: 500 }} variant="subtitle2">
-                                07887818012
+                                {authInfo.accountNumber}
                             </Typography>
-                            <Typography variant="h5">07887818012</Typography>
+                            <Typography variant="h5">{handleMaskValue(authInfo.balance.toString())} VND</Typography>
                         </Stack>
                     }
                 />

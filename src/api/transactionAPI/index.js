@@ -11,4 +11,8 @@ export const transactionAPI = {
         const response = await axiosConfig.get(`${URL}/history/${id}`, { params });
         return response;
     },
+    transfer: async (body) => {
+        const response = await axiosConfig.post(`${URL}`, body);
+        return response;
+    },
 };

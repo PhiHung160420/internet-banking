@@ -7,6 +7,9 @@ import account from '../../../_mock/account';
 import { useNavigate } from 'react-router-dom';
 import CustomModal from '~/components/CustomModal';
 import ChangePasswordForm from '~/components/forms/ChangePasswordForm';
+import { useDispatch } from 'react-redux';
+import { actGetAuthInfo } from '~/store/action/authActions';
+import { clearStorage } from '~/utils/storage';
 
 // ----------------------------------------------------------------------
 
@@ -34,8 +37,10 @@ export default function AccountPopover() {
         setOpen(event.currentTarget);
     };
 
+    const dispatch = useDispatch();
     const handleClose = () => {
-        localStorage.clear();
+        clearStorage();
+        dispatch(actGetAuthInfo({}));
         navigate('/login', { replace: true });
         window.location.reload();
     };
@@ -110,7 +115,7 @@ export default function AccountPopover() {
                 </MenuItem>
             </Popover>
 
-            <CustomModal title={"Đổi mật khẩu"} open={openModal} setOpen={(value) => setOpenModal(value)}>
+            <CustomModal title={'Đổi mật khẩu'} open={openModal} setOpen={(value) => setOpenModal(value)}>
                 <ChangePasswordForm closeModal={() => setOpenModal(false)} />
             </CustomModal>
         </>
