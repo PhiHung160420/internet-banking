@@ -49,7 +49,7 @@ export default function EmployeeRechargeMoney() {
         onChange(temp);
     };
 
-    const onSubmit = async (value) => {
+    const onSubmit = async (value, e) => {
         try {
             const { account, money, content } = value;
             if (accountInfo === 'ACCOUNT_NUMBER' && !/^[0-9]+$/.test(account)) {
@@ -77,12 +77,13 @@ export default function EmployeeRechargeMoney() {
             const result = await transactionAPI.create(transactionData);
 
             if (result?.status === 'DONE') {
+                e.target.reset();
                 return toast.success('Nạp tiền vào tài khoản thành công');
             }
 
             return toast.error('Nạp tiền thất bại');
         } catch (error) {
-            return toast.error(error?.message);
+            return toast.error(error?.message || 'Nạp tiền thất bại');
         }
     };
 

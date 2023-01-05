@@ -7,9 +7,16 @@ import TransferMenu from '~/components/Transfer/TransferMenu';
 import TransferInfo from '~/components/Transfer/TransferInfo';
 import TransferCheck from '~/components/Transfer/TransferCheck';
 import TransferOTP from '~/components/Transfer/TransferOTP';
+import { useLocation } from 'react-router-dom';
 
 function TransferPage() {
     const [selected, setSelected] = useState(menuTransfer[0].type);
+
+    const location = useLocation();
+
+    const accountInfo = location?.state?.accountInfo;
+
+    console.log('accountInfo: ', accountInfo);
 
     const [step, setStep] = useState(1);
 

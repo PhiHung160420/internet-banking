@@ -1,4 +1,4 @@
 export const PAGINATION = {
-    SIZE: 10,
+    SIZE: 5,
     PAGE: 0,
 };

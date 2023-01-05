@@ -27,6 +27,14 @@ const accountAPI = {
         const res = await axiosConfig.put(`/users/${id}`, body);
         return res;
     },
+    lockById: async (id) => {
+        const res = await axiosConfig.post(`${URL}/lock/${id}`);
+        return res;
+    },
+    unLockById: async (id) => {
+        const res = await axiosConfig.post(`${URL}/unlock/${id}`);
+        return res;
+    },
 };
 
 export default accountAPI;
