@@ -38,6 +38,7 @@ TableListToolbar.propTypes = {
     filterName: PropTypes.string,
     onFilterName: PropTypes.func,
     onClickFilter: PropTypes.func,
+    isShowFilter: PropTypes.bool,
 };
 
 export default function TableListToolbar({
@@ -46,6 +47,7 @@ export default function TableListToolbar({
     filterName,
     onFilterName,
     onClickFilter,
+    isShowFilter = true,
 }) {
     return (
         <StyledRoot
@@ -81,13 +83,13 @@ export default function TableListToolbar({
                         <Iconify icon="eva:trash-2-fill" />
                     </IconButton>
                 </Tooltip>
-            ) : (
+            ) : isShowFilter ? (
                 <Tooltip title="Filter list">
                     <IconButton onClick={onClickFilter}>
                         <Iconify icon="ic:round-filter-list" />
                     </IconButton>
                 </Tooltip>
-            )}
+            ) : null}
         </StyledRoot>
     );
 }

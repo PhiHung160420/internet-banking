@@ -3,6 +3,7 @@ import { IconButton, TextField, Tooltip } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { FaAddressBook } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import accountAPI from '~/api/accountAPI';
 import { recipientAPI } from '~/api/recipientAPI';
@@ -16,12 +17,16 @@ import RecipientList from '../RecipientList';
 
 function AccountTransform({ control, name, watch, isUpdate, openModal, setValueForm }) {
     //onGetAccountInfo is function get Account info when callAPi get info success
+    const location = useLocation();
+
+    const accountInfo = location?.state?.accountInfo;
 
     const accountVal = watch(name);
 
     const { showLoading, hideLoading } = useContext(LoadingContext);
 
     const [open, setOpen] = useState();
+
     const [openSave, setOpenSave] = useState();
 
     const [isChooseRecipient, setChooseRecipient] = useState(false);
@@ -30,11 +35,16 @@ function AccountTransform({ control, name, watch, isUpdate, openModal, setValueF
 
     const { account_info } = useSelector((state) => state.transferReducer);
 
+    useEffect(() => {
+        if (accountInfo) {
+            setValueForm(name, accountInfo?.recipientAccountNumber);
+            fetchAccountInfo(accountInfo?.recipientAccountNumber);
+        }
+    }, []);
+
     const fetchAccountInfo = async (accNumber) => {
         showLoading();
         try {
-            //Call API
-
             const res = await accountAPI.getInfoAccountByAccountNumber(accNumber);
             dispatch(
                 actGetAccountInfo({
@@ -76,7 +86,6 @@ function AccountTransform({ control, name, watch, isUpdate, openModal, setValueF
         if (openModal && isUpdate) {
             fetchAccountInfo();
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [openModal, isUpdate]);
     const handleCreateRecipient = async (account, name) => {
         try {
@@ -136,6 +145,7 @@ function AccountTransform({ control, name, watch, isUpdate, openModal, setValueF
                     dataForm={{}}
                     isUpdate={isUpdate}
                     handleCreateRecipient={(account, name) => handleCreateRecipient(account, name)}
+
                     // handleUpdateRecipient={(id, account, name) => handleUpdateRecipient(id, account, name)}
                 />
             </CustomModal>

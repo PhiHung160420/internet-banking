@@ -22,6 +22,7 @@ import { toast } from 'react-toastify';
 import accountAPI from '~/api/accountAPI';
 import HeaderAction from '~/components/HeaderAction';
 import Iconify from '~/components/iconify';
+import Label from '~/components/label';
 import Scrollbar from '~/components/scrollbar';
 import TableListHead from '~/components/Table/TableListHead';
 import TableListToolbar from '~/components/Table/TableListToolbar';
@@ -33,6 +34,7 @@ const TABLE_HEAD = [
     { id: 'email', label: 'Email', alignRight: false },
     { id: 'phone', label: 'Điện thoại', alignRight: false },
     { id: 'accountNumber', label: 'Số tài khoản', alignRight: false },
+    { id: 'status', label: 'Trạng thái', alignRight: false },
     { id: '', label: '', alignRight: false },
 ];
 
@@ -145,7 +147,7 @@ export default function EmployeeListCustomer() {
             ),
         })
             .then(async () => {
-                const result = await accountAPI.lockById(rowData.id);
+                const result = await accountAPI.lockById(rowData?.id);
 
                 if (result?.status === 200) {
                     handleCloseMenu();
@@ -174,14 +176,14 @@ export default function EmployeeListCustomer() {
             ),
         })
             .then(async () => {
-                const result = await accountAPI.delete(rowData.id);
+                const result = await accountAPI.unLockById(rowData?.id);
                 if (result?.status === 200) {
                     handleCloseMenu();
                     fetchAccountList();
 
-                    toast.success('Đóng tài khoản thành công');
+                    toast.success('Mở khoá tài khoản thành công');
                 } else {
-                    toast.success('Đóng tài khoản thất bại');
+                    toast.success('Mở khoá tài khoản thất bại');
                 }
             })
             .catch((error) => {
@@ -210,11 +212,11 @@ export default function EmployeeListCustomer() {
                                 <TableListHead
                                     isShowCheckBox={false}
                                     headLabel={TABLE_HEAD}
-                                    rowCount={accountList.length}
+                                    rowCount={accountList?.length}
                                 />
                                 <TableBody>
-                                    {accountList.map((row) => {
-                                        const { fullName, phoneNumber, email, accountNumber } = row;
+                                    {accountList?.map((row) => {
+                                        const { fullName, phoneNumber, email, accountNumber, status } = row;
                                         return (
                                             <TableRow hover key={phoneNumber}>
                                                 <TableCell component="th" scope="row" align="left">
@@ -243,6 +245,16 @@ export default function EmployeeListCustomer() {
                                                     </Typography>
                                                 </TableCell>
 
+                                                <TableCell align="left">
+                                                    <Label
+                                                        sx={{ cursor: 'pointer' }}
+                                                        style={{}}
+                                                        color={status ? 'success' : 'error'}
+                                                    >
+                                                        {status ? 'Đang hoạt động' : 'Bị khoá'}
+                                                    </Label>
+                                                </TableCell>
+
                                                 <TableCell align="right">
                                                     <IconButton
                                                         size="large"
@@ -257,7 +269,7 @@ export default function EmployeeListCustomer() {
                                     })}
                                 </TableBody>
 
-                                {!accountList.length && (
+                                {!accountList?.length && (
                                     <TableBody>
                                         <TableRow>
                                             <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
@@ -267,13 +279,7 @@ export default function EmployeeListCustomer() {
                                                     }}
                                                 >
                                                     <Typography variant="h6" paragraph>
-                                                        Not found
-                                                    </Typography>
-
-                                                    <Typography variant="body2">
-                                                        No results found for &nbsp;
-                                                        <strong>&quot;{filterName}&quot;</strong>.
-                                                        <br /> Try checking for typos or using complete words.
+                                                        Không tồn tại dữ liệu
                                                     </Typography>
                                                 </Paper>
                                             </TableCell>
@@ -324,14 +330,13 @@ export default function EmployeeListCustomer() {
                     Lịch sử giao dịch
                 </MenuItem>
 
-                <MenuItem onClick={handleLockAccount}>
-                    <Iconify icon={'mdi:account-lock'} sx={{ mr: 2 }} />
-                    Khoá tài khoản
-                </MenuItem>
-
                 <MenuItem onClick={handleUnLockAccount}>
-                    <Iconify icon={'mdi:account-lock-open'} sx={{ mr: 2 }} />
+                    <Iconify icon={'mdi:account-lock-open-outline'} sx={{ mr: 2 }} />
                     Mở khoá tài khoản
+                </MenuItem>
+                <MenuItem onClick={handleLockAccount}>
+                    <Iconify icon={'mdi:account-lock-outline'} sx={{ mr: 2 }} />
+                    Khoá tài khoản
                 </MenuItem>
             </Popover>
         </>

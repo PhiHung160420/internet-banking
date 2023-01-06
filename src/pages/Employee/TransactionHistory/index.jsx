@@ -210,13 +210,8 @@ export default function EmployeeTransactionHistory() {
                                                         textAlign: 'center',
                                                     }}
                                                 >
-                                                    <Typography variant="h6" paragraph>
-                                                        Not found
-                                                    </Typography>
-
-                                                    <Typography variant="body2">
-                                                        No results found for &nbsp;
-                                                        <br /> Try checking for typos or using complete words.
+                                                    <Typography variant="subtitle1" paragraph>
+                                                        Không tồn tại dữ liệu
                                                     </Typography>
                                                 </Paper>
                                             </TableCell>

@@ -64,6 +64,8 @@ export default function RecipientAccount() {
 
     const [rowData, setRowData] = useState({});
 
+    const [useReminderName, setUserReminderName] = useState(true);
+
     const [pagination, setPagination] = useState({
         page: PAGINATION.PAGE,
         size: PAGINATION.SIZE,
@@ -396,6 +398,8 @@ export default function RecipientAccount() {
                     <RecipientAccountForm
                         dataForm={modalState.data}
                         isUpdate={isUpdate}
+                        isUseReminderName={useReminderName}
+                        setReminderName={setUserReminderName}
                         handleCreateRecipient={(account, name) => handleCreateRecipient(account, name)}
                         handleUpdateRecipient={(id, account, name) => handleUpdateRecipient(id, account, name)}
                     />

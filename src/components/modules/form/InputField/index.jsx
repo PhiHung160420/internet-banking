@@ -24,6 +24,7 @@ function InputField({ name, control, label, customOnChange = undefined, rules, t
             value={value}
             onChange={customOnChange ? (event) => customOnChange(event, onChange) : onChange}
             onBlur={onBlur}
+            InputLabelProps={{ shrink: true }}
         />
     );
 }

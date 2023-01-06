@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 // @mui
 import {
     Box,
@@ -28,6 +28,7 @@ import Scrollbar from '~/components/scrollbar';
 import TableListHead from '~/components/Table/TableListHead';
 import TableListToolbar from '~/components/Table/TableListToolbar';
 import { PAGINATION } from '~/constant/pagination';
+import { toast } from 'react-toastify';
 
 const TABLE_HEAD = [
     { id: 'name', label: 'Tài khoản', alignRight: false },
@@ -77,8 +78,6 @@ export default function BankAccountPage() {
         setFilterName(event.target.value);
     };
 
-    const isNotFound = !accounts?.length && !!filterName;
-
     const confirm = useConfirm();
     const { enqueueSnackbar } = useSnackbar();
 
@@ -109,7 +108,6 @@ export default function BankAccountPage() {
     const fetchAccounts = async () => {
         try {
             const res = await accountAPI.getMyAccounts();
-            console.log('res: ', res);
 
             setAccounts([{ ...res }]);
 
@@ -129,7 +127,61 @@ export default function BankAccountPage() {
         fetchAccounts();
     }, []);
 
-    const lockAccount = () => {};
+    const handleLockAccount = () => {
+        confirm({
+            description: (
+                <Box component="p">
+                    Bạn có chắc muốn khoá tài khoản{' '}
+                    <Typography component="span" variant="subtitle1">
+                        {accounts[0]?.accountNumber}
+                    </Typography>{' '}
+                    ?
+                </Box>
+            ),
+        })
+            .then(async () => {
+                const result = await accountAPI.lockById(accounts[0]?.id);
+
+                if (result?.status === 200) {
+                    handleCloseMenu();
+                    fetchAccounts();
+                    toast.success('Khoá tài khoản thành công');
+                } else {
+                    toast.success('Khoá tài khoản thất bại');
+                }
+            })
+            .catch((error) => {
+                toast.error(error?.message);
+            });
+    };
+
+    const handleUnLockAccount = () => {
+        confirm({
+            description: (
+                <Box component="p">
+                    Bạn có chắc muốn mở khoá tài khoản{' '}
+                    <Typography component="span" variant="subtitle1">
+                        {accounts[0]?.accountNumber}
+                    </Typography>{' '}
+                    ?
+                </Box>
+            ),
+        })
+            .then(async () => {
+                const result = await accountAPI.lockById(accounts[0]?.id);
+
+                if (result?.status === 200) {
+                    handleCloseMenu();
+                    fetchAccounts();
+                    toast.success('Mở khoá tài khoản thành công');
+                } else {
+                    toast.success('Mở khoá tài khoản thất bại');
+                }
+            })
+            .catch((error) => {
+                toast.error(error?.message);
+            });
+    };
 
     return (
         <>
@@ -185,7 +237,7 @@ export default function BankAccountPage() {
                                     })}
                                 </TableBody>
 
-                                {isNotFound && (
+                                {!accounts?.length && (
                                     <TableBody>
                                         <TableRow>
                                             <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
@@ -194,14 +246,8 @@ export default function BankAccountPage() {
                                                         textAlign: 'center',
                                                     }}
                                                 >
-                                                    <Typography variant="h6" paragraph>
-                                                        Not found
-                                                    </Typography>
-
-                                                    <Typography variant="body2">
-                                                        No results found for &nbsp;
-                                                        <strong>&quot;{filterName}&quot;</strong>.
-                                                        <br /> Try checking for typos or using complete words.
+                                                    <Typography variant="subtitle1" paragraph>
+                                                        Không tồn tại dữ liệu
                                                     </Typography>
                                                 </Paper>
                                             </TableCell>
@@ -243,12 +289,12 @@ export default function BankAccountPage() {
                     },
                 }}
             >
-                <MenuItem onClick={lockAccount}>
+                <MenuItem onClick={handleLockAccount}>
                     <Iconify icon={'mdi:account-lock'} sx={{ mr: 2 }} />
                     Khoá tài khoản
                 </MenuItem>
 
-                <MenuItem>
+                <MenuItem onClick={handleUnLockAccount}>
                     <Iconify icon={'mdi:account-lock-open'} sx={{ mr: 2 }} />
                     Mở khoá tài khoản
                 </MenuItem>

@@ -26,7 +26,7 @@ function TransferInfo({ selected, setStep }) {
                             <Typography sx={{ fontWeight: 500 }} variant="subtitle2">
                                 {authInfo.accountNumber}
                             </Typography>
-                            <Typography variant="h5">{handleMaskValue(authInfo.balance.toString())} VND</Typography>
+                            <Typography variant="h5">{handleMaskValue(authInfo?.balance)} VND</Typography>
                         </Stack>
                     }
                 />

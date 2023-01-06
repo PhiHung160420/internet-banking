@@ -1,5 +1,6 @@
-export * from './text';
+import moment from 'moment';
 
+export * from './text';
 export const ACCESS_TOKEN_KEY = 'ACCESS_TOKEN_KEY';
 export const REFRESH_TOKEN_KEY = 'REFRESH_TOKEN_KEY';
 export const ROLE_KEY = 'ROLE_KEY';
@@ -23,6 +24,29 @@ export const TRANSACTION_LIST = [
     {
         value: 'DEPOSIT',
         title: 'Giao dịch thanh toán nhắc nợ',
+    },
+];
+
+export const DATE_FILTER_LIST = [
+    {
+        start_from: moment().utc().startOf('day').valueOf(),
+        end_from: moment().utc().endOf('day').valueOf(),
+        title: 'Hôm nay',
+    },
+    {
+        start_from: moment().utc().subtract(1, 'days').startOf('day').valueOf(),
+        end_from: moment().utc().subtract(1, 'days').endOf('day').valueOf(),
+        title: 'Hôm qua',
+    },
+    {
+        start_from: moment().utc().subtract(7, 'days').startOf('day').valueOf(),
+        end_from: moment().utc().endOf('day').valueOf(),
+        title: '7 ngày qua',
+    },
+    {
+        start_from: moment().utc().startOf('month').valueOf(),
+        end_from: moment().utc().endOf('month').valueOf(),
+        title: '30 ngày qua',
     },
 ];
 

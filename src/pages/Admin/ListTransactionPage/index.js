@@ -137,6 +137,7 @@ export default function ListTransaction() {
                         <TableContainer sx={{ minWidth: 800 }}>
                             <Table>
                                 <TableListHead
+                                    isShowCheckBox={false}
                                     order={order}
                                     orderBy={orderBy}
                                     headLabel={TABLE_HEAD}
@@ -151,8 +152,6 @@ export default function ListTransaction() {
 
                                             return (
                                                 <TableRow hover key={id}>
-                                                    <TableCell></TableCell>
-
                                                     <TableCell align="left">
                                                         <Stack direction="row" alignItems="center">
                                                             <Typography variant="subtitle" noWrap>
