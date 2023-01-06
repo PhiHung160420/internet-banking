@@ -90,9 +90,9 @@ export default function RecipientAccount() {
 
     const getListRecipinent = async () => {
         try {
-            const result = await recipientAPI.get();
-            if (result?.data) {
-                setListRecipinent(result?.data);
+            const result = await recipientAPI.getList();
+            if (result?.content) {
+                setListRecipinent(result?.content);
             }
         } catch (error) {
             console.log('getListRecipinent error >>> ', error);

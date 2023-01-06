@@ -355,7 +355,17 @@ export default function DebtReminderPage() {
                 }
                 title={isUpdate ? 'Chỉnh sửa' : 'Tạo mới'}
             >
-                <DebtReminderForm openModal={modalState.open} dataForm={modalState.data} isUpdate={isUpdate} />
+                <DebtReminderForm
+                    handleCloseModal={() => {
+                        setModalState({
+                            open: false,
+                            data: {},
+                        });
+                    }}
+                    openModal={modalState.open}
+                    dataForm={modalState.data}
+                    isUpdate={isUpdate}
+                />
             </CustomModal>
         </>
     );

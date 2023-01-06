@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { actGetAccountInfo } from '~/store/action/transferAction';
 import InputField from '../modules/form/InputField';
 
-function AccountTransform({ control, name, watch, isUpdate, openModal }) {
+function AccountTransform({ control, name, watch, isUpdate, openModal, handleClickIcon }) {
     //onGetAccountInfo is function get Account info when callAPi get info success
 
     const accountVal = watch(name);
@@ -55,7 +55,7 @@ function AccountTransform({ control, name, watch, isUpdate, openModal }) {
                 InputProps={{
                     onBlur: () => handleOnBlurInput(),
                     endAdornment: (
-                        <IconButton edge="end">
+                        <IconButton edge="end" onClick={() => handleClickIcon?.()}>
                             <FaAddressBook fontSize={'18px'} />
                         </IconButton>
                     ),

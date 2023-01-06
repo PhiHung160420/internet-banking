@@ -12,14 +12,14 @@ export async function createRecipientAccount(account, name) {
 }
 
 export async function updateRecipientAccount(id, account, name) {
-  return request({
-      method: 'PUT',
-      url: `/recipient-accounts/${id}`,
-      body: {
-          recipientAccountNumber: account,
-          reminiscentName: name,
-      },
-  });
+    return request({
+        method: 'PUT',
+        url: `/recipient-accounts/${id}`,
+        body: {
+            recipientAccountNumber: account,
+            reminiscentName: name,
+        },
+    });
 }
 
 export async function deleteRecipientAccount(id) {
@@ -27,7 +27,7 @@ export async function deleteRecipientAccount(id) {
         method: 'DELETE',
         url: `/recipient-accounts/${id}`,
     });
-  }
+}
 
 export async function getRecipientAccount() {
     return request({
