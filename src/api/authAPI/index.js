@@ -20,4 +20,9 @@ export const authAPI = {
         const response = await axiosConfig.get(`/accounts/info`);
         return response;
     },
+
+    sendOtpForgotPw: async (email) => {
+        const response = await axiosConfig.post(`/users/forgot-password`, { email });
+        return response;
+    },
 };

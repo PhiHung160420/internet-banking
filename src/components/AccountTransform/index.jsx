@@ -15,7 +15,7 @@ import RecipientAccountForm from '../forms/RecipientAccount';
 import InputField from '../modules/form/InputField';
 import RecipientList from '../RecipientList';
 
-function AccountTransform({ control, name, watch, isUpdate, openModal, setValueForm, handleClickIcon }) {
+function AccountTransform({ control, name, watch, isUpdate, openModal, setValueForm }) {
     //onGetAccountInfo is function get Account info when callAPi get info success
     const location = useLocation();
 
@@ -87,6 +87,7 @@ function AccountTransform({ control, name, watch, isUpdate, openModal, setValueF
             fetchAccountInfo();
         }
     }, [openModal, isUpdate]);
+    
     const handleCreateRecipient = async (account, name) => {
         try {
             const result = await recipientAPI.create(account, name);

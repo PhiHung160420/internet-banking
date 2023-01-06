@@ -1,5 +1,5 @@
 import { filter } from 'lodash';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 // @mui
 import {
     Avatar,
@@ -33,18 +33,23 @@ import Label from '~/components/label';
 import Scrollbar from '~/components/scrollbar';
 import TableListHead from '~/components/Table/TableListHead';
 import TableListToolbar from '~/components/Table/TableListToolbar';
-import { DELETE } from '~/constant';
+import { DELETE, FORMAT_NUMBER } from '~/constant';
 import USERLIST from '~/_mock/user';
 
 import { FcMoneyTransfer } from 'react-icons/fc';
 import { useNavigate } from 'react-router-dom';
 import { routesConfig } from '~/config/routesConfig';
+import { debtRemindersAPI } from '~/api/debtReminderAPI';
+import { PAGINATION } from '~/constant/pagination';
+import { dateTimeConverter } from '~/utils/util';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-    { id: 'name', label: 'Số tài khoản', alignRight: false },
-    { id: 'balance', label: 'Tên gợi nhớ', alignRight: false },
+    { id: 'debtAccountNumber', label: 'Số tài khoản nợ', alignRight: false },
+    { id: 'amount', label: 'Số tiền', alignRight: false },
+    { id: 'content', label: 'Nội dung', width: 300 },
+    { id: 'createdAt', label: 'Ngày tạo' },
     { id: '', label: 'Thao tác', alignRight: true },
 ];
 
@@ -84,28 +89,56 @@ export default function DebtManagementPage() {
         open: false,
         data: {},
     });
-    // const [isUpdate, setIsUpdate] = useState(false);
-    // const handleOpenModal = (update, data) => {
-    //     setModalState((prev) => ({
-    //         ...prev,
-    //         open: true,
-    //     }));
-    //     setIsUpdate(update);
-    // };
-    //
+
     const [open, setOpen] = useState(null);
 
     const [page, setPage] = useState(0);
 
     const [order, setOrder] = useState('asc');
 
-    const [selected, setSelected] = useState([]);
-
     const [orderBy, setOrderBy] = useState('name');
 
-    const [filterName, setFilterName] = useState('');
-
     const [rowsPerPage, setRowsPerPage] = useState(5);
+
+    const [listDebtReminder, setListDebtReminder] = useState([]);
+    const [pagination, setPagination] = useState({
+        page: PAGINATION.PAGE,
+        size: PAGINATION.SIZE,
+        totalElements: 10,
+        totalPages: 1,
+    });
+
+    const getListDebtReminder = async () => {
+        const payload = {
+            pageable: {
+                page: pagination.page,
+                size: pagination.size,
+                sort: 'createdAt,desc',
+            },
+            createdByMyself: false,
+        };
+
+        try {
+            const listDebt = await debtRemindersAPI.getList(payload);
+            setListDebtReminder(listDebt?.content);
+
+            if (!!listDebt?.content) {
+                const paginationRes = {
+                    ...pagination,
+                    page: listDebt?.pageable?.pageNumber,
+                    totalElements: listDebt?.totalElements,
+                    totalPages: listDebt?.totalPages,
+                };
+                setPagination(paginationRes);
+            }
+        } catch (error) {
+            console.log('get list debt reminder error >>> ', error);
+        }
+    };
+
+    useEffect(() => {
+        getListDebtReminder();
+    }, [pagination.page, pagination.size]);
 
     const handleOpenMenu = (event, row) => {
         setOpen(event.currentTarget);
@@ -129,30 +162,6 @@ export default function DebtManagementPage() {
         setOrderBy(property);
     };
 
-    const handleSelectAllClick = (event) => {
-        if (event.target.checked) {
-            const newSelecteds = USERLIST.map((n) => n.name);
-            setSelected(newSelecteds);
-            return;
-        }
-        setSelected([]);
-    };
-
-    const handleClick = (event, name) => {
-        const selectedIndex = selected.indexOf(name);
-        let newSelected = [];
-        if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, name);
-        } else if (selectedIndex === 0) {
-            newSelected = newSelected.concat(selected.slice(1));
-        } else if (selectedIndex === selected.length - 1) {
-            newSelected = newSelected.concat(selected.slice(0, -1));
-        } else if (selectedIndex > 0) {
-            newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
-        }
-        setSelected(newSelected);
-    };
-
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -162,16 +171,11 @@ export default function DebtManagementPage() {
         setRowsPerPage(parseInt(event.target.value, 10));
     };
 
-    const handleFilterByName = (event) => {
-        setPage(0);
-        setFilterName(event.target.value);
-    };
-
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
 
-    const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
+    const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), '');
 
-    const isNotFound = !filteredUsers.length && !!filterName;
+    const isNotFound = !filteredUsers.length;
     const confirm = useConfirm();
     const { enqueueSnackbar } = useSnackbar();
 
@@ -204,6 +208,7 @@ export default function DebtManagementPage() {
     const handleNavigatePaymentDebt = () => {
         navigate(routesConfig.debtPayment('data-moi-ne'));
     };
+
     return (
         <>
             <Container>
@@ -212,62 +217,53 @@ export default function DebtManagementPage() {
                         label: 'Danh sách nợ',
                         button: 'Thêm nhắc nợ',
                     }}
-                    // hasAdd
-                    // onClick={() => handleOpenModal(false, {})}
                 />
 
                 <Card>
-                    <TableListToolbar
-                        numSelected={selected.length}
-                        filterName={filterName}
-                        onFilterName={handleFilterByName}
-                    />
-
                     <Scrollbar>
                         <TableContainer sx={{ minWidth: 800 }}>
                             <Table>
                                 <TableListHead
+                                    isShowCheckBox={false}
                                     order={order}
                                     orderBy={orderBy}
                                     headLabel={TABLE_HEAD}
-                                    rowCount={USERLIST.length}
-                                    numSelected={selected.length}
+                                    rowCount={listDebtReminder.length}
                                     onRequestSort={handleRequestSort}
-                                    onSelectAllClick={handleSelectAllClick}
                                 />
                                 <TableBody>
-                                    {filteredUsers
+                                    {listDebtReminder
                                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                         .map((row) => {
-                                            const { id, name, avatarUrl, balance } = row;
-                                            const selectedUser = selected.indexOf(name) !== -1;
+                                            const { id, accountNumber, content, amount, createdAt } = row;
 
                                             return (
                                                 <TableRow
                                                     hover
                                                     key={id}
                                                     tabIndex={-1}
-                                                    role="checkbox"
-                                                    selected={selectedUser}
                                                 >
-                                                    <TableCell padding="checkbox">
-                                                        <Checkbox
-                                                            checked={selectedUser}
-                                                            onChange={(event) => handleClick(event, name)}
-                                                        />
-                                                    </TableCell>
-
-                                                    <TableCell component="th" scope="row" padding="none">
-                                                        <Stack direction="row" alignItems="center" spacing={2}>
-                                                            <Avatar alt={name} src={avatarUrl} />
-
-                                                            <Label sx={{ textTransform: 'none' }}>{name}</Label>
-                                                        </Stack>
+                                                    <TableCell align="left">
+                                                        <Label sx={{ textTransform: 'none' }}>
+                                                            {accountNumber}
+                                                        </Label>
                                                     </TableCell>
 
                                                     <TableCell align="left">
                                                         <Typography variant="subtitle2" noWrap>
-                                                            {balance}
+                                                            {FORMAT_NUMBER.format(amount)} đ
+                                                        </Typography>
+                                                    </TableCell>
+
+                                                    <TableCell align="left">
+                                                        <Typography variant="subtitle2" maxWidth={200}>
+                                                            {content}
+                                                        </Typography>
+                                                    </TableCell>
+
+                                                    <TableCell align="left">
+                                                        <Typography variant="subtitle2" noWrap>
+                                                            {dateTimeConverter(createdAt)}
                                                         </Typography>
                                                     </TableCell>
 
@@ -304,8 +300,7 @@ export default function DebtManagementPage() {
                                                     </Typography>
 
                                                     <Typography variant="body2">
-                                                        No results found for &nbsp;
-                                                        <strong>&quot;{filterName}&quot;</strong>.
+                                                        No results found for &nbsp;.
                                                         <br /> Try checking for typos or using complete words.
                                                     </Typography>
                                                 </Paper>
@@ -321,9 +316,9 @@ export default function DebtManagementPage() {
                         labelRowsPerPage="Dòng trên trang"
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
-                        count={USERLIST.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
+                        count={pagination.totalElements}
+                        rowsPerPage={pagination.size}
+                        page={pagination.page}
                         onPageChange={handleChangePage}
                         onRowsPerPageChange={handleChangeRowsPerPage}
                     />

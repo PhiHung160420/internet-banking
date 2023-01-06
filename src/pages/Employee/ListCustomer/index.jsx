@@ -34,7 +34,7 @@ const TABLE_HEAD = [
     { id: 'email', label: 'Email', alignRight: false },
     { id: 'phone', label: 'Điện thoại', alignRight: false },
     { id: 'accountNumber', label: 'Số tài khoản', alignRight: false },
-    { id: 'status', label: 'Trạng thái', alignRight: false },
+    { id: 'active', label: 'Trạng thái', alignRight: false },
     { id: '', label: '', alignRight: false },
 ];
 
@@ -216,7 +216,7 @@ export default function EmployeeListCustomer() {
                                 />
                                 <TableBody>
                                     {accountList?.map((row) => {
-                                        const { fullName, phoneNumber, email, accountNumber, status } = row;
+                                        const { fullName, phoneNumber, email, accountNumber, active } = row;
                                         return (
                                             <TableRow hover key={phoneNumber}>
                                                 <TableCell component="th" scope="row" align="left">
@@ -249,9 +249,9 @@ export default function EmployeeListCustomer() {
                                                     <Label
                                                         sx={{ cursor: 'pointer' }}
                                                         style={{}}
-                                                        color={status ? 'success' : 'error'}
+                                                        color={active ? 'success' : 'error'}
                                                     >
-                                                        {status ? 'Đang hoạt động' : 'Bị khoá'}
+                                                        {active ? 'Đang hoạt động' : 'Bị khoá'}
                                                     </Label>
                                                 </TableCell>
 
@@ -329,15 +329,23 @@ export default function EmployeeListCustomer() {
                     <Iconify icon={'icon-park-outline:transaction-order'} sx={{ mr: 2 }} />
                     Lịch sử giao dịch
                 </MenuItem>
+                {!rowData?.active ? (
+                    <MenuItem onClick={handleUnLockAccount}>
+                        <Iconify icon={'mdi:account-lock-open-outline'} sx={{ mr: 2 }} />
+                        Mở khoá tài khoản
+                    </MenuItem>
+                ) : (
+                    <></>
+                )}
 
-                <MenuItem onClick={handleUnLockAccount}>
-                    <Iconify icon={'mdi:account-lock-open-outline'} sx={{ mr: 2 }} />
-                    Mở khoá tài khoản
-                </MenuItem>
-                <MenuItem onClick={handleLockAccount}>
-                    <Iconify icon={'mdi:account-lock-outline'} sx={{ mr: 2 }} />
-                    Khoá tài khoản
-                </MenuItem>
+                {rowData?.active ? (
+                    <MenuItem onClick={handleLockAccount}>
+                        <Iconify icon={'mdi:account-lock-outline'} sx={{ mr: 2 }} />
+                        Khoá tài khoản
+                    </MenuItem>
+                ) : (
+                    <></>
+                )}
             </Popover>
         </>
     );

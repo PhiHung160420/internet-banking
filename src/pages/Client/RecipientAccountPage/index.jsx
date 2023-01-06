@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 // @mui
 import {
-    Avatar,
     Card,
     Container,
     IconButton,
@@ -15,12 +14,8 @@ import {
     TableContainer,
     TablePagination,
     TableRow,
-    Tooltip,
     Typography,
 } from '@mui/material';
-
-// sections
-// mock
 import { LoadingButton } from '@mui/lab';
 import { toast } from 'react-toastify';
 import { recipientAPI } from '~/api/recipientAPI';
@@ -147,9 +142,7 @@ export default function RecipientAccount() {
             size: event.target.value,
         }));
     };
-
-    // const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
-
+    
     const isNotFound = !listRecipient?.length && !!filterName;
 
     const handleCreateRecipient = async (account, name) => {

@@ -1,30 +1,23 @@
 import { filter } from 'lodash';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 // @mui
 import {
-    Avatar,
     Box,
     Card,
-    Checkbox,
     Container,
     IconButton,
     MenuItem,
     Paper,
     Popover,
-    Stack,
     Table,
     TableBody,
     TableCell,
     TableContainer,
     TablePagination,
     TableRow,
+    TextField,
     Typography,
 } from '@mui/material';
-
-// sections
-// mock
-import { useConfirm } from 'material-ui-confirm';
-import { useSnackbar } from 'notistack';
 import CustomModal from '~/components/CustomModal';
 import DebtReminderForm from '~/components/forms/DebtReminderForm';
 import HeaderAction from '~/components/HeaderAction';
@@ -32,15 +25,21 @@ import Iconify from '~/components/iconify';
 import Label from '~/components/label';
 import Scrollbar from '~/components/scrollbar';
 import TableListHead from '~/components/Table/TableListHead';
-import TableListToolbar from '~/components/Table/TableListToolbar';
-import { DELETE } from '~/constant';
+import { DELETE, FORMAT_NUMBER } from '~/constant';
 import USERLIST from '~/_mock/user';
+import { debtRemindersAPI } from '~/api/debtReminderAPI';
+import { PAGINATION } from '~/constant/pagination';
+import { dateTimeConverter } from '~/utils/util';
+import { LoadingButton } from '@mui/lab';
+import { toast } from 'react-toastify';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-    { id: 'name', label: 'Số tài khoản', alignRight: false },
-    { id: 'balance', label: 'Tên gợi nhớ', alignRight: false },
+    { id: 'debtAccountNumber', label: 'Số tài khoản', alignRight: false },
+    { id: 'amount', label: 'Số tiền', alignRight: false },
+    { id: 'content', label: 'Nội dung', width: 300 },
+    { id: 'createdAt', label: 'Ngày tạo' },
     { id: '', label: 'Thao tác', alignRight: true },
 ];
 
@@ -81,6 +80,23 @@ export default function DebtReminderPage() {
         data: {},
     });
     const [isUpdate, setIsUpdate] = useState(false);
+    const [open, setOpen] = useState(null);
+    const [page, setPage] = useState(0);
+    const [order, setOrder] = useState('asc');
+    const [orderBy, setOrderBy] = useState('name');
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [listDebtReminder, setListDebtReminder] = useState([]);
+    const [pagination, setPagination] = useState({
+        page: PAGINATION.PAGE,
+        size: PAGINATION.SIZE,
+        totalElements: 10,
+        totalPages: 1,
+    });
+    const [reasonModal, setReasonModal] = useState({
+        reason: '',
+        status: false,
+    });
+
     const handleOpenModal = (update, data) => {
         setModalState((prev) => ({
             ...prev,
@@ -88,20 +104,38 @@ export default function DebtReminderPage() {
         }));
         setIsUpdate(update);
     };
-    //
-    const [open, setOpen] = useState(null);
 
-    const [page, setPage] = useState(0);
+    const getListDebtReminder = async () => {
+        const payload = {
+            pageable: {
+                page: pagination.page,
+                size: pagination.size,
+                sort: 'createdAt,desc',
+            },
+            createdByMyself: true,
+        };
 
-    const [order, setOrder] = useState('asc');
+        try {
+            const listDebt = await debtRemindersAPI.getList(payload);
+            setListDebtReminder(listDebt?.content);
 
-    const [selected, setSelected] = useState([]);
+            if (!!listDebt?.content) {
+                const paginationRes = {
+                    ...pagination,
+                    page: listDebt?.pageable?.pageNumber,
+                    totalElements: listDebt?.totalElements,
+                    totalPages: listDebt?.totalPages,
+                };
+                setPagination(paginationRes);
+            }
+        } catch (error) {
+            console.log('get list debt reminder error >>> ', error);
+        }
+    };
 
-    const [orderBy, setOrderBy] = useState('name');
-
-    const [filterName, setFilterName] = useState('');
-
-    const [rowsPerPage, setRowsPerPage] = useState(5);
+    useEffect(() => {
+        getListDebtReminder();
+    }, [pagination.page, pagination.size]);
 
     const handleOpenMenu = (event, row) => {
         setOpen(event.currentTarget);
@@ -125,30 +159,6 @@ export default function DebtReminderPage() {
         setOrderBy(property);
     };
 
-    const handleSelectAllClick = (event) => {
-        if (event.target.checked) {
-            const newSelecteds = USERLIST.map((n) => n.name);
-            setSelected(newSelecteds);
-            return;
-        }
-        setSelected([]);
-    };
-
-    const handleClick = (event, name) => {
-        const selectedIndex = selected.indexOf(name);
-        let newSelected = [];
-        if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, name);
-        } else if (selectedIndex === 0) {
-            newSelected = newSelected.concat(selected.slice(1));
-        } else if (selectedIndex === selected.length - 1) {
-            newSelected = newSelected.concat(selected.slice(0, -1));
-        } else if (selectedIndex > 0) {
-            newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
-        }
-        setSelected(newSelected);
-    };
-
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -158,43 +168,70 @@ export default function DebtReminderPage() {
         setRowsPerPage(parseInt(event.target.value, 10));
     };
 
-    const handleFilterByName = (event) => {
-        setPage(0);
-        setFilterName(event.target.value);
-    };
-
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
 
-    const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
+    const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), '');
 
-    const isNotFound = !filteredUsers.length && !!filterName;
-    const confirm = useConfirm();
-    const { enqueueSnackbar } = useSnackbar();
+    const isNotFound = !filteredUsers.length;
 
-    const handleConfirm = (fullname) => {
-        confirm({
-            description: (
-                <Box component="p">
-                    Xóa nhắc nợ này sẽ gửi thông báo đến{' '}
-                    <Typography component="span" variant="h5">
-                        {fullname}
-                    </Typography>{' '}
-                    bạn có chắc chắn thực hiện?
-                </Box>
-            ),
-        })
-            .then(async () => {
-                enqueueSnackbar('Xóa thành công, thông báo đã được gửi!', {
-                    variant: 'success',
-                });
-            })
-            .catch(() => {
-                /* ... */
-                enqueueSnackbar('Xóa thất bại', {
-                    variant: 'error',
-                });
+    const handleCancelDebt = async () => {
+        try {
+            const result = await debtRemindersAPI.cancelDebt(modalState?.data?.id, {
+                cancellationReason: reasonModal?.reason,
+                debtAccountNumber: modalState?.data?.debtAccountNumber,
             });
+
+            if (result?.status === 200) {
+                setReasonModal({ reason: '', status: false });
+                getListDebtReminder();
+                return toast.success('Huỷ nhắc nợ thành công');
+            }
+            return toast.error('Huỷ nhắc nợ thất bại');
+        } catch (error) {
+            return toast.error('Huỷ nhắc nợ thất bại');
+        }
     };
+
+    // const handleConfirm = (fullname) => {
+    //     confirm({
+    //         description: (
+    //             <Box component="p">
+    //                 Xóa nhắc nợ này sẽ gửi thông báo đến{' '}
+    //                 <Typography component="span" variant="h5">
+    //                     {fullname}
+    //                 </Typography>{' '}
+    //                 bạn có chắc chắn thực hiện?
+
+    //                 <TextField
+    //                     name="reason"
+    //                     label="Lí do huỷ"
+    //                     value={cancelReason}
+    //                     onChange={(event) => {
+    //                         setCancelReason(event.target.value);
+    //                     }}
+    //                     multiline
+    //                     rows={4}
+    //                 />
+    //             </Box>
+    //         ),
+    //     })
+    //         .then(async () => {
+    //             console.log('modalState >>>> ', modalState);
+    //             // const result = await debtRemindersAPI.cancelDebt(modalState?.data?.id, {
+
+    //             // })
+    //             // enqueueSnackbar('Xóa thành công, thông báo đã được gửi!', {
+    //             //     variant: 'success',
+    //             // });
+    //         })
+    //         .catch(() => {
+    //             /* ... */
+    //             enqueueSnackbar('Xóa thất bại', {
+    //                 variant: 'error',
+    //             });
+    //         });
+    // };
+
     return (
         <>
             <Container>
@@ -208,57 +245,45 @@ export default function DebtReminderPage() {
                 />
 
                 <Card>
-                    <TableListToolbar
-                        numSelected={selected.length}
-                        filterName={filterName}
-                        onFilterName={handleFilterByName}
-                    />
-
                     <Scrollbar>
                         <TableContainer sx={{ minWidth: 800 }}>
                             <Table>
                                 <TableListHead
+                                    isShowCheckBox={false}
                                     order={order}
                                     orderBy={orderBy}
                                     headLabel={TABLE_HEAD}
-                                    rowCount={USERLIST.length}
-                                    numSelected={selected.length}
+                                    rowCount={listDebtReminder?.length}
                                     onRequestSort={handleRequestSort}
-                                    onSelectAllClick={handleSelectAllClick}
                                 />
                                 <TableBody>
-                                    {filteredUsers
+                                    {listDebtReminder
                                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                         .map((row) => {
-                                            const { id, name, avatarUrl, balance } = row;
-                                            const selectedUser = selected.indexOf(name) !== -1;
-
+                                            const { id, debtAccountNumber, content, amount, createdAt } = row;
                                             return (
-                                                <TableRow
-                                                    hover
-                                                    key={id}
-                                                    tabIndex={-1}
-                                                    role="checkbox"
-                                                    selected={selectedUser}
-                                                >
-                                                    <TableCell padding="checkbox">
-                                                        <Checkbox
-                                                            checked={selectedUser}
-                                                            onChange={(event) => handleClick(event, name)}
-                                                        />
-                                                    </TableCell>
-
-                                                    <TableCell component="th" scope="row" padding="none">
-                                                        <Stack direction="row" alignItems="center" spacing={2}>
-                                                            <Avatar alt={name} src={avatarUrl} />
-
-                                                            <Label sx={{ textTransform: 'none' }}>{name}</Label>
-                                                        </Stack>
+                                                <TableRow key={id} tabIndex={-1}>
+                                                    <TableCell align="left">
+                                                        <Label sx={{ textTransform: 'none' }}>
+                                                            {debtAccountNumber}
+                                                        </Label>
                                                     </TableCell>
 
                                                     <TableCell align="left">
                                                         <Typography variant="subtitle2" noWrap>
-                                                            {balance}
+                                                            {FORMAT_NUMBER.format(amount)} đ
+                                                        </Typography>
+                                                    </TableCell>
+
+                                                    <TableCell align="left">
+                                                        <Typography variant="subtitle2" maxWidth={200}>
+                                                            {content}
+                                                        </Typography>
+                                                    </TableCell>
+
+                                                    <TableCell align="left">
+                                                        <Typography variant="subtitle2" noWrap>
+                                                            {dateTimeConverter(createdAt)}
                                                         </Typography>
                                                     </TableCell>
 
@@ -296,7 +321,6 @@ export default function DebtReminderPage() {
 
                                                     <Typography variant="body2">
                                                         No results found for &nbsp;
-                                                        <strong>&quot;{filterName}&quot;</strong>.
                                                         <br /> Try checking for typos or using complete words.
                                                     </Typography>
                                                 </Paper>
@@ -312,9 +336,9 @@ export default function DebtReminderPage() {
                         labelRowsPerPage="Dòng trên trang"
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
-                        count={USERLIST.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
+                        count={pagination.totalElements}
+                        rowsPerPage={pagination.size}
+                        page={pagination.page}
                         onPageChange={handleChangePage}
                         onRowsPerPageChange={handleChangeRowsPerPage}
                     />
@@ -339,7 +363,7 @@ export default function DebtReminderPage() {
                     },
                 }}
             >
-                <MenuItem sx={{ color: 'error.main' }} onClick={() => handleConfirm(modalState.data?.name)}>
+                <MenuItem sx={{ color: 'error.main' }} onClick={() => setReasonModal({ reason: '', status: true })}>
                     <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
                     {DELETE}
                 </MenuItem>
@@ -362,10 +386,52 @@ export default function DebtReminderPage() {
                             data: {},
                         });
                     }}
+                    handleLoadData={() => {
+                        getListDebtReminder();
+                    }}
                     openModal={modalState.open}
                     dataForm={modalState.data}
                     isUpdate={isUpdate}
                 />
+            </CustomModal>
+
+            <CustomModal
+                open={reasonModal?.status}
+                setOpen={(value) =>
+                    setReasonModal((prev) => ({
+                        ...prev,
+                        status: value,
+                    }))
+                }
+                title={`Xác nhận huỷ nhắc nợ?`}
+            >
+                <Box my={2}>
+                    <TextField
+                        width={350}
+                        sx={{ width: '395px' }}
+                        name="reason"
+                        label="Lí do huỷ"
+                        value={reasonModal?.reason}
+                        onChange={(event) => {
+                            setReasonModal((prev) => ({
+                                ...prev,
+                                reason: event.target.value,
+                            }));
+                        }}
+                        multiline
+                        rows={4}
+                    />
+                    <LoadingButton
+                        sx={{ my: 2 }}
+                        fullWidth
+                        size="large"
+                        type="submit"
+                        variant="contained"
+                        onClick={() => handleCancelDebt()}
+                    >
+                        Xác nhận
+                    </LoadingButton>
+                </Box>
             </CustomModal>
         </>
     );

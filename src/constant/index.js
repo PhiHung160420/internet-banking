@@ -55,3 +55,9 @@ export const API_SERVER_URL = 'http://8.219.120.205/internet-banking/api';
 export const PLACEHOLDER_AVATAR = '/static/images/avatars/avatar_6.png';
 export const RE_CAPCHA_SITEKEY = '6LciuJYjAAAAAKJ4gm2cS0BveAdBZ6rjIy05Z29d';
 export const RE_CAPCHA_SECRET_KEY = '6LciuJYjAAAAAD23jVq_f5xor1DmDWKrpwwPC0Mh';
+export const FORGOT_PW_STATE = {
+    SEND_EMAIL: 'SEND_EMAIL',
+    ENTER_OTP: 'ENTER_OTP',
+    ENTER_NEW_PASSWORD: 'ENTER_NEW_PASSWORD'
+}
+export const FORMAT_NUMBER = new Intl.NumberFormat();
