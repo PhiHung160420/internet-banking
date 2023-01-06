@@ -15,4 +15,9 @@ export const authAPI = {
         const response = await axiosConfig.post(`/users/change-password`, data);
         return response;
     },
+
+    getInfo: async () => {
+        const response = await axiosConfig.get(`/accounts/info`);
+        return response;
+    },
 };

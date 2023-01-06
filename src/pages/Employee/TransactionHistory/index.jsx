@@ -1,4 +1,3 @@
-import { filter } from 'lodash';
 import { useEffect, useState } from 'react';
 // @mui
 import {
@@ -15,6 +14,9 @@ import {
     Typography,
 } from '@mui/material';
 
+import moment from 'moment';
+import { useLocation } from 'react-router-dom';
+import { transactionAPI } from '~/api/transactionAPI';
 import HeaderAction from '~/components/HeaderAction';
 import Label from '~/components/label';
 import Scrollbar from '~/components/scrollbar';
@@ -22,11 +24,7 @@ import BasicSelect from '~/components/select';
 import TableListHead from '~/components/Table/TableListHead';
 import TableListToolbar from '~/components/Table/TableListToolbar';
 import { TRANSACTION_LIST } from '~/constant';
-import USERLIST from '~/_mock/user';
-import { useLocation } from 'react-router-dom';
 import { PAGINATION } from '~/constant/pagination';
-import { transactionAPI } from '~/api/transactionAPI';
-import moment from 'moment';
 import { handleMaskValue } from '~/utils/format';
 
 const TABLE_HEAD = [
@@ -36,74 +34,29 @@ const TABLE_HEAD = [
     { id: 'balance', label: 'Số dư', alignRight: false },
 ];
 
-function descendingComparator(a, b, orderBy) {
-    if (b[orderBy] < a[orderBy]) {
-        return -1;
-    }
-    if (b[orderBy] > a[orderBy]) {
-        return 1;
-    }
-    return 0;
-}
-
-function getComparator(order, orderBy) {
-    return order === 'desc'
-        ? (a, b) => descendingComparator(a, b, orderBy)
-        : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function applySortFilter(array, comparator, query) {
-    const stabilizedThis = array.map((el, index) => [el, index]);
-    stabilizedThis.sort((a, b) => {
-        const order = comparator(a[0], b[0]);
-        if (order !== 0) return order;
-        return a[1] - b[1];
-    });
-    if (query) {
-        return filter(array, (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
-    }
-    return stabilizedThis.map((el) => el[0]);
-}
-
 export default function EmployeeTransactionHistory() {
-    const [page, setPage] = useState(0);
-
     const location = useLocation();
 
     const dataUser = location?.state?.dataUser;
-
-    const [order, setOrder] = useState('asc');
-
-    const [orderBy, setOrderBy] = useState('name');
-
-    const [filterName, setFilterName] = useState('');
 
     const [selectedValue, setSelectedValue] = useState(TRANSACTION_LIST[0]);
 
     const [showSelect, setShowSelect] = useState(false);
 
-    const [rowsPerPage, setRowsPerPage] = useState(5);
-
-    const handleRequestSort = (event, property) => {
-        const isAsc = orderBy === property && order === 'asc';
-        setOrder(isAsc ? 'desc' : 'asc');
-        setOrderBy(property);
-    };
-
     const handleChangePage = (event, newPage) => {
-        setPage(newPage);
+        setPagination((prev) => ({
+            ...prev,
+            page: newPage,
+        }));
     };
 
     const handleChangeRowsPerPage = (event) => {
-        setPage(0);
-        setRowsPerPage(parseInt(event.target.value, 10));
+        setPagination((prev) => ({
+            ...prev,
+            page: 0,
+            size: event.target.value,
+        }));
     };
-
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
-
-    const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
-
-    const isNotFound = !filteredUsers.length && !!filterName;
 
     const [transactions, setTransactions] = useState([]);
 
@@ -140,11 +93,12 @@ export default function EmployeeTransactionHistory() {
             page: pagination.page,
             size: pagination.size,
             sort: 'createdAt,desc',
+            type: selectedValue?.value,
         };
         try {
-            const res = await transactionAPI.findById(dataUser?.id, selectedValue?.value, payload);
+            const res = await transactionAPI.findById(dataUser?.id, payload);
 
-            setTransactions(res.content);
+            setTransactions(res?.content);
 
             const paginationRes = {
                 ...pagination,
@@ -173,11 +127,7 @@ export default function EmployeeTransactionHistory() {
                 />
 
                 <Card>
-                    <TableListToolbar
-                        isShowSearchInput={false}
-                        filterName={filterName}
-                        onClickFilter={() => setShowSelect(!showSelect)}
-                    />
+                    <TableListToolbar isShowSearchInput={false} onClickFilter={() => setShowSelect(!showSelect)} />
 
                     {showSelect ? (
                         <Container style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 20 }}>
@@ -194,12 +144,9 @@ export default function EmployeeTransactionHistory() {
                         <TableContainer sx={{ minWidth: 800 }}>
                             <Table>
                                 <TableListHead
-                                    order={order}
-                                    orderBy={orderBy}
                                     headLabel={TABLE_HEAD}
                                     rowCount={transactions.length}
                                     isShowCheckBox={false}
-                                    onRequestSort={handleRequestSort}
                                 />
                                 <TableBody>
                                     {transactions.map((row) => {
@@ -252,14 +199,9 @@ export default function EmployeeTransactionHistory() {
                                             </TableRow>
                                         );
                                     })}
-                                    {emptyRows > 0 && (
-                                        <TableRow style={{ height: 53 * emptyRows }}>
-                                            <TableCell colSpan={6} />
-                                        </TableRow>
-                                    )}
                                 </TableBody>
 
-                                {isNotFound && (
+                                {!transactions?.length && (
                                     <TableBody>
                                         <TableRow>
                                             <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
@@ -268,13 +210,8 @@ export default function EmployeeTransactionHistory() {
                                                         textAlign: 'center',
                                                     }}
                                                 >
-                                                    <Typography variant="h6" paragraph>
-                                                        Not found
-                                                    </Typography>
-
-                                                    <Typography variant="body2">
-                                                        No results found for &nbsp;
-                                                        <br /> Try checking for typos or using complete words.
+                                                    <Typography variant="subtitle1" paragraph>
+                                                        Không tồn tại dữ liệu
                                                     </Typography>
                                                 </Paper>
                                             </TableCell>
@@ -286,12 +223,12 @@ export default function EmployeeTransactionHistory() {
                     </Scrollbar>
 
                     <TablePagination
-                        labelRowsPerPage="Dòng trên trang"
+                        labelRowsPerPage="Số dòng"
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
-                        count={transactions.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
+                        count={pagination.totalElements}
+                        rowsPerPage={pagination.size}
+                        page={pagination.page}
                         onPageChange={handleChangePage}
                         onRowsPerPageChange={handleChangeRowsPerPage}
                     />

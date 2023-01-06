@@ -21,6 +21,8 @@ import {
 } from '~/constant';
 import { routesConfig } from '~/config/routesConfig';
 import { authAPI } from '~/api/authAPI';
+import { useDispatch } from 'react-redux';
+import { actGetAuthInfo } from '~/store/action/authActions';
 
 const schema = yup.object().shape({
     email: yup.string().email('Email sai định dạng').required('Email không được bỏ trống'),
@@ -34,6 +36,16 @@ export default function LoginForm() {
         resolver: yupResolver(schema),
     });
     const navigate = useNavigate();
+
+    const dispatch = useDispatch();
+    const getAccountInfo = async () => {
+        try {
+            const res = await authAPI.getInfo();
+            dispatch(actGetAuthInfo(res));
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     const onSubmit = async (data) => {
         try {
@@ -56,6 +68,7 @@ export default function LoginForm() {
                     localStorage.setItem(ROLE_KEY, ROLE_ADMIN);
                     navigate(routesConfig.dashboard);
                 }
+                await getAccountInfo();
                 toast.success('Đăng nhập thành công');
             }
         } catch (error) {

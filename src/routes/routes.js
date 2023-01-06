@@ -29,7 +29,6 @@ export const publicRoutes = [
 ];
 
 export const privateRoutes = [
-    // { path: routesConfig.home, element: HomePage },
     { path: routesConfig.customerBankAcc, element: BankAccountPage },
     { path: routesConfig.customerRecipientAcc, element: RecipientAccount },
     { path: routesConfig.transfer, element: TransferPage },

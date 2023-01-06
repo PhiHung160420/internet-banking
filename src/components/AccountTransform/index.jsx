@@ -1,49 +1,105 @@
-import { IconButton, TextField } from '@mui/material';
-import { useEffect } from 'react';
+import { Save } from '@material-ui/icons';
+import { IconButton, TextField, Tooltip } from '@mui/material';
+import { useContext, useEffect, useState } from 'react';
 import { FaAddressBook } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
-import { actGetAccountInfo } from '~/store/action/transferAction';
-import InputField from '../modules/form/InputField';
+import { useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import accountAPI from '~/api/accountAPI';
+import { recipientAPI } from '~/api/recipientAPI';
+import { LoadingContext } from '~/providers/LoadingProvider';
 
-function AccountTransform({ control, name, watch, isUpdate, openModal, handleClickIcon }) {
+import { actGetAccountInfo } from '~/store/action/transferAction';
+import CustomModal from '../CustomModal';
+import RecipientAccountForm from '../forms/RecipientAccount';
+import InputField from '../modules/form/InputField';
+import RecipientList from '../RecipientList';
+
+function AccountTransform({ control, name, watch, isUpdate, openModal, setValueForm, handleClickIcon }) {
     //onGetAccountInfo is function get Account info when callAPi get info success
+    const location = useLocation();
+
+    const accountInfo = location?.state?.accountInfo;
 
     const accountVal = watch(name);
+
+    const { showLoading, hideLoading } = useContext(LoadingContext);
+
+    const [open, setOpen] = useState();
+
+    const [openSave, setOpenSave] = useState();
+
+    const [isChooseRecipient, setChooseRecipient] = useState(false);
 
     const dispatch = useDispatch();
 
     const { account_info } = useSelector((state) => state.transferReducer);
 
-    const fetchAccountInfo = async (accNumber) => {
-        try {
-            //Call API
+    useEffect(() => {
+        if (accountInfo) {
+            setValueForm(name, accountInfo?.recipientAccountNumber);
+            fetchAccountInfo(accountInfo?.recipientAccountNumber);
+        }
+    }, []);
 
+    const fetchAccountInfo = async (accNumber) => {
+        showLoading();
+        try {
+            const res = await accountAPI.getInfoAccountByAccountNumber(accNumber);
             dispatch(
                 actGetAccountInfo({
-                    fullname: 'TRAN THI LUNG LINH',
-                    account_number: accountVal,
+                    fullname: res?.fullName,
+                    account_number: res?.accountNumber,
                 }),
             );
+            hideLoading();
         } catch (error) {
-            console.log(error);
+            toast.error(error?.message || 'Có lỗi xảy ra vui lòng thử lại');
+            hideLoading();
             dispatch(actGetAccountInfo({}));
         }
     };
 
     const handleOnBlurInput = () => {
         if (accountVal) {
-            fetchAccountInfo();
-        } else {
+            fetchAccountInfo(accountVal);
+        } else if (!accountVal) {
             dispatch(actGetAccountInfo({}));
         }
+        setChooseRecipient(false);
+    };
+
+    const handleChooseRecipientAccount = (account) => {
+        setValueForm(name, account?.recipientAccountNumber);
+        dispatch(
+            actGetAccountInfo({
+                fullname: account?.recipientAccountName,
+                account_number: account?.recipientAccountNumber,
+            }),
+        );
+        //Close modal
+        setChooseRecipient(true);
+        setOpen(false);
     };
 
     useEffect(() => {
         if (openModal && isUpdate) {
             fetchAccountInfo();
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [openModal, isUpdate]);
+    const handleCreateRecipient = async (account, name) => {
+        try {
+            const result = await recipientAPI.create(account, name);
+            setOpenSave(false);
+
+            return toast.success('Tạo tài khoản gợi nhớ thành công');
+
+            // return toast.error('Tạo tài khoản gợi nhớ thất bại');
+        } catch (error) {
+            // return toast.error('Tạo tài khoản gợi nhớ thất bại');
+            return toast.error(error?.message);
+        }
+    };
 
     return (
         <>
@@ -55,13 +111,44 @@ function AccountTransform({ control, name, watch, isUpdate, openModal, handleCli
                 InputProps={{
                     onBlur: () => handleOnBlurInput(),
                     endAdornment: (
-                        <IconButton edge="end" onClick={() => handleClickIcon?.()}>
-                            <FaAddressBook fontSize={'18px'} />
-                        </IconButton>
+                        <Tooltip title="Danh sách người nhận">
+                            <IconButton edge="end" onClick={() => setOpen(true)}>
+                                <FaAddressBook fontSize={'18px'} />
+                            </IconButton>
+                        </Tooltip>
                     ),
                 }}
             />
-            {account_info?.fullname && <TextField value={account_info?.fullname} label="Tên người nhận" disabled />}
+            {account_info?.fullname && (
+                <TextField
+                    value={account_info?.fullname}
+                    label="Tên người nhận"
+                    disabled
+                    InputProps={{
+                        endAdornment: !isChooseRecipient && (
+                            <Tooltip title="Lưu người nhận">
+                                <IconButton edge="end" onClick={() => setOpenSave(true)}>
+                                    <Save fontSize={'18px'} />
+                                </IconButton>
+                            </Tooltip>
+                        ),
+                    }}
+                />
+            )}
+
+            <CustomModal title={'Danh sách người nhận của bạn'} open={open} setOpen={(value) => setOpen(value)}>
+                <RecipientList onChooseRecipient={handleChooseRecipientAccount} />
+            </CustomModal>
+
+            <CustomModal title={'Lưu người nhận mới'} open={openSave} setOpen={(value) => setOpenSave(value)}>
+                <RecipientAccountForm
+                    dataForm={{}}
+                    isUpdate={isUpdate}
+                    handleCreateRecipient={(account, name) => handleCreateRecipient(account, name)}
+
+                    // handleUpdateRecipient={(id, account, name) => handleUpdateRecipient(id, account, name)}
+                />
+            </CustomModal>
         </>
     );
 }

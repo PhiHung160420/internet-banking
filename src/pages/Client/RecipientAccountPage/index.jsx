@@ -1,4 +1,3 @@
-import { filter } from 'lodash';
 import { useEffect, useState } from 'react';
 // @mui
 import {
@@ -33,9 +32,9 @@ import Label from '~/components/label';
 import Scrollbar from '~/components/scrollbar';
 import TableListHead from '~/components/Table/TableListHead';
 import { DELETE, EDIT } from '~/constant';
-import USERLIST from '~/_mock/user';
-
-// ----------------------------------------------------------------------
+import { PAGINATION } from '~/constant/pagination';
+import { useNavigate } from 'react-router-dom';
+import { routesConfig } from '~/config/routesConfig';
 
 const TABLE_HEAD = [
     { id: 'name', label: 'Số tài khoản', alignRight: false },
@@ -43,65 +42,65 @@ const TABLE_HEAD = [
     { id: '', label: 'Thao tác', alignRight: true },
 ];
 
-// ----------------------------------------------------------------------
-
-function descendingComparator(a, b, orderBy) {
-    if (b[orderBy] < a[orderBy]) {
-        return -1;
-    }
-    if (b[orderBy] > a[orderBy]) {
-        return 1;
-    }
-    return 0;
-}
-
-function getComparator(order, orderBy) {
-    return order === 'desc'
-        ? (a, b) => descendingComparator(a, b, orderBy)
-        : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function applySortFilter(array, comparator, query) {
-    const stabilizedThis = array.map((el, index) => [el, index]);
-    stabilizedThis.sort((a, b) => {
-        const order = comparator(a[0], b[0]);
-        if (order !== 0) return order;
-        return a[1] - b[1];
-    });
-    if (query) {
-        return filter(array, (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
-    }
-    return stabilizedThis.map((el) => el[0]);
-}
-
 export default function RecipientAccount() {
     const [modalState, setModalState] = useState({
         open: false,
         data: {},
     });
-    const [isUpdate, setIsUpdate] = useState(false);
-    const [open, setOpen] = useState(null);
-    const [page, setPage] = useState(0);
-    const [order, setOrder] = useState('asc');
-    const [orderBy, setOrderBy] = useState('name');
-    const [filterName, setFilterName] = useState('');
-    const [rowsPerPage, setRowsPerPage] = useState(5);
-    const [listRecipinent, setListRecipinent] = useState([]);
 
-    const getListRecipinent = async () => {
+    const navigate = useNavigate();
+
+    const [isUpdate, setIsUpdate] = useState(false);
+
+    const [open, setOpen] = useState(null);
+
+    const [order, setOrder] = useState('asc');
+
+    const [orderBy, setOrderBy] = useState('name');
+
+    const [filterName, setFilterName] = useState('');
+
+    const [listRecipient, setListRecipient] = useState([]);
+
+    const [rowData, setRowData] = useState({});
+
+    const [useReminderName, setUserReminderName] = useState(true);
+
+    const [pagination, setPagination] = useState({
+        page: PAGINATION.PAGE,
+        size: PAGINATION.SIZE,
+        totalElements: 10,
+        totalPages: 1,
+    });
+
+    const getListRecipient = async () => {
+        const payload = {
+            page: pagination.page,
+            size: pagination.size,
+            sort: 'createdAt,desc',
+        };
         try {
-            const result = await recipientAPI.getList();
-            if (result?.content) {
-                setListRecipinent(result?.content);
+            const res = await recipientAPI.getList(payload);
+
+            setListRecipient(res?.content);
+
+            if (!!res?.content) {
+                const paginationRes = {
+                    ...pagination,
+                    page: res?.pageable?.pageNumber,
+                    totalElements: res?.totalElements,
+                    totalPages: res?.totalPages,
+                };
+                setPagination(paginationRes);
             }
         } catch (error) {
-            console.log('getListRecipinent error >>> ', error);
+            console.log(error);
         }
     };
 
     useEffect(() => {
-        getListRecipinent();
-    }, []);
+        getListRecipient();
+    }, [pagination.page, pagination.size]);
 
     const handleOpenModal = (update, data) => {
         setModalState((prev) => ({
@@ -117,6 +116,7 @@ export default function RecipientAccount() {
             data: row,
             open: false,
         }));
+        setRowData(row);
     };
 
     const handleCloseMenu = () => {
@@ -134,19 +134,23 @@ export default function RecipientAccount() {
     };
 
     const handleChangePage = (event, newPage) => {
-        setPage(newPage);
+        setPagination((prev) => ({
+            ...prev,
+            page: newPage,
+        }));
     };
 
     const handleChangeRowsPerPage = (event) => {
-        setPage(0);
-        setRowsPerPage(parseInt(event.target.value, 10));
+        setPagination((prev) => ({
+            ...prev,
+            page: 0,
+            size: event.target.value,
+        }));
     };
 
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+    // const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
 
-    const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
-
-    const isNotFound = !filteredUsers.length && !!filterName;
+    const isNotFound = !listRecipient?.length && !!filterName;
 
     const handleCreateRecipient = async (account, name) => {
         try {
@@ -156,12 +160,13 @@ export default function RecipientAccount() {
                     data: {},
                     open: false,
                 });
-                getListRecipinent();
+                getListRecipient();
                 return toast.success('Tạo tài khoản gợi nhớ thành công');
             }
-            return toast.error('Tạo tài khoản gợi nhớ thất bại');
+            // return toast.error('Tạo tài khoản gợi nhớ thất bại');
         } catch (error) {
-            return toast.error('Tạo tài khoản gợi nhớ thất bại');
+            // return toast.error('Tạo tài khoản gợi nhớ thất bại');
+            return toast.error(error?.message);
         }
     };
 
@@ -169,7 +174,7 @@ export default function RecipientAccount() {
         try {
             const result = await recipientAPI.update(id, account, name);
             if (result?.id) {
-                const currRecipient = [...listRecipinent]?.map((item) => {
+                const currRecipient = [...listRecipient]?.map((item) => {
                     if (item?.id === id) {
                         return {
                             ...item,
@@ -179,16 +184,17 @@ export default function RecipientAccount() {
                     }
                     return item;
                 });
-                setListRecipinent(currRecipient);
+                setListRecipient(currRecipient);
                 setModalState({
                     data: {},
                     open: false,
                 });
                 return toast.success('Cập nhật tài khoản gợi nhớ thành công');
             }
-            return toast.error('Cập nhật tài khoản gợi nhớ thất bại');
+            // return toast.error('Cập nhật tài khoản gợi nhớ thất bại');
         } catch (error) {
-            return toast.error('Cập nhật tài khoản gợi nhớ thất bại');
+            // return toast.error('Cập nhật tài khoản gợi nhớ thất bại');
+            return toast.error(error?.message);
         }
     };
 
@@ -201,13 +207,22 @@ export default function RecipientAccount() {
                     open: false,
                 });
                 setOpen(null);
-                getListRecipinent();
+                getListRecipient();
                 return toast.success('Xoá tài khoản gợi nhớ thành công');
             }
-            return toast.error('Xoá tài khoản gợi nhớ thất bại');
+            // return toast.error('Xoá tài khoản gợi nhớ thất bại');
         } catch (error) {
-            return toast.error('Xoá tài khoản gợi nhớ thất bại');
+            // return toast.error('Xoá tài khoản gợi nhớ thất bại');
+            return toast.error(error?.message);
         }
+    };
+
+    const handleTransfer = () => {
+        navigate(routesConfig.transfer, {
+            state: {
+                accountInfo: rowData,
+            },
+        });
     };
 
     return (
@@ -216,7 +231,7 @@ export default function RecipientAccount() {
                 <HeaderAction
                     text={{
                         label: 'Danh sách tài khoản người nhận',
-                        button: 'Thêm thiết lập',
+                        button: 'Thêm người nhận',
                     }}
                     hasAdd
                     onClick={() => handleOpenModal(false, {})}
@@ -231,60 +246,45 @@ export default function RecipientAccount() {
                                     order={order}
                                     orderBy={orderBy}
                                     headLabel={TABLE_HEAD}
-                                    rowCount={listRecipinent.length}
+                                    rowCount={listRecipient?.length}
                                     onRequestSort={handleRequestSort}
                                 />
                                 <TableBody>
-                                    {listRecipinent
-                                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                        .map((row) => {
-                                            const {
-                                                id,
-                                                recipientAccountName,
-                                                recipientAccountNumber,
-                                                reminiscentName,
-                                            } = row;
-                                            return (
-                                                <TableRow hover key={id} tabIndex={-1}>
-                                                    <TableCell
-                                                        component="th"
-                                                        scope="row"
-                                                        padding="none"
-                                                        style={{ paddingLeft: '20px' }}
+                                    {listRecipient?.map((row) => {
+                                        const { id, recipientAccountNumber, reminiscentName } = row;
+                                        return (
+                                            <TableRow hover key={id} tabIndex={-1}>
+                                                <TableCell
+                                                    component="th"
+                                                    scope="row"
+                                                    padding="none"
+                                                    style={{ paddingLeft: '20px' }}
+                                                >
+                                                    <Stack direction="row" alignItems="center" spacing={2}>
+                                                        <Label sx={{ textTransform: 'none' }}>
+                                                            {recipientAccountNumber}
+                                                        </Label>
+                                                    </Stack>
+                                                </TableCell>
+
+                                                <TableCell align="left">
+                                                    <Typography variant="subtitle2" noWrap>
+                                                        {reminiscentName}
+                                                    </Typography>
+                                                </TableCell>
+
+                                                <TableCell align="right">
+                                                    <IconButton
+                                                        size="large"
+                                                        color="inherit"
+                                                        onClick={(e) => handleOpenMenu(e, row)}
                                                     >
-                                                        <Stack direction="row" alignItems="center" spacing={2}>
-                                                            <Tooltip title={recipientAccountName} placement={`top`}>
-                                                                <Avatar>{recipientAccountName[0]}</Avatar>
-                                                            </Tooltip>
-                                                            <Label sx={{ textTransform: 'none' }}>
-                                                                {recipientAccountNumber}
-                                                            </Label>
-                                                        </Stack>
-                                                    </TableCell>
-
-                                                    <TableCell align="left">
-                                                        <Typography variant="subtitle2" noWrap>
-                                                            {reminiscentName}
-                                                        </Typography>
-                                                    </TableCell>
-
-                                                    <TableCell align="right">
-                                                        <IconButton
-                                                            size="large"
-                                                            color="inherit"
-                                                            onClick={(e) => handleOpenMenu(e, row)}
-                                                        >
-                                                            <Iconify icon={'eva:more-vertical-fill'} />
-                                                        </IconButton>
-                                                    </TableCell>
-                                                </TableRow>
-                                            );
-                                        })}
-                                    {emptyRows > 0 && (
-                                        <TableRow style={{ height: 53 * emptyRows }}>
-                                            <TableCell colSpan={6} />
-                                        </TableRow>
-                                    )}
+                                                        <Iconify icon={'eva:more-vertical-fill'} />
+                                                    </IconButton>
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })}
                                 </TableBody>
 
                                 {isNotFound && (
@@ -315,12 +315,12 @@ export default function RecipientAccount() {
                     </Scrollbar>
 
                     <TablePagination
-                        labelRowsPerPage="Dòng trên trang"
+                        labelRowsPerPage="Số dòng"
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
-                        count={listRecipinent.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
+                        count={pagination.totalElements}
+                        rowsPerPage={pagination.size}
+                        page={pagination.page}
                         onPageChange={handleChangePage}
                         onRowsPerPageChange={handleChangeRowsPerPage}
                     />
@@ -363,6 +363,11 @@ export default function RecipientAccount() {
                     <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
                     {DELETE}
                 </MenuItem>
+
+                <MenuItem onClick={handleTransfer}>
+                    <Iconify icon={'mdi:hand-coin'} sx={{ mr: 2 }} />
+                    Chuyển tiền
+                </MenuItem>
             </Popover>
 
             <CustomModal
@@ -393,6 +398,8 @@ export default function RecipientAccount() {
                     <RecipientAccountForm
                         dataForm={modalState.data}
                         isUpdate={isUpdate}
+                        isUseReminderName={useReminderName}
+                        setReminderName={setUserReminderName}
                         handleCreateRecipient={(account, name) => handleCreateRecipient(account, name)}
                         handleUpdateRecipient={(id, account, name) => handleUpdateRecipient(id, account, name)}
                     />

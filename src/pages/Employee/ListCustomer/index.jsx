@@ -1,6 +1,5 @@
-import { filter } from 'lodash';
-import { useEffect, useState } from 'react';
 import {
+    Box,
     Card,
     Container,
     IconButton,
@@ -16,36 +15,37 @@ import {
     TableRow,
     Typography,
 } from '@mui/material';
+import { useConfirm } from 'material-ui-confirm';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import accountAPI from '~/api/accountAPI';
 import HeaderAction from '~/components/HeaderAction';
+import Iconify from '~/components/iconify';
+import Label from '~/components/label';
 import Scrollbar from '~/components/scrollbar';
 import TableListHead from '~/components/Table/TableListHead';
 import TableListToolbar from '~/components/Table/TableListToolbar';
 import { routesConfig } from '~/config/routesConfig';
-import { ROLE_KEY } from '~/constant';
 import { PAGINATION } from '~/constant/pagination';
-import USERS from '~/_mock/user';
-import Iconify from '~/components/iconify';
 
 const TABLE_HEAD = [
     { id: 'name', label: 'Tên', alignRight: false },
     { id: 'email', label: 'Email', alignRight: false },
     { id: 'phone', label: 'Điện thoại', alignRight: false },
     { id: 'accountNumber', label: 'Số tài khoản', alignRight: false },
+    { id: 'status', label: 'Trạng thái', alignRight: false },
     { id: '', label: '', alignRight: false },
 ];
 
 export default function EmployeeListCustomer() {
     const navigate = useNavigate();
 
-    const [page, setPage] = useState(0);
+    const confirm = useConfirm();
 
     const [open, setOpen] = useState(null);
 
     const [filterName, setFilterName] = useState('');
-
-    const [rowsPerPage, setRowsPerPage] = useState(5);
 
     const [rowData, setRowData] = useState({});
 
@@ -57,10 +57,6 @@ export default function EmployeeListCustomer() {
     });
 
     const [accountList, setAccountList] = useState([]);
-
-    const [filterList, setFilterList] = useState([]);
-
-    const isNotFound = !filterList.length && !!filterName;
 
     const handleOpenMenu = (event, row) => {
         setOpen(event.currentTarget);
@@ -87,11 +83,8 @@ export default function EmployeeListCustomer() {
     };
 
     const handleFilterByName = (event) => {
-        setPage(0);
         setFilterName(event.target.value);
     };
-
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERS.length) : 0;
 
     const addCustomer = () => {
         navigate(routesConfig.employeeAddCustomer);
@@ -122,7 +115,7 @@ export default function EmployeeListCustomer() {
         try {
             const res = await accountAPI.getList(payload);
 
-            setAccountList(res.content);
+            setAccountList(res?.content);
 
             const paginationRes = {
                 ...pagination,
@@ -140,6 +133,63 @@ export default function EmployeeListCustomer() {
     useEffect(() => {
         fetchAccountList();
     }, [pagination.page, pagination.size]);
+
+    const handleLockAccount = () => {
+        confirm({
+            description: (
+                <Box component="p">
+                    Bạn có chắc muốn khoá tài khoản{' '}
+                    <Typography component="span" variant="subtitle1">
+                        {rowData?.accountNumber}
+                    </Typography>{' '}
+                    ?
+                </Box>
+            ),
+        })
+            .then(async () => {
+                const result = await accountAPI.lockById(rowData?.id);
+
+                if (result?.status === 200) {
+                    handleCloseMenu();
+                    fetchAccountList();
+
+                    toast.success('Khoá tài khoản thành công');
+                } else {
+                    toast.success('Khoá tài khoản thất bại');
+                }
+            })
+            .catch((error) => {
+                toast.error(error?.message);
+            });
+    };
+
+    const handleUnLockAccount = () => {
+        confirm({
+            description: (
+                <Box component="p">
+                    Bạn có chắc muốn mở khoá tài khoản{' '}
+                    <Typography component="span" variant="subtitle1">
+                        {rowData?.accountNumber}
+                    </Typography>{' '}
+                    ?
+                </Box>
+            ),
+        })
+            .then(async () => {
+                const result = await accountAPI.unLockById(rowData?.id);
+                if (result?.status === 200) {
+                    handleCloseMenu();
+                    fetchAccountList();
+
+                    toast.success('Mở khoá tài khoản thành công');
+                } else {
+                    toast.success('Mở khoá tài khoản thất bại');
+                }
+            })
+            .catch((error) => {
+                toast.error(error?.message);
+            });
+    };
 
     return (
         <>
@@ -162,12 +212,11 @@ export default function EmployeeListCustomer() {
                                 <TableListHead
                                     isShowCheckBox={false}
                                     headLabel={TABLE_HEAD}
-                                    rowCount={accountList.length}
+                                    rowCount={accountList?.length}
                                 />
                                 <TableBody>
-                                    {accountList.map((row) => {
-                                        const { fullName, phoneNumber, email, accountNumber } = row;
-
+                                    {accountList?.map((row) => {
+                                        const { fullName, phoneNumber, email, accountNumber, status } = row;
                                         return (
                                             <TableRow hover key={phoneNumber}>
                                                 <TableCell component="th" scope="row" align="left">
@@ -196,6 +245,16 @@ export default function EmployeeListCustomer() {
                                                     </Typography>
                                                 </TableCell>
 
+                                                <TableCell align="left">
+                                                    <Label
+                                                        sx={{ cursor: 'pointer' }}
+                                                        style={{}}
+                                                        color={status ? 'success' : 'error'}
+                                                    >
+                                                        {status ? 'Đang hoạt động' : 'Bị khoá'}
+                                                    </Label>
+                                                </TableCell>
+
                                                 <TableCell align="right">
                                                     <IconButton
                                                         size="large"
@@ -208,14 +267,9 @@ export default function EmployeeListCustomer() {
                                             </TableRow>
                                         );
                                     })}
-                                    {emptyRows > 0 && (
-                                        <TableRow style={{ height: 53 * emptyRows }}>
-                                            <TableCell colSpan={6} />
-                                        </TableRow>
-                                    )}
                                 </TableBody>
 
-                                {isNotFound && (
+                                {!accountList?.length && (
                                     <TableBody>
                                         <TableRow>
                                             <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
@@ -225,13 +279,7 @@ export default function EmployeeListCustomer() {
                                                     }}
                                                 >
                                                     <Typography variant="h6" paragraph>
-                                                        Not found
-                                                    </Typography>
-
-                                                    <Typography variant="body2">
-                                                        No results found for &nbsp;
-                                                        <strong>&quot;{filterName}&quot;</strong>.
-                                                        <br /> Try checking for typos or using complete words.
+                                                        Không tồn tại dữ liệu
                                                     </Typography>
                                                 </Paper>
                                             </TableCell>
@@ -280,6 +328,15 @@ export default function EmployeeListCustomer() {
                 <MenuItem onClick={handleShowHistory}>
                     <Iconify icon={'icon-park-outline:transaction-order'} sx={{ mr: 2 }} />
                     Lịch sử giao dịch
+                </MenuItem>
+
+                <MenuItem onClick={handleUnLockAccount}>
+                    <Iconify icon={'mdi:account-lock-open-outline'} sx={{ mr: 2 }} />
+                    Mở khoá tài khoản
+                </MenuItem>
+                <MenuItem onClick={handleLockAccount}>
+                    <Iconify icon={'mdi:account-lock-outline'} sx={{ mr: 2 }} />
+                    Khoá tài khoản
                 </MenuItem>
             </Popover>
         </>

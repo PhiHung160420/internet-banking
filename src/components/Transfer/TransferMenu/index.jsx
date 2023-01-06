@@ -11,6 +11,7 @@ function TransferMenu({ selected, setSelected }) {
                 border: '1px solid black',
                 borderRadius: 2,
             }}
+            mt={4}
         >
             <List
                 sx={{ color: 'text.primary', bgcolor: 'action.selected' }}

@@ -7,6 +7,8 @@ import TransferMenu from '~/components/Transfer/TransferMenu';
 import TransferInfo from '~/components/Transfer/TransferInfo';
 import TransferCheck from '~/components/Transfer/TransferCheck';
 import TransferOTP from '~/components/Transfer/TransferOTP';
+import { useDispatch } from 'react-redux';
+import { actResetTransfer } from '~/store/action/transferAction';
 
 function TransferPage() {
     const [selected, setSelected] = useState(menuTransfer[0].type);
@@ -26,8 +28,11 @@ function TransferPage() {
         }
     };
 
+    const dispatch = useDispatch();
+
     useEffect(() => {
         setStep(1);
+        dispatch(actResetTransfer());
     }, [selected]);
 
     return (

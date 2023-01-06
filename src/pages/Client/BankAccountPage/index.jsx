@@ -1,35 +1,34 @@
-import { filter } from 'lodash';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 // @mui
 import {
+    Box,
     Card,
-    Table,
-    Stack,
-    Paper,
-    Avatar,
-    Popover,
-    Checkbox,
-    TableRow,
+    Container,
+    IconButton,
     MenuItem,
+    Paper,
+    Popover,
+    Stack,
+    Table,
     TableBody,
     TableCell,
-    Container,
-    Typography,
-    IconButton,
     TableContainer,
     TablePagination,
-    Box,
+    TableRow,
+    Typography,
 } from '@mui/material';
 
-import USERLIST from '~/_mock/user';
-import Iconify from '~/components/iconify';
-import Scrollbar from '~/components/scrollbar';
-import Label from '~/components/label';
-import TableListHead from '~/components/Table/TableListHead';
-import TableListToolbar from '~/components/Table/TableListToolbar';
-import HeaderAction from '~/components/HeaderAction';
 import { useConfirm } from 'material-ui-confirm';
 import { useSnackbar } from 'notistack';
+import accountAPI from '~/api/accountAPI';
+import HeaderAction from '~/components/HeaderAction';
+import Iconify from '~/components/iconify';
+import Label from '~/components/label';
+import Scrollbar from '~/components/scrollbar';
+import TableListHead from '~/components/Table/TableListHead';
+import TableListToolbar from '~/components/Table/TableListToolbar';
+import { PAGINATION } from '~/constant/pagination';
+import { toast } from 'react-toastify';
 
 const TABLE_HEAD = [
     { id: 'name', label: 'Tài khoản', alignRight: false },
@@ -38,49 +37,19 @@ const TABLE_HEAD = [
     { id: '' },
 ];
 
-function descendingComparator(a, b, orderBy) {
-    if (b[orderBy] < a[orderBy]) {
-        return -1;
-    }
-    if (b[orderBy] > a[orderBy]) {
-        return 1;
-    }
-    return 0;
-}
-
-function getComparator(order, orderBy) {
-    return order === 'desc'
-        ? (a, b) => descendingComparator(a, b, orderBy)
-        : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function applySortFilter(array, comparator, query) {
-    const stabilizedThis = array.map((el, index) => [el, index]);
-    stabilizedThis.sort((a, b) => {
-        const order = comparator(a[0], b[0]);
-        if (order !== 0) return order;
-        return a[1] - b[1];
-    });
-    if (query) {
-        return filter(array, (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
-    }
-    return stabilizedThis.map((el) => el[0]);
-}
-
 export default function BankAccountPage() {
     const [open, setOpen] = useState(null);
 
-    const [page, setPage] = useState(0);
-
-    const [order, setOrder] = useState('asc');
-
-    const [selected, setSelected] = useState([]);
-
-    const [orderBy, setOrderBy] = useState('name');
-
     const [filterName, setFilterName] = useState('');
 
-    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [accounts, setAccounts] = useState([]);
+
+    const [pagination, setPagination] = useState({
+        page: PAGINATION.PAGE,
+        size: PAGINATION.SIZE,
+        totalElements: 10,
+        totalPages: 1,
+    });
 
     const handleOpenMenu = (event) => {
         setOpen(event.currentTarget);
@@ -90,55 +59,24 @@ export default function BankAccountPage() {
         setOpen(null);
     };
 
-    const handleRequestSort = (event, property) => {
-        const isAsc = orderBy === property && order === 'asc';
-        setOrder(isAsc ? 'desc' : 'asc');
-        setOrderBy(property);
-    };
-
-    const handleSelectAllClick = (event) => {
-        if (event.target.checked) {
-            const newSelecteds = USERLIST.map((n) => n.name);
-            setSelected(newSelecteds);
-            return;
-        }
-        setSelected([]);
-    };
-
-    const handleClick = (event, name) => {
-        const selectedIndex = selected.indexOf(name);
-        let newSelected = [];
-        if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, name);
-        } else if (selectedIndex === 0) {
-            newSelected = newSelected.concat(selected.slice(1));
-        } else if (selectedIndex === selected.length - 1) {
-            newSelected = newSelected.concat(selected.slice(0, -1));
-        } else if (selectedIndex > 0) {
-            newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
-        }
-        setSelected(newSelected);
-    };
-
     const handleChangePage = (event, newPage) => {
-        setPage(newPage);
+        setPagination((prev) => ({
+            ...prev,
+            page: newPage,
+        }));
     };
 
     const handleChangeRowsPerPage = (event) => {
-        setPage(0);
-        setRowsPerPage(parseInt(event.target.value, 10));
+        setPagination((prev) => ({
+            ...prev,
+            page: 0,
+            size: event.target.value,
+        }));
     };
 
     const handleFilterByName = (event) => {
-        setPage(0);
         setFilterName(event.target.value);
     };
-
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
-
-    const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
-
-    const isNotFound = !filteredUsers.length && !!filterName;
 
     const confirm = useConfirm();
     const { enqueueSnackbar } = useSnackbar();
@@ -161,10 +99,87 @@ export default function BankAccountPage() {
                 });
             })
             .catch(() => {
-                /* ... */
                 enqueueSnackbar('Thay đổi tài khoản thanh toán thất bại', {
                     variant: 'error',
                 });
+            });
+    };
+
+    const fetchAccounts = async () => {
+        try {
+            const res = await accountAPI.getMyAccounts();
+
+            setAccounts([{ ...res }]);
+
+            // const paginationRes = {
+            //     ...pagination,
+            //     page: res?.pageable?.pageNumber,
+            //     totalElements: res?.totalElements,
+            //     totalPages: res?.totalPages,
+            // };
+            // setPagination(paginationRes);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    useEffect(() => {
+        fetchAccounts();
+    }, []);
+
+    const handleLockAccount = () => {
+        confirm({
+            description: (
+                <Box component="p">
+                    Bạn có chắc muốn khoá tài khoản{' '}
+                    <Typography component="span" variant="subtitle1">
+                        {accounts[0]?.accountNumber}
+                    </Typography>{' '}
+                    ?
+                </Box>
+            ),
+        })
+            .then(async () => {
+                const result = await accountAPI.lockById(accounts[0]?.id);
+
+                if (result?.status === 200) {
+                    handleCloseMenu();
+                    fetchAccounts();
+                    toast.success('Khoá tài khoản thành công');
+                } else {
+                    toast.success('Khoá tài khoản thất bại');
+                }
+            })
+            .catch((error) => {
+                toast.error(error?.message);
+            });
+    };
+
+    const handleUnLockAccount = () => {
+        confirm({
+            description: (
+                <Box component="p">
+                    Bạn có chắc muốn mở khoá tài khoản{' '}
+                    <Typography component="span" variant="subtitle1">
+                        {accounts[0]?.accountNumber}
+                    </Typography>{' '}
+                    ?
+                </Box>
+            ),
+        })
+            .then(async () => {
+                const result = await accountAPI.lockById(accounts[0]?.id);
+
+                if (result?.status === 200) {
+                    handleCloseMenu();
+                    fetchAccounts();
+                    toast.success('Mở khoá tài khoản thành công');
+                } else {
+                    toast.success('Mở khoá tài khoản thất bại');
+                }
+            })
+            .catch((error) => {
+                toast.error(error?.message);
             });
     };
 
@@ -178,94 +193,51 @@ export default function BankAccountPage() {
                 />
 
                 <Card>
-                    <TableListToolbar
-                        numSelected={selected.length}
-                        filterName={filterName}
-                        onFilterName={handleFilterByName}
-                    />
+                    <TableListToolbar filterName={filterName} onFilterName={handleFilterByName} />
 
                     <Scrollbar>
                         <TableContainer sx={{ minWidth: 800 }}>
                             <Table>
-                                <TableListHead
-                                    order={order}
-                                    orderBy={orderBy}
-                                    headLabel={TABLE_HEAD}
-                                    rowCount={USERLIST.length}
-                                    numSelected={selected.length}
-                                    onRequestSort={handleRequestSort}
-                                    onSelectAllClick={handleSelectAllClick}
-                                />
+                                <TableListHead isShowCheckBox={false} headLabel={TABLE_HEAD} />
                                 <TableBody>
-                                    {filteredUsers
-                                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                        .map((row) => {
-                                            const { id, name, status, avatarUrl, balance } = row;
-                                            const selectedUser = selected.indexOf(name) !== -1;
+                                    {accounts?.map((row) => {
+                                        const { id, accountNumber, type, balance } = row;
 
-                                            return (
-                                                <TableRow
-                                                    hover
-                                                    key={id}
-                                                    tabIndex={-1}
-                                                    role="checkbox"
-                                                    selected={selectedUser}
-                                                >
-                                                    <TableCell padding="checkbox">
-                                                        <Checkbox
-                                                            checked={selectedUser}
-                                                            onChange={(event) => handleClick(event, name)}
-                                                        />
-                                                    </TableCell>
+                                        return (
+                                            <TableRow hover key={id} tabIndex={-1} role="">
+                                                <TableCell component="th" scope="row" padding="left">
+                                                    <Stack direction="row" alignItems="center">
+                                                        <Typography variant="subtitle2" noWrap>
+                                                            {accountNumber}
+                                                        </Typography>
+                                                    </Stack>
+                                                </TableCell>
+                                                <TableCell align="left">
+                                                    <Label sx={{ textTransform: 'none' }}>{balance}</Label>
+                                                </TableCell>
+                                                <TableCell align="left">
+                                                    <Label
+                                                        sx={{ textTransform: 'none', cursor: 'pointer' }}
+                                                        color={(type === 'PAYMENT' && 'success') || 'error'}
+                                                        onClick={() => handleConfirm(accountNumber)}
+                                                    >
+                                                        {type === 'PAYMENT'
+                                                            ? 'Tài khoản thanh toán'
+                                                            : 'Tài khoản thường'}
+                                                    </Label>
+                                                </TableCell>
 
-                                                    <TableCell component="th" scope="row" padding="none">
-                                                        <Stack direction="row" alignItems="center" spacing={2}>
-                                                            <Avatar alt={name} src={avatarUrl} />
-                                                            <Typography variant="subtitle2" noWrap>
-                                                                {name}
-                                                            </Typography>
-                                                        </Stack>
-                                                    </TableCell>
-                                                    <TableCell align="left">
-                                                        <Label
-                                                            sx={{ textTransform: 'none' }}
-                                                            // color={(status === 'banned' && 'error') || 'success'}
-                                                        >
-                                                            {balance}
-                                                        </Label>
-                                                    </TableCell>
-                                                    <TableCell align="left">
-                                                        <Label
-                                                            sx={{ textTransform: 'none', cursor: 'pointer' }}
-                                                            color={(status === 'banned' && 'error') || 'success'}
-                                                            onClick={() => handleConfirm(name)}
-                                                        >
-                                                            {status === 'banned'
-                                                                ? 'Tài khoản thường'
-                                                                : 'Tài khoản thanh toán'}
-                                                        </Label>
-                                                    </TableCell>
-
-                                                    <TableCell align="right">
-                                                        <IconButton
-                                                            size="large"
-                                                            color="inherit"
-                                                            onClick={handleOpenMenu}
-                                                        >
-                                                            <Iconify icon={'eva:more-vertical-fill'} />
-                                                        </IconButton>
-                                                    </TableCell>
-                                                </TableRow>
-                                            );
-                                        })}
-                                    {emptyRows > 0 && (
-                                        <TableRow style={{ height: 53 * emptyRows }}>
-                                            <TableCell colSpan={6} />
-                                        </TableRow>
-                                    )}
+                                                <TableCell align="right">
+                                                    <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
+                                                        <Iconify icon={'eva:more-vertical-fill'} />
+                                                    </IconButton>
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })}
                                 </TableBody>
 
-                                {isNotFound && (
+                                {!accounts?.length && (
                                     <TableBody>
                                         <TableRow>
                                             <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
@@ -274,14 +246,8 @@ export default function BankAccountPage() {
                                                         textAlign: 'center',
                                                     }}
                                                 >
-                                                    <Typography variant="h6" paragraph>
-                                                        Not found
-                                                    </Typography>
-
-                                                    <Typography variant="body2">
-                                                        No results found for &nbsp;
-                                                        <strong>&quot;{filterName}&quot;</strong>.
-                                                        <br /> Try checking for typos or using complete words.
+                                                    <Typography variant="subtitle1" paragraph>
+                                                        Không tồn tại dữ liệu
                                                     </Typography>
                                                 </Paper>
                                             </TableCell>
@@ -293,12 +259,12 @@ export default function BankAccountPage() {
                     </Scrollbar>
 
                     <TablePagination
-                        labelRowsPerPage="Dòng trên trang"
+                        labelRowsPerPage="Số dòng"
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
-                        count={USERLIST.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
+                        count={pagination.totalElements}
+                        rowsPerPage={pagination.size}
+                        page={pagination.page}
                         onPageChange={handleChangePage}
                         onRowsPerPageChange={handleChangeRowsPerPage}
                     />
@@ -314,7 +280,7 @@ export default function BankAccountPage() {
                 PaperProps={{
                     sx: {
                         p: 1,
-                        width: 140,
+                        width: 180,
                         '& .MuiMenuItem-root': {
                             px: 1,
                             typography: 'body2',
@@ -323,14 +289,14 @@ export default function BankAccountPage() {
                     },
                 }}
             >
-                <MenuItem>
-                    <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-                    Edit
+                <MenuItem onClick={handleLockAccount}>
+                    <Iconify icon={'mdi:account-lock'} sx={{ mr: 2 }} />
+                    Khoá tài khoản
                 </MenuItem>
 
-                <MenuItem sx={{ color: 'error.main' }}>
-                    <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-                    Delete
+                <MenuItem onClick={handleUnLockAccount}>
+                    <Iconify icon={'mdi:account-lock-open'} sx={{ mr: 2 }} />
+                    Mở khoá tài khoản
                 </MenuItem>
             </Popover>
         </>
