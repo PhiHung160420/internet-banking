@@ -49,9 +49,9 @@ export default function LoginForm() {
 
     const onSubmit = async (data) => {
         try {
-            if (!capchaValue) {
-                return toast.error('Capcha không đúng');
-            }
+            // if (!capchaValue) {
+            //     return toast.error('Capcha không đúng');
+            // }
             const { email, password } = data;
             const res = await authAPI.login({ email, password });
 

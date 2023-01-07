@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { transactionAPI } from '~/api/transactionAPI';
 import { actResetTransfer } from '~/store/action/transferAction';
-import { handleMaskValue } from '~/utils/format';
+import { handleMaskValue, handleParseMask } from '~/utils/format';
 import TransferAccountInfo from '../TransferAccountInfo';
 
 function TransferCheck({ setStep }) {
@@ -15,7 +15,7 @@ function TransferCheck({ setStep }) {
         const body = {
             email: authInfo.email,
             recipientAccountNumber: transfer.account,
-            amount: transfer.amount,
+            amount: handleParseMask(transfer.amount),
             content: transfer.note,
             internal: true,
             type: 'TRANSFER',

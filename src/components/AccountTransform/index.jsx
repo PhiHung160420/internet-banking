@@ -15,7 +15,7 @@ import RecipientAccountForm from '../forms/RecipientAccount';
 import InputField from '../modules/form/InputField';
 import RecipientList from '../RecipientList';
 
-function AccountTransform({ control, name, watch, isUpdate, openModal, setValueForm }) {
+function AccountTransform({ control, name, watch, isUpdate, openModal, setValueForm, rules }) {
     //onGetAccountInfo is function get Account info when callAPi get info success
     const location = useLocation();
 
@@ -115,6 +115,7 @@ function AccountTransform({ control, name, watch, isUpdate, openModal, setValueF
                         </Tooltip>
                     ),
                 }}
+                rules={rules}
             />
             {account_info?.fullname && (
                 <TextField
