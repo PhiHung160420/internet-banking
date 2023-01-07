@@ -8,7 +8,7 @@ function CustomModal({ open, setOpen, title, closeModalFunc, children, ...props 
     };
     return (
         <Dialog open={open} onClose={handleClose} fullWidth maxWidth={'xs'} {...props}>
-            <DialogTitle>{title}</DialogTitle>
+            <DialogTitle textAlign={'center'}>{title}</DialogTitle>
             <DialogContent>{children}</DialogContent>
         </Dialog>
     );

@@ -23,7 +23,7 @@ const SetTransform = createTransform(
     },
 
     // định nghĩa reducer nào sẽ áp dụng transform này.
-    { whitelist: ['authReducer'], blacklist: ['transferReducer'] },
+    { whitelist: ['authReducer'], blacklist: ['transferReducer', 'authReducer'] },
 );
 
 const persistConfig = {

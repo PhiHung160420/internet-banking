@@ -1,12 +1,25 @@
 import { Avatar, Card, CardHeader, IconButton, Stack, Typography } from '@mui/material';
+import { useState } from 'react';
 import { MdMoreVert } from 'react-icons/md';
 import { useSelector } from 'react-redux';
+import AccountList from '~/components/AccountList';
+import CustomModal from '~/components/CustomModal';
 
 import TransferForm from '~/components/forms/TransferForm';
 import { handleMaskValue } from '~/utils/format';
 
 function TransferInfo({ selected, setStep }) {
     const { authInfo } = useSelector((state) => state.authReducer);
+    const [open, setOpen] = useState(false);
+
+    const [accountInfo, setAccountInfo] = useState(authInfo);
+
+    const handleSelectAccount = (account) => {
+        if (account) {
+            setAccountInfo(account);
+        }
+        setOpen(false);
+    };
     return (
         <Stack gap={2} p={4}>
             <Card>
@@ -14,7 +27,7 @@ function TransferInfo({ selected, setStep }) {
                     sx={{ p: 3 }}
                     avatar={<Avatar aria-label="recipe">R</Avatar>}
                     action={
-                        <IconButton sx={{ display: 'flex' }} aria-label="settings">
+                        <IconButton sx={{ display: 'flex' }} aria-label="settings" onClick={() => setOpen(true)}>
                             <MdMoreVert sx={{ alignItems: 'center' }} />
                         </IconButton>
                     }
@@ -24,9 +37,9 @@ function TransferInfo({ selected, setStep }) {
                                 Nguồn tiền
                             </Typography>
                             <Typography sx={{ fontWeight: 500 }} variant="subtitle2">
-                                {authInfo.accountNumber}
+                                {accountInfo?.accountNumber}
                             </Typography>
-                            <Typography variant="h5">{handleMaskValue(authInfo?.balance)} VND</Typography>
+                            <Typography variant="h5">{handleMaskValue(accountInfo?.balance)} VND</Typography>
                         </Stack>
                     }
                 />
@@ -35,6 +48,10 @@ function TransferInfo({ selected, setStep }) {
             <Typography ml={2} variant="h5" component="h5">
                 CHUYỂN TIỀN ĐẾN
             </Typography>
+
+            <CustomModal title={'Chọn tài khoản thanh toán'} open={open} setOpen={(value) => setOpen(value)}>
+                <AccountList onSelectAccount={handleSelectAccount} />
+            </CustomModal>
 
             <Card sx={{ p: 3 }}>
                 <TransferForm selected={selected} setStep={setStep} />
