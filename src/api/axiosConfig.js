@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { parse, stringify } from 'qs';
-import { ACCESS_TOKEN_KEY, API_SERVER_URL, REFRESH_TOKEN_KEY } from '~/constant';
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '~/constant';
 import { clearStorage } from '~/utils/storage';
 import { authAPI } from './authAPI';
 

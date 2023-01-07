@@ -39,7 +39,7 @@ function TransferInfo({ selected, setStep }) {
                             <Typography sx={{ fontWeight: 500 }} variant="subtitle2">
                                 {accountInfo?.accountNumber}
                             </Typography>
-                            <Typography variant="h5">{handleMaskValue(accountInfo?.balance)} VND</Typography>
+                            <Typography variant="h5">{handleMaskValue(accountInfo?.balance)} VNĐ</Typography>
                         </Stack>
                     }
                 />
