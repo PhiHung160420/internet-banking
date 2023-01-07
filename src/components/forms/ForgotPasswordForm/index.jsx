@@ -38,26 +38,34 @@ export default function ForgotPasswordForm() {
                       .oneOf([yup.ref('password')], 'Mật khẩu nhập lại không chính xác'),
     });
 
-    const { control, handleSubmit } = useForm({
+    const { control, handleSubmit, getValues } = useForm({
         defaultValues: { email: '', password: '' },
         resolver: yupResolver(schema),
     });
+
+    const sendOTP = async (email) => {
+        try {
+            const result = await authAPI.sendOtpForgotPw(email);
+            if (result) {
+                toast.success('Mã OTP đã được gửi đến Email');
+                return setFormState(FORGOT_PW_STATE.ENTER_OTP);
+            } else {
+                toast.error(result?.message || 'Xử lí tác vụ thất bại');
+            }
+        } catch (error) {
+            toast.error(error?.message || 'Gửi OTP thất bại');
+        }
+    };
 
     const onSubmit = async (data) => {
         try {
             const { email, password } = data;
             if (formState === FORGOT_PW_STATE.SEND_EMAIL) {
-                const result = await authAPI.sendOtpForgotPw(email);
-                if (result) {
-                    toast.success('Mã OTP đã được gửi đến Email');
-                    return setFormState(FORGOT_PW_STATE.ENTER_OTP);
-                } else {
-                    toast.error(result?.message || 'Xử lí tác vụ thất bại');
-                }
+                await sendOTP(email);
             }
 
             if (formState === FORGOT_PW_STATE.ENTER_OTP) {
-                const result = await authAPI.submitForgotPw(otpValue, { password, email });
+                const result = await authAPI.submitForgotPw(otpValue, { newPassword: password, email });
                 if (result) {
                     toast.success('Đổi mật khẩu thành công');
                     return navigate('/login');
@@ -94,6 +102,12 @@ export default function ForgotPasswordForm() {
                             name="otp"
                             numInputs={6}
                         />
+                        <div
+                            style={{ textAlign: 'right', color: '#2165D1', cursor: 'pointer' }}
+                            onClick={() => sendOTP(getValues('email'))}
+                        >
+                            Gửi lại OTP
+                        </div>
                         <InputField
                             fullWidth
                             label="Mật khẩu"

@@ -6,34 +6,22 @@ import {
     Table,
     Stack,
     Paper,
-    Avatar,
     Popover,
-    Checkbox,
     TableRow,
     MenuItem,
     TableBody,
     TableCell,
     Container,
     Typography,
-    IconButton,
     TableContainer,
     TablePagination,
-    Box,
 } from '@mui/material';
-
-// sections
-// mock
 import USERS from '~/_mock/user';
 import Iconify from '~/components/iconify';
 import Scrollbar from '~/components/scrollbar';
-import Label from '~/components/label';
 import TableListHead from '~/components/Table/TableListHead';
 import TableListToolbar from '~/components/Table/TableListToolbar';
 import HeaderAction from '~/components/HeaderAction';
-import { routesConfig } from '~/config/routesConfig';
-import { useNavigate } from 'react-router-dom';
-import { useConfirm } from 'material-ui-confirm';
-import { useSnackbar } from 'notistack';
 
 const TABLE_HEAD = [
     { id: 'name', label: 'Người chuyển', alignRight: false },
@@ -73,24 +61,13 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function ListTransaction() {
-    const navigate = useNavigate();
-
     const [open, setOpen] = useState(null);
-
     const [page, setPage] = useState(0);
-
     const [order, setOrder] = useState('asc');
-
     const [orderBy, setOrderBy] = useState('name');
-
     const [filterName, setFilterName] = useState('');
-
     const [rowsPerPage, setRowsPerPage] = useState(5);
-
-    const handleOpenMenu = (event) => {
-        setOpen(event.currentTarget);
-    };
-
+    
     const handleCloseMenu = () => {
         setOpen(null);
     };
@@ -149,7 +126,6 @@ export default function ListTransaction() {
                                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                         .map((row) => {
                                             const { id, name, status, avatarUrl, balance } = row;
-
                                             return (
                                                 <TableRow hover key={id}>
                                                     <TableCell align="left">

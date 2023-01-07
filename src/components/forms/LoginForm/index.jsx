@@ -66,7 +66,7 @@ export default function LoginForm() {
                     navigate(routesConfig.employeeListCustomer);
                 } else if (res?.role === ROLE_ADMIN) {
                     localStorage.setItem(ROLE_KEY, ROLE_ADMIN);
-                    navigate(routesConfig.dashboard);
+                    navigate(routesConfig.employees);
                 }
                 await getAccountInfo();
                 toast.success('Đăng nhập thành công');

@@ -39,7 +39,6 @@ export const privateRoutes = [
 ];
 
 export const adminRoutes = [
-    { path: routesConfig.dashboard, element: AdminPage },
     { path: routesConfig.employees, element: ListEmployee },
     { path: routesConfig.addEmployee, element: AddEmployee },
     { path: routesConfig.updateEmployee, element: UpdateEmployee },

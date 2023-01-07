@@ -38,7 +38,7 @@ export const routesConfig = {
 
 export const DEFAULT_ROUTES =
     localStorage.getItem(ROLE_KEY) === ROLE_ADMIN
-        ? routesConfig.dashboard
+        ? routesConfig.employees
         : localStorage.getItem(ROLE_KEY) === ROLE_EMPLOYEE
         ? routesConfig.employeeListCustomer
         : routesConfig.customerBankAcc;

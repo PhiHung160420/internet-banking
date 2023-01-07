@@ -52,12 +52,6 @@ const navCustomer = [
 
 const navAdmin = [
     {
-        id: 'Dashboard',
-        title: 'Tổng quan',
-        path: routesConfig.dashboard,
-        icon: <RxDashboard {...styledIcon} />,
-    },
-    {
         id: 'Customers',
         title: 'Danh sách nhân viên',
         path: routesConfig.employees,
