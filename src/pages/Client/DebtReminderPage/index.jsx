@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import {
     Box,
     Card,
+    Chip,
     Container,
     IconButton,
     MenuItem,
@@ -39,6 +40,7 @@ const TABLE_HEAD = [
     { id: 'debtAccountNumber', label: 'Số tài khoản', alignRight: false },
     { id: 'amount', label: 'Số tiền', alignRight: false },
     { id: 'content', label: 'Nội dung', width: 300 },
+    { id: 'status', label: 'Trạng thái' },
     { id: 'createdAt', label: 'Ngày tạo' },
     { id: '', label: 'Thao tác', alignRight: true },
 ];
@@ -192,7 +194,7 @@ export default function DebtReminderPage() {
             }
             return toast.error('Huỷ nhắc nợ thất bại');
         } catch (error) {
-            return toast.error('Huỷ nhắc nợ thất bại');
+            return toast.error(error?.message || 'Huỷ nhắc nợ thất bại');
         }
     };
 
@@ -224,7 +226,7 @@ export default function DebtReminderPage() {
                                     {listDebtReminder
                                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                         .map((row) => {
-                                            const { id, debtAccountNumber, content, amount, createdAt } = row;
+                                            const { id, debtAccountNumber, content, amount, createdAt, status } = row;
                                             return (
                                                 <TableRow key={id} tabIndex={-1}>
                                                     <TableCell align="left">
@@ -244,7 +246,15 @@ export default function DebtReminderPage() {
                                                             {content}
                                                         </Typography>
                                                     </TableCell>
-
+                                                    <TableCell align="left">
+                                                        <Typography variant="subtitle2" maxWidth={200}>
+                                                            {status === 'PAID' ? (
+                                                                <Chip label="Đã thanh toán" color="primary" />
+                                                            ) : (
+                                                                <Chip label="Chưa thanh toán" />
+                                                            )}
+                                                        </Typography>
+                                                    </TableCell>
                                                     <TableCell align="left">
                                                         <Typography variant="subtitle2" noWrap>
                                                             {dateTimeConverter(createdAt)}

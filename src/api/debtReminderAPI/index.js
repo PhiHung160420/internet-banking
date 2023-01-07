@@ -17,4 +17,19 @@ export const debtRemindersAPI = {
         const response = await axiosConfig.post(`${URL}/cancellation/${debtReminderId}`, { ...body });
         return response;
     },
+
+    getDebtDetail: async (debtId) => {
+        const response = await axiosConfig.get(`${URL}/${debtId}`);
+        return response;
+    },
+
+    getPaymentOtp: async (debtId) => {
+        const response = await axiosConfig.post(`${URL}/payment/${debtId}`);
+        return response;
+    },
+
+    confirmOtp: async (otpValue) => {
+        const response = await axiosConfig.post(`${URL}/payment/validate/${otpValue}`)
+        return response
+    }
 };

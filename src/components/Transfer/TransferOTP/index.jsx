@@ -13,33 +13,6 @@ function TransferOTP({ setStep }) {
         setOtpValue(otp);
     };
 
-    const { transfer } = useSelector((state) => state.transferReducer);
-
-    const { authInfo } = useSelector((state) => state.authReducer);
-    console.log(authInfo);
-
-    console.log(transfer);
-
-    const transactionSubmit = async () => {
-        const body = {
-            email: authInfo.email,
-            recipientAccountNumber: transfer.account,
-            amount: transfer.amount,
-            content: transfer.note,
-            internal: true,
-            type: 'TRANSFER',
-        };
-        try {
-            const res = await transactionAPI.transfer(body);
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-    useEffect(() => {
-        transactionSubmit();
-    }, []);
-
     return (
         <Stack justifyContent={'center'} alignItems="center">
             <Stack textAlign={'center'}>

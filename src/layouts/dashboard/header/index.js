@@ -56,7 +56,7 @@ export default function Header({ onOpenNav }) {
                     <Iconify icon="eva:menu-2-fill" />
                 </IconButton>
 
-                <Searchbar />
+                {/* <Searchbar /> */}
 
                 <Box sx={{ flexGrow: 1 }} />
 
@@ -68,7 +68,7 @@ export default function Header({ onOpenNav }) {
                         sm: 1,
                     }}
                 >
-                    {IS_ADMIN || IS_EMPLOYEE ? null : <NotificationsPopover />}
+                    {/* {IS_ADMIN || IS_EMPLOYEE ? null : <NotificationsPopover />} */}
                     <AccountPopover />
                 </Stack>
             </StyledToolbar>

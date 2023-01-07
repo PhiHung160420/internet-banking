@@ -1,6 +1,8 @@
 import { Box, Button, Card, Divider, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import { transactionAPI } from '~/api/transactionAPI';
 import { handleMaskValue } from '~/utils/format';
 import TransferAccountInfo from '../TransferAccountInfo';
 
@@ -8,9 +10,27 @@ function TransferCheck({ setStep }) {
     const { transfer, account_info } = useSelector((state) => state.transferReducer);
     const { authInfo } = useSelector((state) => state.authReducer);
 
-    const handleSubmitCheck = () => {
-        setStep(3);
+    const handleSubmitCheck = async () => {
+        const body = {
+            email: authInfo.email,
+            recipientAccountNumber: transfer.account,
+            amount: transfer.amount,
+            content: transfer.note,
+            internal: true,
+            type: 'TRANSFER',
+        };
+        try {
+            const res = await transactionAPI.transfer(body);
+            if (res) {
+                toast.success('Mã OTP đã được gửi đến email');
+                return setStep(3);
+            }
+            return toast.error(res?.message || 'Chuyển khoản thất bại');
+        } catch (error) {
+            toast.error(error?.message || 'Chuyển khoản thất bại');
+        }
     };
+    
     return (
         <Stack flexDirection={'row'}>
             <Box flex={1} textAlign="center">
