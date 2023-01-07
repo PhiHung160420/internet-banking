@@ -184,6 +184,10 @@ export default function DebtReminderPage() {
             if (result?.status === 200) {
                 setReasonModal({ reason: '', status: false });
                 getListDebtReminder();
+                setModalState((prev) => ({
+                    data: {},
+                    open: false,
+                }));
                 return toast.success('Huỷ nhắc nợ thành công');
             }
             return toast.error('Huỷ nhắc nợ thất bại');
@@ -191,46 +195,6 @@ export default function DebtReminderPage() {
             return toast.error('Huỷ nhắc nợ thất bại');
         }
     };
-
-    // const handleConfirm = (fullname) => {
-    //     confirm({
-    //         description: (
-    //             <Box component="p">
-    //                 Xóa nhắc nợ này sẽ gửi thông báo đến{' '}
-    //                 <Typography component="span" variant="h5">
-    //                     {fullname}
-    //                 </Typography>{' '}
-    //                 bạn có chắc chắn thực hiện?
-
-    //                 <TextField
-    //                     name="reason"
-    //                     label="Lí do huỷ"
-    //                     value={cancelReason}
-    //                     onChange={(event) => {
-    //                         setCancelReason(event.target.value);
-    //                     }}
-    //                     multiline
-    //                     rows={4}
-    //                 />
-    //             </Box>
-    //         ),
-    //     })
-    //         .then(async () => {
-    //             console.log('modalState >>>> ', modalState);
-    //             // const result = await debtRemindersAPI.cancelDebt(modalState?.data?.id, {
-
-    //             // })
-    //             // enqueueSnackbar('Xóa thành công, thông báo đã được gửi!', {
-    //             //     variant: 'success',
-    //             // });
-    //         })
-    //         .catch(() => {
-    //             /* ... */
-    //             enqueueSnackbar('Xóa thất bại', {
-    //                 variant: 'error',
-    //             });
-    //         });
-    // };
 
     return (
         <>
