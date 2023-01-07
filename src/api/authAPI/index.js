@@ -22,7 +22,12 @@ export const authAPI = {
     },
 
     sendOtpForgotPw: async (email) => {
-        const response = await axiosConfig.post(`/users/forgot-password`, { email });
+        const response = await axiosConfig.post(`/users/forgot-password?email=${email}`);
+        return response;
+    },
+
+    submitForgotPw: async (otpValue, body) => {
+        const response = await axiosConfig.post(`/users/forgot-password/validate?otpValue=${otpValue}`, { ...body });
         return response;
     },
 };
