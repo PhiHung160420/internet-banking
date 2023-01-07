@@ -185,7 +185,7 @@ export default function EmployeeTransactionHistory() {
                                                             recipientAccountNumber,
                                                         )}
                                                     >
-                                                        {handleMaskValue(String(amount))}
+                                                        {handleMaskValue(String(amount))} đ
                                                     </Label>
                                                 </TableCell>
                                                 <TableCell align="left">
@@ -193,7 +193,7 @@ export default function EmployeeTransactionHistory() {
                                                         sx={{ textTransform: 'none', cursor: 'pointer' }}
                                                         color={'info'}
                                                     >
-                                                        {handleMaskValue(String(balance))}
+                                                        {handleMaskValue(String(balance))} đ
                                                     </Label>
                                                 </TableCell>
                                             </TableRow>

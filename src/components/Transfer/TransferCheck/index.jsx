@@ -37,7 +37,7 @@ function TransferCheck({ setStep }) {
         <Stack flexDirection={'row'}>
             <Box flex={1} textAlign="center">
                 <Typography variant="h5">SỐ TIỀN GIAO DỊCH</Typography>
-                <Typography variant="h5">{handleMaskValue(transfer.amount)} VND</Typography>
+                <Typography variant="h5">{handleMaskValue(transfer.amount)} VNĐ</Typography>
             </Box>
 
             <Box flex={1} gap={1}>

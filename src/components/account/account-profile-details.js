@@ -1,15 +1,14 @@
-import React, { useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Button, Card, CardContent, CardHeader, Divider, Grid, InputAdornment, IconButton } from '@mui/material';
-import { useEffect } from 'react';
+import { Box, Button, Card, CardContent, CardHeader, Divider, Grid, IconButton, InputAdornment } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import * as yup from 'yup';
 import accountAPI from '~/api/accountAPI';
+import Iconify from '~/components/iconify';
 import { REGEX_VNPHONE } from '~/constant';
 import InputField from '../modules/form/InputField';
-import Iconify from '~/components/iconify';
 
 export const AccountProfileDetails = (props) => {
     const { user, setUserInfo, role, redirectUrl, isUpdate } = props;

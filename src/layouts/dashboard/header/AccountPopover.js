@@ -7,7 +7,7 @@ import account from '../../../_mock/account';
 import { useNavigate } from 'react-router-dom';
 import CustomModal from '~/components/CustomModal';
 import ChangePasswordForm from '~/components/forms/ChangePasswordForm';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { actGetAuthInfo } from '~/store/action/authActions';
 import { clearStorage } from '~/utils/storage';
 
@@ -36,6 +36,8 @@ export default function AccountPopover() {
     const handleOpen = (event) => {
         setOpen(event.currentTarget);
     };
+
+    const { authInfo } = useSelector((state) => state.authReducer);
 
     const dispatch = useDispatch();
     const handleClose = () => {
@@ -94,7 +96,7 @@ export default function AccountPopover() {
             >
                 <Box sx={{ my: 1.5, px: 2.5 }}>
                     <Typography variant="subtitle2" noWrap>
-                        {account.displayName}
+                        {authInfo?.fullName}
                     </Typography>
                 </Box>
 

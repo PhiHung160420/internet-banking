@@ -37,6 +37,7 @@ import { PAGINATION } from '~/constant/pagination';
 import { dateTimeConverter } from '~/utils/util';
 import { LoadingButton } from '@mui/lab';
 import { toast } from 'react-toastify';
+import { handleMaskValue } from '~/utils/format';
 
 // ----------------------------------------------------------------------
 
@@ -239,7 +240,7 @@ export default function DebtManagementPage() {
 
                                                     <TableCell align="left">
                                                         <Typography variant="subtitle2" noWrap>
-                                                            {FORMAT_NUMBER.format(amount)} đ
+                                                            {handleMaskValue(amount)} đ
                                                         </Typography>
                                                     </TableCell>
 

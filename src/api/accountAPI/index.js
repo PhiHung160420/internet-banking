@@ -39,6 +39,14 @@ const accountAPI = {
         const res = await axiosConfig.post(`${URL}/unlock/${id}`);
         return res;
     },
+    lock: async () => {
+        const res = await axiosConfig.post(`${URL}/lock`);
+        return res;
+    },
+    unlock: async () => {
+        const res = await axiosConfig.post(`${URL}/unlock`);
+        return res;
+    },
 };
 
 export default accountAPI;

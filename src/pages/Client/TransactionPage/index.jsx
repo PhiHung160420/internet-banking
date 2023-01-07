@@ -21,8 +21,9 @@ import Label from '~/components/label';
 import Scrollbar from '~/components/scrollbar';
 import BasicSelect from '~/components/select';
 import TableListHead from '~/components/Table/TableListHead';
-import { DATE_FILTER_LIST, FORMAT_NUMBER, TRANSACTION_LIST } from '~/constant';
+import { DATE_FILTER_LIST, TRANSACTION_LIST } from '~/constant';
 import { PAGINATION } from '~/constant/pagination';
+import { handleMaskValue } from '~/utils/format';
 import { dateTimeConverter } from '~/utils/util';
 
 const TABLE_HEAD = [
@@ -76,6 +77,10 @@ export default function TransactionPage() {
     useEffect(() => {
         fetchTransactions();
     }, [pagination.page, pagination.size]);
+
+    useEffect(() => {
+        fetchTransactions();
+    }, [transactionType, dateFilter]);
 
     const handleChangePage = (event, newPage) => {
         setPagination((prev) => ({
@@ -147,17 +152,16 @@ export default function TransactionPage() {
                                                     </Stack>
                                                 </TableCell>
                                                 <TableCell align="left">
-                                                    <Label
-                                                        sx={{ cursor: 'pointer' }}
-                                                        style={{}}
-                                                        color={(status === 'banned' && 'error') || 'success'}
-                                                    >
-                                                        {FORMAT_NUMBER.format(amount)} đ
+                                                    <Label sx={{ cursor: 'pointer' }} style={{}} color={'success'}>
+                                                        {handleMaskValue(amount)} đ
                                                     </Label>
                                                 </TableCell>
                                                 <TableCell align="left">
-                                                    <Label sx={{ textTransform: 'none', cursor: 'pointer' }}>
-                                                        {FORMAT_NUMBER.format(balance)} đ
+                                                    <Label
+                                                        sx={{ textTransform: 'none', cursor: 'pointer' }}
+                                                        color={'primary'}
+                                                    >
+                                                        {handleMaskValue(balance)} đ
                                                     </Label>
                                                 </TableCell>
                                             </TableRow>
