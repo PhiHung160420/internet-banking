@@ -15,6 +15,11 @@ export const transactionAPI = {
         const response = await axiosConfig.post(`${URL}`, body);
         return response;
     },
+
+    validateOTP: async (otp) => {
+        const response = await axiosConfig.post(`${URL}/validate/${otp}`);
+        return response;
+    },
     getList: async (params) => {
         const response = await axiosConfig.get(`${URL}/history`, { params });
         return response;

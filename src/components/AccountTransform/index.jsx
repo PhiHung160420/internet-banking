@@ -29,8 +29,6 @@ function AccountTransform({ control, name, watch, isUpdate, openModal, setValueF
 
     const [openSave, setOpenSave] = useState();
 
-    const [isChooseRecipient, setChooseRecipient] = useState(false);
-
     const dispatch = useDispatch();
 
     const { account_info } = useSelector((state) => state.transferReducer);
@@ -66,7 +64,6 @@ function AccountTransform({ control, name, watch, isUpdate, openModal, setValueF
         } else if (!accountVal) {
             dispatch(actGetAccountInfo({}));
         }
-        setChooseRecipient(false);
     };
 
     const handleChooseRecipientAccount = (account) => {
@@ -78,7 +75,6 @@ function AccountTransform({ control, name, watch, isUpdate, openModal, setValueF
             }),
         );
         //Close modal
-        setChooseRecipient(true);
         setOpen(false);
     };
 
@@ -87,7 +83,7 @@ function AccountTransform({ control, name, watch, isUpdate, openModal, setValueF
             fetchAccountInfo();
         }
     }, [openModal, isUpdate]);
-    
+
     const handleCreateRecipient = async (account, name) => {
         try {
             const result = await recipientAPI.create(account, name);
@@ -126,7 +122,7 @@ function AccountTransform({ control, name, watch, isUpdate, openModal, setValueF
                     label="Tên người nhận"
                     disabled
                     InputProps={{
-                        endAdornment: !isChooseRecipient && (
+                        endAdornment: (
                             <Tooltip title="Lưu người nhận">
                                 <IconButton edge="end" onClick={() => setOpenSave(true)}>
                                     <Save fontSize={'18px'} />
@@ -143,10 +139,8 @@ function AccountTransform({ control, name, watch, isUpdate, openModal, setValueF
 
             <CustomModal title={'Lưu người nhận mới'} open={openSave} setOpen={(value) => setOpenSave(value)}>
                 <RecipientAccountForm
-                    dataForm={{
-                        recipientAccountNumber: accountVal,
-                    }}
-                    isUpdate={isUpdate}
+                    initialAccount={accountVal}
+                    isUpdate={false}
                     handleCreateRecipient={(account, name) => handleCreateRecipient(account, name)}
 
                     // handleUpdateRecipient={(id, account, name) => handleUpdateRecipient(id, account, name)}

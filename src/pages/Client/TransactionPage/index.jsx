@@ -21,8 +21,9 @@ import Label from '~/components/label';
 import Scrollbar from '~/components/scrollbar';
 import BasicSelect from '~/components/select';
 import TableListHead from '~/components/Table/TableListHead';
-import { DATE_FILTER_LIST, TRANSACTION_LIST } from '~/constant';
+import { DATE_FILTER_LIST, FORMAT_NUMBER, TRANSACTION_LIST } from '~/constant';
 import { PAGINATION } from '~/constant/pagination';
+import { dateTimeConverter } from '~/utils/util';
 
 const TABLE_HEAD = [
     { id: 'date', label: 'Ngày', alignRight: false },
@@ -128,21 +129,20 @@ export default function TransactionPage() {
                                 />
                                 <TableBody>
                                     {transactions.map((row) => {
-                                        const { id, name, status, balance } = row;
-
+                                        const { id, amount, status, balance, tradingDate, content } = row;
                                         return (
                                             <TableRow hover key={id} tabIndex={1} role="checkbox">
                                                 <TableCell component="th" scope="row">
                                                     <Stack direction="row" alignItems="center" spacing={2}>
                                                         <Typography variant="subtitle2" noWrap>
-                                                            {name}
+                                                            {dateTimeConverter(tradingDate)}
                                                         </Typography>
                                                     </Stack>
                                                 </TableCell>
                                                 <TableCell component="th" scope="row">
                                                     <Stack direction="row" alignItems="center" spacing={2}>
                                                         <Typography variant="subtitle2" noWrap>
-                                                            {name}
+                                                            {content}
                                                         </Typography>
                                                     </Stack>
                                                 </TableCell>
@@ -152,12 +152,12 @@ export default function TransactionPage() {
                                                         style={{}}
                                                         color={(status === 'banned' && 'error') || 'success'}
                                                     >
-                                                        {balance}
+                                                        {FORMAT_NUMBER.format(amount)} đ
                                                     </Label>
                                                 </TableCell>
                                                 <TableCell align="left">
                                                     <Label sx={{ textTransform: 'none', cursor: 'pointer' }}>
-                                                        {balance}
+                                                        {FORMAT_NUMBER.format(balance)} đ
                                                     </Label>
                                                 </TableCell>
                                             </TableRow>

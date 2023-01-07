@@ -1,8 +1,9 @@
 import { Box, Button, Card, Divider, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { transactionAPI } from '~/api/transactionAPI';
+import { actResetTransfer } from '~/store/action/transferAction';
 import { handleMaskValue } from '~/utils/format';
 import TransferAccountInfo from '../TransferAccountInfo';
 
@@ -30,7 +31,8 @@ function TransferCheck({ setStep }) {
             toast.error(error?.message || 'Chuyển khoản thất bại');
         }
     };
-    
+
+    const dispatch = useDispatch();
     return (
         <Stack flexDirection={'row'}>
             <Box flex={1} textAlign="center">
@@ -66,7 +68,14 @@ function TransferCheck({ setStep }) {
                 </Card>
 
                 <Stack flexDirection={'row'} gap={2} my={2}>
-                    <Button sx={{ flex: 1 }} variant="outlined" onClick={() => setStep(1)}>
+                    <Button
+                        sx={{ flex: 1 }}
+                        variant="outlined"
+                        onClick={() => {
+                            setStep(1);
+                            dispatch(actResetTransfer());
+                        }}
+                    >
                         Hủy bỏ
                     </Button>
                     <Button sx={{ flex: 2 }} variant="contained" onClick={handleSubmitCheck}>

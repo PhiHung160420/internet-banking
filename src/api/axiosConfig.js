@@ -8,7 +8,7 @@ const defaultHeader = {
     'Content-Type': 'application/json',
 };
 const axiosConfig = axios.create({
-    baseURL: API_SERVER_URL,
+    baseURL: process.env.REACT_APP_API_URL,
     headers: defaultHeader,
     paramsSerializer: {
         encode: parse,
