@@ -143,7 +143,9 @@ function AccountTransform({ control, name, watch, isUpdate, openModal, setValueF
 
             <CustomModal title={'Lưu người nhận mới'} open={openSave} setOpen={(value) => setOpenSave(value)}>
                 <RecipientAccountForm
-                    dataForm={{}}
+                    dataForm={{
+                        recipientAccountNumber: accountVal,
+                    }}
                     isUpdate={isUpdate}
                     handleCreateRecipient={(account, name) => handleCreateRecipient(account, name)}
 
