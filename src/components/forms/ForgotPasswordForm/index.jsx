@@ -1,7 +1,7 @@
 // @mui
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LoadingButton } from '@mui/lab';
-import { Box, IconButton, InputAdornment, Stack, Typography } from '@mui/material';
+import { Box, CircularProgress, IconButton, InputAdornment, Stack, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import OtpInput from 'react-otp-input';
@@ -18,6 +18,8 @@ export default function ForgotPasswordForm() {
     const [otpValue, setOtpValue] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [confirmLoading, setConfirmLoading] = useState(false);
+    const [otpLoading, setOtpLoading] = useState(false);
     const navigate = useNavigate();
 
     const schema = yup.object().shape({
@@ -59,6 +61,7 @@ export default function ForgotPasswordForm() {
 
     const onSubmit = async (data) => {
         try {
+            setConfirmLoading(true);
             const { email, password } = data;
             if (formState === FORGOT_PW_STATE.SEND_EMAIL) {
                 await sendOTP(email);
@@ -73,8 +76,10 @@ export default function ForgotPasswordForm() {
                     toast.error(result?.message || 'Xử lí tác vụ thất bại');
                 }
             }
+            setConfirmLoading(false);
         } catch (error) {
             toast.error(error?.message || 'Xử lí tác vụ thất bại');
+            setConfirmLoading(false);
         }
     };
 
@@ -104,9 +109,15 @@ export default function ForgotPasswordForm() {
                         />
                         <div
                             style={{ textAlign: 'right', color: '#2165D1', cursor: 'pointer' }}
-                            onClick={() => sendOTP(getValues('email'))}
+                            onClick={async () => {
+                                if (!otpLoading) {
+                                    setOtpLoading(true);
+                                    await sendOTP(getValues('email'));
+                                    setOtpLoading(false);
+                                }
+                            }}
                         >
-                            Gửi lại OTP
+                            {otpLoading ? <CircularProgress size={20} /> : 'Gửi lại OTP'}
                         </div>
                         <InputField
                             fullWidth
@@ -168,7 +179,7 @@ export default function ForgotPasswordForm() {
         <Box component={'form'} onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={3}>{displayField()}</Stack>
             <div style={{ marginTop: '20px' }}>
-                <LoadingButton fullWidth size="large" type="submit" variant="contained">
+                <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={confirmLoading}>
                     Xác nhận
                 </LoadingButton>
             </div>
