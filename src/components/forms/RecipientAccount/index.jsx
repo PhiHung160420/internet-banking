@@ -11,13 +11,19 @@ import { SUBMIT, UPDATE } from '~/constant';
 
 // ----------------------------------------------------------------------
 
-export default function RecipientAccountForm({ dataForm, isUpdate, handleCreateRecipient, handleUpdateRecipient }) {
-    const initValue = { account: '', account_name: '' };
+export default function RecipientAccountForm({
+    dataForm,
+    isUpdate,
+    initialAccount,
+    handleCreateRecipient,
+    handleUpdateRecipient,
+}) {
+    const initValue = { account: initialAccount || '', account_name: '' };
     console.log(dataForm);
     const updateValue = {
         ...initValue,
-        account: dataForm.recipientAccountNumber,
-        account_name: dataForm.reminiscentName,
+        account: dataForm?.recipientAccountNumber,
+        account_name: dataForm?.reminiscentName,
     };
     const [useReminderName, setUserReminderName] = useState(true);
 

@@ -9,11 +9,18 @@ import TransferCheck from '~/components/Transfer/TransferCheck';
 import TransferOTP from '~/components/Transfer/TransferOTP';
 import { useDispatch } from 'react-redux';
 import { actResetTransfer } from '~/store/action/transferAction';
+import TransactionSuccess from '~/components/TransactionSuccess';
+import TransactionError from '~/components/TransactionError';
 
 function TransferPage() {
     const [selected, setSelected] = useState(menuTransfer[0].type);
 
     const [step, setStep] = useState(1);
+
+    const resetTransfer = () => {
+        setStep(1);
+        dispatch(actResetTransfer());
+    };
 
     const renderTransferComponent = () => {
         switch (step) {
@@ -23,6 +30,10 @@ function TransferPage() {
                 return <TransferCheck setStep={setStep} />;
             case 3:
                 return <TransferOTP setStep={setStep} />;
+            case 4:
+                return <TransactionSuccess setStep={setStep} onResetTransfer={resetTransfer} />;
+            case 5:
+                return <TransactionError setStep={setStep} onResetTransfer={resetTransfer} />;
             default:
                 break;
         }
@@ -32,7 +43,9 @@ function TransferPage() {
 
     useEffect(() => {
         setStep(1);
-        dispatch(actResetTransfer());
+        return () => {
+            dispatch(actResetTransfer());
+        };
     }, [selected]);
 
     return (
