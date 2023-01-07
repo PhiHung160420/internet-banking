@@ -60,11 +60,6 @@ export default function TransferForm({ selected, setStep }) {
                     setValueForm={setValue}
                     rules={{
                         required: 'Vui lòng nhập tài khoản cần chuyển khoản',
-                        validate: {
-                            min: (value) => {
-                                return value?.length > 6 || 'Tài khoản phải có ít nhất 6 kí tự';
-                            },
-                        },
                     }}
                 />
 
