@@ -2,29 +2,22 @@ import { filter } from 'lodash';
 import { useEffect, useState } from 'react';
 // @mui
 import {
-    Avatar,
     Box,
     Card,
-    Checkbox,
     Container,
     IconButton,
     MenuItem,
     Paper,
     Popover,
-    Stack,
     Table,
     TableBody,
     TableCell,
     TableContainer,
     TablePagination,
     TableRow,
+    TextField,
     Typography,
 } from '@mui/material';
-
-// sections
-// mock
-import { useConfirm } from 'material-ui-confirm';
-import { useSnackbar } from 'notistack';
 import CustomModal from '~/components/CustomModal';
 import DebtReminderForm from '~/components/forms/DebtReminderForm';
 import HeaderAction from '~/components/HeaderAction';
@@ -32,7 +25,6 @@ import Iconify from '~/components/iconify';
 import Label from '~/components/label';
 import Scrollbar from '~/components/scrollbar';
 import TableListHead from '~/components/Table/TableListHead';
-import TableListToolbar from '~/components/Table/TableListToolbar';
 import { DELETE, FORMAT_NUMBER } from '~/constant';
 import USERLIST from '~/_mock/user';
 
@@ -42,6 +34,8 @@ import { routesConfig } from '~/config/routesConfig';
 import { debtRemindersAPI } from '~/api/debtReminderAPI';
 import { PAGINATION } from '~/constant/pagination';
 import { dateTimeConverter } from '~/utils/util';
+import { LoadingButton } from '@mui/lab';
+import { toast } from 'react-toastify';
 
 // ----------------------------------------------------------------------
 
@@ -99,6 +93,10 @@ export default function DebtManagementPage() {
     const [orderBy, setOrderBy] = useState('name');
 
     const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [reasonModal, setReasonModal] = useState({
+        reason: '',
+        status: false,
+    });
 
     const [listDebtReminder, setListDebtReminder] = useState([]);
     const [pagination, setPagination] = useState({
@@ -176,37 +174,31 @@ export default function DebtManagementPage() {
     const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), '');
 
     const isNotFound = !filteredUsers.length;
-    const confirm = useConfirm();
-    const { enqueueSnackbar } = useSnackbar();
-
-    const handleConfirm = (fullname) => {
-        confirm({
-            description: (
-                <Box component="p">
-                    Xóa nợ này sẽ gửi thông báo đến{' '}
-                    <Typography component="span" variant="h5">
-                        {fullname}
-                    </Typography>{' '}
-                    bạn có chắc chắn thực hiện?
-                </Box>
-            ),
-        })
-            .then(async () => {
-                enqueueSnackbar('Xóa thành công, thông báo đã được gửi!', {
-                    variant: 'success',
-                });
-            })
-            .catch(() => {
-                /* ... */
-                enqueueSnackbar('Xóa thất bại', {
-                    variant: 'error',
-                });
-            });
-    };
-
     const navigate = useNavigate();
     const handleNavigatePaymentDebt = () => {
         navigate(routesConfig.debtPayment('data-moi-ne'));
+    };
+
+    const handleCancelDebt = async () => {
+        try {
+            const result = await debtRemindersAPI.cancelDebt(modalState?.data?.id, {
+                cancellationReason: reasonModal?.reason,
+                debtAccountNumber: modalState?.data?.debtAccountNumber,
+            });
+
+            if (result?.status === 200) {
+                setReasonModal({ reason: '', status: false });
+                getListDebtReminder();
+                setModalState((prev) => ({
+                    data: {},
+                    open: false,
+                }));
+                return toast.success('Huỷ nhắc nợ thành công');
+            }
+            return toast.error('Huỷ nhắc nợ thất bại');
+        } catch (error) {
+            return toast.error('Huỷ nhắc nợ thất bại');
+        }
     };
 
     return (
@@ -238,15 +230,9 @@ export default function DebtManagementPage() {
                                             const { id, accountNumber, content, amount, createdAt } = row;
 
                                             return (
-                                                <TableRow
-                                                    hover
-                                                    key={id}
-                                                    tabIndex={-1}
-                                                >
+                                                <TableRow hover key={id} tabIndex={-1}>
                                                     <TableCell align="left">
-                                                        <Label sx={{ textTransform: 'none' }}>
-                                                            {accountNumber}
-                                                        </Label>
+                                                        <Label sx={{ textTransform: 'none' }}>{accountNumber}</Label>
                                                     </TableCell>
 
                                                     <TableCell align="left">
@@ -343,7 +329,7 @@ export default function DebtManagementPage() {
                     },
                 }}
             >
-                <MenuItem sx={{ color: 'error.main' }} onClick={() => handleConfirm(modalState.data?.name)}>
+                <MenuItem sx={{ color: 'error.main' }} onClick={() => setReasonModal({ reason: '', status: true })}>
                     <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
                     {DELETE}
                 </MenuItem>
@@ -363,6 +349,45 @@ export default function DebtManagementPage() {
                 }
             >
                 <DebtReminderForm openModal={modalState.open} dataForm={modalState.data} i />
+            </CustomModal>
+
+            <CustomModal
+                open={reasonModal?.status}
+                setOpen={(value) =>
+                    setReasonModal((prev) => ({
+                        ...prev,
+                        status: value,
+                    }))
+                }
+                title={`Xác nhận huỷ nhắc nợ?`}
+            >
+                <Box my={2}>
+                    <TextField
+                        width={350}
+                        sx={{ width: '395px' }}
+                        name="reason"
+                        label="Lí do huỷ"
+                        value={reasonModal?.reason}
+                        onChange={(event) => {
+                            setReasonModal((prev) => ({
+                                ...prev,
+                                reason: event.target.value,
+                            }));
+                        }}
+                        multiline
+                        rows={4}
+                    />
+                    <LoadingButton
+                        sx={{ my: 2 }}
+                        fullWidth
+                        size="large"
+                        type="submit"
+                        variant="contained"
+                        onClick={() => handleCancelDebt()}
+                    >
+                        Xác nhận
+                    </LoadingButton>
+                </Box>
             </CustomModal>
         </>
     );
