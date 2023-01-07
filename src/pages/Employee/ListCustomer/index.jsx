@@ -82,10 +82,6 @@ export default function EmployeeListCustomer() {
         }));
     };
 
-    const handleFilterByName = (event) => {
-        setFilterName(event.target.value);
-    };
-
     const addCustomer = () => {
         navigate(routesConfig.employeeAddCustomer);
     };
@@ -204,8 +200,6 @@ export default function EmployeeListCustomer() {
                 />
 
                 <Card>
-                    <TableListToolbar filterName={filterName} onFilterName={handleFilterByName} />
-
                     <Scrollbar>
                         <TableContainer sx={{ minWidth: 800 }}>
                             <Table>

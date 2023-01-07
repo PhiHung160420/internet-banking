@@ -1,82 +1,85 @@
-import { filter } from 'lodash';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 // @mui
 import {
     Card,
     Table,
     Stack,
-    Paper,
-    Popover,
     TableRow,
-    MenuItem,
     TableBody,
     TableCell,
     Container,
     Typography,
     TableContainer,
     TablePagination,
+    Box,
 } from '@mui/material';
-import USERS from '~/_mock/user';
-import Iconify from '~/components/iconify';
 import Scrollbar from '~/components/scrollbar';
 import TableListHead from '~/components/Table/TableListHead';
-import TableListToolbar from '~/components/Table/TableListToolbar';
 import HeaderAction from '~/components/HeaderAction';
+import { transactionAPI } from '~/api/transactionAPI';
+import { PAGINATION } from '~/constant/pagination';
+import { DATE_FILTER_LIST, FORMAT_NUMBER, TRANSACTION_LIST } from '~/constant';
+import BasicSelect from '~/components/select';
+import { dateTimeConverter } from '~/utils/util';
 
 const TABLE_HEAD = [
-    { id: 'name', label: 'Người chuyển', alignRight: false },
-    { id: 'name', label: 'Người nhận', alignRight: false },
-    { id: 'email', label: 'Số tài khoản', alignRight: false },
-    { id: 'phone', label: 'Số tiền', alignRight: false },
-    { id: 'address', label: 'Hình thức chuyển', alignRight: false },
+    { id: 'tradingDate', label: 'Ngày tạo', alignRight: false },
+    { id: 'accountNumber', label: 'Người chuyển', alignRight: false },
+    { id: 'recipientAccountNumber', label: 'Người nhận', alignRight: false },
+    { id: 'amount', label: 'Số tiền', alignRight: false },
 ];
 
-function descendingComparator(a, b, orderBy) {
-    if (b[orderBy] < a[orderBy]) {
-        return -1;
-    }
-    if (b[orderBy] > a[orderBy]) {
-        return 1;
-    }
-    return 0;
-}
-
-function getComparator(order, orderBy) {
-    return order === 'desc'
-        ? (a, b) => descendingComparator(a, b, orderBy)
-        : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function applySortFilter(array, comparator, query) {
-    const stabilizedThis = array.map((el, index) => [el, index]);
-    stabilizedThis.sort((a, b) => {
-        const order = comparator(a[0], b[0]);
-        if (order !== 0) return order;
-        return a[1] - b[1];
-    });
-    if (query) {
-        return filter(array, (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
-    }
-    return stabilizedThis.map((el) => el[0]);
-}
-
 export default function ListTransaction() {
-    const [open, setOpen] = useState(null);
     const [page, setPage] = useState(0);
-    const [order, setOrder] = useState('asc');
-    const [orderBy, setOrderBy] = useState('name');
-    const [filterName, setFilterName] = useState('');
     const [rowsPerPage, setRowsPerPage] = useState(5);
-    
-    const handleCloseMenu = () => {
-        setOpen(null);
+
+    const [transactionType, setTransactionType] = useState(TRANSACTION_LIST[0]);
+
+    const [dateFilter, setDateFilter] = useState(DATE_FILTER_LIST[0]);
+
+    const [transactions, setTransactions] = useState([]);
+
+    const [pagination, setPagination] = useState({
+        page: PAGINATION.PAGE,
+        size: PAGINATION.SIZE,
+        totalElements: 10,
+        totalPages: 1,
+    });
+
+    const fetchTransactions = async () => {
+        const payload = {
+            page: pagination.page,
+            size: pagination.size,
+            sort: 'createdAt,desc',
+            type: transactionType?.value,
+            startFrom: dateFilter?.start_from,
+            endFrom: dateFilter?.end_from,
+        };
+        try {
+            const res = await transactionAPI.getList(payload);
+
+            setTransactions(res?.content);
+
+            const paginationRes = {
+                ...pagination,
+                page: res?.pageable?.pageNumber,
+                totalElements: res?.totalElements,
+                totalPages: res?.totalPages,
+            };
+
+            setPagination(paginationRes);
+        } catch (error) {
+            console.log(error);
+        }
     };
 
-    const handleRequestSort = (event, property) => {
-        const isAsc = orderBy === property && order === 'asc';
-        setOrder(isAsc ? 'desc' : 'asc');
-        setOrderBy(property);
-    };
+    useEffect(() => {
+        fetchTransactions();
+    }, [pagination.page, pagination.size]);
+
+    useEffect(() => {
+        fetchTransactions();
+    }, [transactionType, dateFilter]);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -86,17 +89,6 @@ export default function ListTransaction() {
         setPage(0);
         setRowsPerPage(parseInt(event.target.value, 10));
     };
-
-    const handleFilterByName = (event) => {
-        setPage(0);
-        setFilterName(event.target.value);
-    };
-
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERS.length) : 0;
-
-    const filteredUsers = applySortFilter(USERS, getComparator(order, orderBy), filterName);
-
-    const isNotFound = !filteredUsers.length && !!filterName;
 
     return (
         <>
@@ -108,90 +100,66 @@ export default function ListTransaction() {
                 />
 
                 <Card>
-                    <TableListToolbar filterName={filterName} onFilterName={handleFilterByName} />
-
+                    <Container style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 30, marginBottom: 30 }}>
+                        <BasicSelect
+                            label="Xem theo"
+                            selectedValue={dateFilter}
+                            handleChangeValue={setDateFilter}
+                            selectList={DATE_FILTER_LIST}
+                        />
+                        <Box ml={2}>
+                            <BasicSelect
+                                label="Giao dịch"
+                                selectedValue={transactionType}
+                                handleChangeValue={setTransactionType}
+                                selectList={TRANSACTION_LIST}
+                            />
+                        </Box>
+                    </Container>
                     <Scrollbar>
                         <TableContainer sx={{ minWidth: 800 }}>
                             <Table>
                                 <TableListHead
                                     isShowCheckBox={false}
-                                    order={order}
-                                    orderBy={orderBy}
                                     headLabel={TABLE_HEAD}
-                                    rowCount={USERS.length}
-                                    onRequestSort={handleRequestSort}
+                                    rowCount={transactions.length}
                                 />
                                 <TableBody>
-                                    {filteredUsers
+                                    {transactions
                                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                         .map((row) => {
-                                            const { id, name, status, avatarUrl, balance } = row;
+                                            const { id, accountNumber, recipientAccountNumber, amount, tradingDate } =
+                                                row;
                                             return (
                                                 <TableRow hover key={id}>
                                                     <TableCell align="left">
+                                                        <Typography variant="subtitle" noWrap>
+                                                            {dateTimeConverter(tradingDate)}
+                                                        </Typography>
+                                                    </TableCell>
+                                                    <TableCell align="left">
                                                         <Stack direction="row" alignItems="center">
                                                             <Typography variant="subtitle" noWrap>
-                                                                {name}
+                                                                {accountNumber}
                                                             </Typography>
                                                         </Stack>
                                                     </TableCell>
 
                                                     <TableCell align="left">
                                                         <Typography variant="subtitle" noWrap>
-                                                            {name}
+                                                            {recipientAccountNumber}
                                                         </Typography>
                                                     </TableCell>
 
                                                     <TableCell align="left">
                                                         <Typography variant="subtitle" noWrap>
-                                                            {name}
-                                                        </Typography>
-                                                    </TableCell>
-
-                                                    <TableCell align="left">
-                                                        <Typography variant="subtitle" noWrap>
-                                                            {name}
-                                                        </Typography>
-                                                    </TableCell>
-
-                                                    <TableCell align="left">
-                                                        <Typography variant="subtitle" noWrap>
-                                                            {name}
+                                                            {FORMAT_NUMBER.format(amount)} đ
                                                         </Typography>
                                                     </TableCell>
                                                 </TableRow>
                                             );
                                         })}
-                                    {emptyRows > 0 && (
-                                        <TableRow style={{ height: 53 * emptyRows }}>
-                                            <TableCell colSpan={6} />
-                                        </TableRow>
-                                    )}
                                 </TableBody>
-
-                                {isNotFound && (
-                                    <TableBody>
-                                        <TableRow>
-                                            <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                                                <Paper
-                                                    sx={{
-                                                        textAlign: 'center',
-                                                    }}
-                                                >
-                                                    <Typography variant="h6" paragraph>
-                                                        Not found
-                                                    </Typography>
-
-                                                    <Typography variant="body2">
-                                                        No results found for &nbsp;
-                                                        <strong>&quot;{filterName}&quot;</strong>.
-                                                        <br /> Try checking for typos or using complete words.
-                                                    </Typography>
-                                                </Paper>
-                                            </TableCell>
-                                        </TableRow>
-                                    </TableBody>
-                                )}
                             </Table>
                         </TableContainer>
                     </Scrollbar>
@@ -200,43 +168,14 @@ export default function ListTransaction() {
                         labelRowsPerPage="Số dòng"
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
-                        count={USERS.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
+                        count={pagination.totalElements}
+                        rowsPerPage={pagination.size}
+                        page={pagination.page}
                         onPageChange={handleChangePage}
                         onRowsPerPageChange={handleChangeRowsPerPage}
                     />
                 </Card>
             </Container>
-
-            <Popover
-                open={Boolean(open)}
-                anchorEl={open}
-                onClose={handleCloseMenu}
-                anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                PaperProps={{
-                    sx: {
-                        p: 1,
-                        width: 140,
-                        '& .MuiMenuItem-root': {
-                            px: 1,
-                            typography: 'body2',
-                            borderRadius: 0.75,
-                        },
-                    },
-                }}
-            >
-                <MenuItem>
-                    <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-                    Chỉnh sửa
-                </MenuItem>
-
-                <MenuItem sx={{ color: 'error.main' }}>
-                    <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-                    Xoá
-                </MenuItem>
-            </Popover>
         </>
     );
 }

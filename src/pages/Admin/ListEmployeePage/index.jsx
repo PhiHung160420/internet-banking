@@ -1,10 +1,8 @@
-import { filter } from 'lodash';
 import { useEffect, useState } from 'react';
 // @mui
 import {
     Box,
     Card,
-    Checkbox,
     Container,
     IconButton,
     MenuItem,
@@ -29,9 +27,7 @@ import Scrollbar from '~/components/scrollbar';
 import TableListHead from '~/components/Table/TableListHead';
 import TableListToolbar from '~/components/Table/TableListToolbar';
 import { routesConfig } from '~/config/routesConfig';
-import { ROLE_KEY } from '~/constant';
 import { PAGINATION } from '~/constant/pagination';
-import USERS from '~/_mock/user';
 
 const TABLE_HEAD = [
     { id: 'name', label: 'Tên', alignRight: false },
@@ -48,8 +44,6 @@ export default function ListEmployee() {
     const confirm = useConfirm();
 
     const [open, setOpen] = useState(null);
-
-    const [filterName, setFilterName] = useState('');
 
     const [rowData, setRowData] = useState({});
 
@@ -102,10 +96,6 @@ export default function ListEmployee() {
             page: 0,
             size: event.target.value,
         }));
-    };
-
-    const handleFilterByName = (event) => {
-        setFilterName(event.target.value);
     };
 
     const addCustomer = () => {
@@ -172,8 +162,6 @@ export default function ListEmployee() {
                 />
 
                 <Card>
-                    <TableListToolbar filterName={filterName} onFilterName={handleFilterByName} />
-
                     <Scrollbar>
                         <TableContainer sx={{ minWidth: 800 }}>
                             <Table>
