@@ -57,7 +57,7 @@ function TransferCheck({ setStep }) {
                     <Divider variant="middle" />
                     <Box p={3}>
                         <Typography variant="body2">Nội dung chuyển tiền</Typography>
-                        <Typography variant="h6">{transfer.note || ' '} </Typography>
+                        <Typography variant="h6" style={{maxWidth: '100%', wordBreak: 'break-word'}}>{transfer.note || ' '} </Typography>
                     </Box>
                     <Divider variant="middle" />
 

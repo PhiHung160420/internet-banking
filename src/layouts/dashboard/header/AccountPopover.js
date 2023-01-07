@@ -15,10 +15,6 @@ import { clearStorage } from '~/utils/storage';
 
 const MENU_OPTIONS = [
     {
-        label: 'Trang cá nhân',
-        icon: 'eva:person-fill',
-    },
-    {
         label: 'Đổi mật khẩu',
         icon: 'eva:settings-2-fill',
         onClick: (openModal) => {
