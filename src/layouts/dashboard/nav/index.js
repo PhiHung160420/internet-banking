@@ -13,6 +13,7 @@ import { useAuth } from '~/hooks/useAuth';
 import NavSection from '../../../components/nav-section';
 import Scrollbar from '../../../components/scrollbar';
 import { navAdmin, navCustomer, navEmployee } from './config';
+import { useSelector } from 'react-redux';
 
 const NAV_WIDTH = 280;
 
@@ -33,6 +34,8 @@ export default function Nav({ openNav, onCloseNav }) {
     const { pathname } = useLocation();
     const isDesktop = useResponsive('up', 'lg');
     const { IS_ADMIN, IS_EMPLOYEE } = useAuth();
+
+    const { authInfo } = useSelector((state) => state.authReducer);
 
     useEffect(() => {
         if (openNav) {
@@ -58,14 +61,14 @@ export default function Nav({ openNav, onCloseNav }) {
                 ) : null}
             </Box>
 
-            <Box sx={{ mb: 5, mx: 2.5 }}>
+            <Box sx={{ mb: 5, mx: 1 }}>
                 <Link underline="none">
                     <StyledAccount>
                         <Avatar src={account.photoURL} alt="photoURL" />
 
-                        <Box sx={{ ml: 2 }}>
+                        <Box sx={{ ml: 1 }}>
                             <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
-                                {account.displayName}
+                                {authInfo?.fullName}
                             </Typography>
 
                             <Typography variant="body2" sx={{ color: 'text.secondary' }}>

@@ -51,7 +51,7 @@ export default function DebtReminderForm({ dataForm, isUpdate, openModal, handle
             const result = await debtRemindersAPI.create(submitData);
             if (result?.id) {
                 handleCloseModal();
-                handleLoadData?.()
+                handleLoadData?.();
                 return toast.success('Tạo nhắc nợ thành công');
             }
             return toast.error('Tạo nhắc nợ thất bại');

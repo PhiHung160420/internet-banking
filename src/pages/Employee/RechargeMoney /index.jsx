@@ -77,7 +77,11 @@ export default function EmployeeRechargeMoney() {
             const result = await transactionAPI.create(transactionData);
 
             if (result?.status === 'DONE') {
-                reset({});
+                reset({
+                    account: '',
+                    money: '',
+                    content: '',
+                });
                 return toast.success('Nạp tiền vào tài khoản thành công');
             }
 

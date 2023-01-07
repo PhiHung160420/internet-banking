@@ -22,7 +22,7 @@ export const TRANSACTION_LIST = [
         title: 'Giao dịch chuyển khoản',
     },
     {
-        value: 'DEPOSIT',
+        value: 'TRANSFER',
         title: 'Giao dịch thanh toán nhắc nợ',
     },
 ];
@@ -44,8 +44,8 @@ export const DATE_FILTER_LIST = [
         title: '7 ngày qua',
     },
     {
-        start_from: moment().utc().startOf('month').valueOf(),
-        end_from: moment().utc().endOf('month').valueOf(),
+        start_from: moment().utc().subtract(30, 'days').startOf('day').valueOf(),
+        end_from: moment().utc().endOf('day').valueOf(),
         title: '30 ngày qua',
     },
 ];
@@ -58,6 +58,6 @@ export const RE_CAPCHA_SECRET_KEY = '6LciuJYjAAAAAD23jVq_f5xor1DmDWKrpwwPC0Mh';
 export const FORGOT_PW_STATE = {
     SEND_EMAIL: 'SEND_EMAIL',
     ENTER_OTP: 'ENTER_OTP',
-    ENTER_NEW_PASSWORD: 'ENTER_NEW_PASSWORD'
-}
+    ENTER_NEW_PASSWORD: 'ENTER_NEW_PASSWORD',
+};
 export const FORMAT_NUMBER = new Intl.NumberFormat();

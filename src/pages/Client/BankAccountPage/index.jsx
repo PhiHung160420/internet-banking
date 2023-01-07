@@ -29,12 +29,14 @@ import TableListHead from '~/components/Table/TableListHead';
 import TableListToolbar from '~/components/Table/TableListToolbar';
 import { PAGINATION } from '~/constant/pagination';
 import { toast } from 'react-toastify';
+import { handleMaskValue } from '~/utils/format';
 
 const TABLE_HEAD = [
     { id: 'name', label: 'Tài khoản', alignRight: false },
     { id: 'balance', label: 'Số dư hiện tại', alignRight: false },
-    { id: 'status', label: 'Trạng thái', alignRight: false },
-    { id: '' },
+    { id: 'type', label: 'Loại tài khoản', alignRight: false },
+    { id: 'status', label: 'Tình trạng', alignRight: false },
+    { id: 'action', alignRight: true },
 ];
 
 export default function BankAccountPage() {
@@ -44,6 +46,8 @@ export default function BankAccountPage() {
 
     const [accounts, setAccounts] = useState([]);
 
+    const [rowData, setRowData] = useState();
+
     const [pagination, setPagination] = useState({
         page: PAGINATION.PAGE,
         size: PAGINATION.SIZE,
@@ -51,8 +55,10 @@ export default function BankAccountPage() {
         totalPages: 1,
     });
 
-    const handleOpenMenu = (event) => {
+    const handleOpenMenu = (event, row) => {
         setOpen(event.currentTarget);
+        console.log('row: ', row);
+        setRowData(row);
     };
 
     const handleCloseMenu = () => {
@@ -140,10 +146,11 @@ export default function BankAccountPage() {
             ),
         })
             .then(async () => {
-                const result = await accountAPI.lockById(accounts[0]?.id);
+                const result = await accountAPI.lock();
 
                 if (result?.status === 200) {
                     handleCloseMenu();
+                    setAccounts([]);
                     fetchAccounts();
                     toast.success('Khoá tài khoản thành công');
                 } else {
@@ -168,10 +175,11 @@ export default function BankAccountPage() {
             ),
         })
             .then(async () => {
-                const result = await accountAPI.lockById(accounts[0]?.id);
+                const result = await accountAPI.unlock();
 
                 if (result?.status === 200) {
                     handleCloseMenu();
+                    setAccounts([]);
                     fetchAccounts();
                     toast.success('Mở khoá tài khoản thành công');
                 } else {
@@ -201,7 +209,7 @@ export default function BankAccountPage() {
                                 <TableListHead isShowCheckBox={false} headLabel={TABLE_HEAD} />
                                 <TableBody>
                                     {accounts?.map((row) => {
-                                        const { id, accountNumber, type, balance } = row;
+                                        const { id, accountNumber, type, balance, active } = row;
 
                                         return (
                                             <TableRow hover key={id} tabIndex={-1} role="">
@@ -213,7 +221,9 @@ export default function BankAccountPage() {
                                                     </Stack>
                                                 </TableCell>
                                                 <TableCell align="left">
-                                                    <Label sx={{ textTransform: 'none' }}>{balance}</Label>
+                                                    <Label sx={{ textTransform: 'none' }}>
+                                                        {handleMaskValue(balance)} đ
+                                                    </Label>
                                                 </TableCell>
                                                 <TableCell align="left">
                                                     <Label
@@ -227,8 +237,21 @@ export default function BankAccountPage() {
                                                     </Label>
                                                 </TableCell>
 
+                                                <TableCell align="left">
+                                                    <Label
+                                                        sx={{ textTransform: 'none', cursor: 'pointer' }}
+                                                        color={active ? 'success' : 'error'}
+                                                    >
+                                                        {active ? 'Đang hoạt động' : 'Bị khoá'}
+                                                    </Label>
+                                                </TableCell>
+
                                                 <TableCell align="right">
-                                                    <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
+                                                    <IconButton
+                                                        size="large"
+                                                        color="inherit"
+                                                        onClick={(e) => handleOpenMenu(e, row)}
+                                                    >
                                                         <Iconify icon={'eva:more-vertical-fill'} />
                                                     </IconButton>
                                                 </TableCell>
@@ -289,15 +312,17 @@ export default function BankAccountPage() {
                     },
                 }}
             >
-                <MenuItem onClick={handleLockAccount}>
-                    <Iconify icon={'mdi:account-lock'} sx={{ mr: 2 }} />
-                    Khoá tài khoản
-                </MenuItem>
-
-                <MenuItem onClick={handleUnLockAccount}>
-                    <Iconify icon={'mdi:account-lock-open'} sx={{ mr: 2 }} />
-                    Mở khoá tài khoản
-                </MenuItem>
+                {rowData?.active ? (
+                    <MenuItem onClick={handleLockAccount}>
+                        <Iconify icon={'mdi:account-lock'} sx={{ mr: 2 }} />
+                        Khoá tài khoản
+                    </MenuItem>
+                ) : (
+                    <MenuItem onClick={handleUnLockAccount}>
+                        <Iconify icon={'mdi:account-lock-open'} sx={{ mr: 2 }} />
+                        Mở khoá tài khoản
+                    </MenuItem>
+                )}
             </Popover>
         </>
     );

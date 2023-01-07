@@ -22,7 +22,7 @@ function TransactionSuccess({ setStep, onResetTransfer }) {
 
                 <Typography variant="h4">Giao dịch thành công!</Typography>
 
-                <Typography variant="h4">{handleMaskValue(transfer?.amount)} VND</Typography>
+                <Typography variant="h4">{handleMaskValue(transfer?.amount)} VNĐ</Typography>
 
                 <Button variant="contained" onClick={onResetTransfer}>
                     Thực hiện giao dịch khác
