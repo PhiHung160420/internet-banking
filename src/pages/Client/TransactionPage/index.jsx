@@ -30,7 +30,7 @@ const TABLE_HEAD = [
     { id: 'date', label: 'Ngày', alignRight: false },
     { id: 'content', label: 'Nội dung', alignRight: false },
     { id: 'value', label: 'Số tiền giao dịch', alignRight: false },
-    { id: 'balance', label: 'Số dư', alignRight: false },
+    // { id: 'balance', label: 'Số dư', alignRight: false },
 ];
 
 export default function TransactionPage() {
@@ -156,14 +156,14 @@ export default function TransactionPage() {
                                                         {handleMaskValue(amount)} đ
                                                     </Label>
                                                 </TableCell>
-                                                <TableCell align="left">
+                                                {/* <TableCell align="left">
                                                     <Label
                                                         sx={{ textTransform: 'none', cursor: 'pointer' }}
                                                         color={'primary'}
                                                     >
                                                         {handleMaskValue(balance)} đ
                                                     </Label>
-                                                </TableCell>
+                                                </TableCell> */}
                                             </TableRow>
                                         );
                                     })}
