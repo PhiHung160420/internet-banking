@@ -6,19 +6,18 @@ import AddEmployee from '~/pages/Admin/AddEmployeePage';
 import ListEmployee from '~/pages/Admin/ListEmployeePage';
 import ListTransaction from '~/pages/Admin/ListTransactionPage';
 import UpdateEmployee from '~/pages/Admin/UpdateCustomerPage';
-import AdminPage from '~/pages/AdminPage';
 import BankAccountPage from '~/pages/Client/BankAccountPage';
-import RecipientAccount from '~/pages/Client/RecipientAccountPage';
-import TransferPage from '~/pages/Client/TransferPage';
-import DebtReminderPage from '~/pages/Client/DebtReminderPage';
 import DebtManagementPage from '~/pages/Client/DebtManagementPage';
 import DebtPaymentPage from '~/pages/Client/DebtPaymentPage';
+import DebtReminderPage from '~/pages/Client/DebtReminderPage';
+import RecipientAccount from '~/pages/Client/RecipientAccountPage';
 import TransactionPage from '~/pages/Client/TransactionPage';
-import ForgotPasswordPage from '~/pages/ForgotPasswordPage';
-import EmployeeListCustomer from '~/pages/Employee/ListCustomer';
+import TransferPage from '~/pages/Client/TransferPage';
 import EmployeeAddCustomer from '~/pages/Employee/AddCustomer';
-import EmployeeTransactionHistory from '~/pages/Employee/TransactionHistory';
+import EmployeeListCustomer from '~/pages/Employee/ListCustomer';
 import EmployeeRechargeMoney from '~/pages/Employee/RechargeMoney ';
+import EmployeeTransactionHistory from '~/pages/Employee/TransactionHistory';
+import ForgotPasswordPage from '~/pages/ForgotPasswordPage';
 
 // Layout = null mean EmptyLayout
 // Layout = undefined mean DefaultLayout

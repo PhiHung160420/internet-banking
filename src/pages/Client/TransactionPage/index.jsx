@@ -79,6 +79,11 @@ export default function TransactionPage() {
     }, [pagination.page, pagination.size]);
 
     useEffect(() => {
+        setTransactions([]);
+        setPagination((prev) => ({
+            ...prev,
+            page: 1,
+        }));
         fetchTransactions();
     }, [transactionType, dateFilter]);
 

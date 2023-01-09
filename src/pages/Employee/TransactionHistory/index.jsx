@@ -22,7 +22,6 @@ import Label from '~/components/label';
 import Scrollbar from '~/components/scrollbar';
 import BasicSelect from '~/components/select';
 import TableListHead from '~/components/Table/TableListHead';
-import TableListToolbar from '~/components/Table/TableListToolbar';
 import { TRANSACTION_LIST } from '~/constant';
 import { PAGINATION } from '~/constant/pagination';
 import { handleMaskValue } from '~/utils/format';
@@ -40,8 +39,6 @@ export default function EmployeeTransactionHistory() {
     const dataUser = location?.state?.dataUser;
 
     const [selectedValue, setSelectedValue] = useState(TRANSACTION_LIST[0]);
-
-    const [showSelect, setShowSelect] = useState(false);
 
     const handleChangePage = (event, newPage) => {
         setPagination((prev) => ({
@@ -84,6 +81,11 @@ export default function EmployeeTransactionHistory() {
 
     useEffect(() => {
         if (selectedValue) {
+            setTransactions([]);
+            setPagination((prev) => ({
+                ...prev,
+                page: 1,
+            }));
             fetchTransactionsById();
         }
     }, [selectedValue]);
@@ -127,18 +129,14 @@ export default function EmployeeTransactionHistory() {
                 />
 
                 <Card>
-                    <TableListToolbar isShowSearchInput={false} onClickFilter={() => setShowSelect(!showSelect)} />
-
-                    {showSelect ? (
-                        <Container style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 20 }}>
-                            <BasicSelect
-                                label="Giao dịch"
-                                selectedValue={selectedValue}
-                                handleChangeValue={setSelectedValue}
-                                selectList={TRANSACTION_LIST}
-                            />
-                        </Container>
-                    ) : null}
+                    <Container style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 30, marginBottom: 30 }}>
+                        <BasicSelect
+                            label="Giao dịch"
+                            selectedValue={selectedValue}
+                            handleChangeValue={setSelectedValue}
+                            selectList={TRANSACTION_LIST}
+                        />
+                    </Container>
 
                     <Scrollbar>
                         <TableContainer sx={{ minWidth: 800 }}>
