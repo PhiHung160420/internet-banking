@@ -14,7 +14,7 @@ export const ROLE_ADMIN = 'ROLE_ADMIN';
 
 export const TRANSACTION_LIST = [
     {
-        value: 'DEPOSIT',
+        value: 'RECEIVE',
         title: 'Giao dịch nhận tiền',
     },
     {
