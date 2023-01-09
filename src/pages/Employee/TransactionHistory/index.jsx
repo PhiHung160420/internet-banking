@@ -69,7 +69,7 @@ export default function EmployeeTransactionHistory() {
 
     const getAmountType = (type, accountNumber, recipientAccountNumber) => {
         switch (type) {
-            case 'RECEIVE':
+            case 'DEPOSIT':
                 return 'success';
             case 'TRANSFER': {
                 if (accountNumber === recipientAccountNumber) {
